@@ -1,11 +1,17 @@
 cmake_minimum_required(VERSION 3.10)
-project(optix_package_test VERSION 0.1)
+project(optix_helper_test VERSION 0.1)
 
-find_package(optix REQUIRED)
+get_target_property(definitions optix_helpers INTERFACE_COMPILE_DEFINITIONS)
+message(STATUS "definitions : ${definitions}")
 
-add_executable(optix_package_test
-    src/main.cpp
+list(APPEND test_names
+    nvcrt-test
 )
-target_link_libraries(optix_package_test
-    optix
+list(APPEND test_deps
+    optix_helpers
 )
+
+foreach(name ${test_names})
+    add_executable(${name} src/${name}.cpp)
+    target_link_libraries(${name} ${test_deps})
+endforeach()
