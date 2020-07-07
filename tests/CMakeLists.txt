@@ -5,6 +5,7 @@ get_target_property(definitions optix_helpers INTERFACE_COMPILE_DEFINITIONS)
 message(STATUS "definitions : ${definitions}")
 
 list(APPEND test_names
+    base-test
     nvcrt-test
 )
 list(APPEND test_deps
