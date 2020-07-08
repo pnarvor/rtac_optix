@@ -19,19 +19,24 @@ find_library(optix_prime_LIBRARY "optix_prime"
     HINTS ${OPTIX_PREFIX}
     PATH_SUFFIXES lib lib64
 )
-
+find_path(sutil_sdk_INCLUDE_DIR "sutil.h"
+    HINTS ${OPTIX_PREFIX}/SDK/sutil
+)
+find_library(sutil_sdk_LIBRARY "sutil_sdk"
+    HINTS ${OPTIX_PREFIX}/SDK-precompiled-samples
+)
 if(${OPTIX_PREFIX} STREQUAL "OPTIX_PREFIX-NOTFOUND")
     message(FATAL_ERROR "Could not find OptiX SDK inside \"${OPTIX_PATH}\" folder. Please check the -DOPTIX_PATH option.")
 endif()
-message(STATUS "Found OptiX         : ${OPTIX_PREFIX}")
-message(STATUS "OptiX include dirs  : ${OPTIX_INCLUDE_DIR}")
-message(STATUS "optix library       : ${optix_LIBRARY}")
-message(STATUS "optixu library      : ${optixu_LIBRARY}")
-message(STATUS "optix_prime library : ${optix_prime_LIBRARY}")
+message(STATUS "Found OptiX           : ${OPTIX_PREFIX}")
+message(STATUS "OptiX include dirs    : ${OPTIX_INCLUDE_DIR}")
+message(STATUS "optix library         : ${optix_LIBRARY}")
+message(STATUS "optixu library        : ${optixu_LIBRARY}")
+message(STATUS "optix_prime library   : ${optix_prime_LIBRARY}")
+message(STATUS "sutil_sdk library     : ${sutil_sdk_LIBRARY}")
+message(STATUS "sutil_sdk include dir : ${sutil_sdk_INCLUDE_DIR}")
 
-list(APPEND optix_helpers_PUBLIC_HEADERS
-    include/optix_helpers/NVRTC_Helper.h
-)
+
 
 # WHY IS THIS NECESSARY ???
 find_package(CUDA REQUIRED)
@@ -40,6 +45,10 @@ find_library(CUDA_nvrtc_LIBRARY nvrtc
     PATH_SUFFIXES lib lib64
 )
 
+
+list(APPEND optix_helpers_PUBLIC_HEADERS
+    include/optix_helpers/NVRTC_Helper.h
+)
 add_library(optix_helpers SHARED
     src/NVRTC_Helper.cpp
 )
@@ -51,12 +60,14 @@ target_include_directories(optix_helpers
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
         $<INSTALL_INTERFACE:include>
         ${OPTIX_INCLUDE_DIR}
+        ${sutil_sdk_INCLUDE_DIR}
         ${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES}
 )
 target_link_libraries(optix_helpers PUBLIC
     ${optix_LIBRARY}
     ${optixu_LIBRARY}
     ${optix_prime_LIBRARY}
+    ${sutil_sdk_LIBRARY}
     ${CUDA_LIBRARIES}
     ${CUDA_nvrtc_LIBRARY}
 )

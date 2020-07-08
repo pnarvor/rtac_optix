@@ -2,25 +2,16 @@
 #include <optix.h>
 #include <exception>
 
+#include <sutil.h>
+
+#include <optix_helpers/NVRTC_Helper.h>
+
 #include "cusamples.h"
 
 using namespace std;
 
-// Error check/report helper for users of the C API                 
-#define RT_CHECK_ERROR( func )                                     \
-  do {                                                             \
-    RTresult code = func;                                          \
-    if( code != RT_SUCCESS )                                       \
-      throw std::runtime_error(std::to_string(code)+__FILE__+":"+std::to_string(__LINE__));\
-  } while(0)                                                        
-
-
-int main()
+int main(int argc, char** argv)
 {
-	cout << "NVRTC_INCLUDE_DIRS : " << std::string(NVRTC_INCLUDE_DIRS) << endl;
-    cout << "Hello There !" << endl;
-	cout << cusample::drawColor << endl;
-
     RTcontext context = 0;
 
     RTprogram ray_gen_program;
@@ -44,7 +35,25 @@ int main()
     RT_CHECK_ERROR( rtBufferSetSize2D( buffer, width, height ) );
     RT_CHECK_ERROR( rtContextDeclareVariable( context, "result_buffer", &result_buffer ) );
     RT_CHECK_ERROR( rtVariableSetObject( result_buffer, buffer ) );
+    
+    optix::NVRTC_Helper nvrtc;
+    auto ptx = nvrtc.compile(cusample::drawColor);
+    RT_CHECK_ERROR( rtProgramCreateFromPTXString( context, ptx.c_str(), "draw_solid_color", &ray_gen_program) );
+    RT_CHECK_ERROR( rtProgramDeclareVariable( ray_gen_program, "draw_color", &draw_color ) );
+    RT_CHECK_ERROR( rtVariableSet3f( draw_color, 0.462f, 0.725f, 0.0f ) );
+    RT_CHECK_ERROR( rtContextSetRayGenerationProgram( context, 0, ray_gen_program ) );
 
+    /* Run */
+    RT_CHECK_ERROR( rtContextValidate( context ) );
+    RT_CHECK_ERROR( rtContextLaunch2D( context, 0 /* entry point */, width, height ) );
+    
+    sutil::initGlut(&argc, argv);
+    sutil::displayBufferGlut( argv[0], buffer );
+    RT_CHECK_ERROR( rtBufferDestroy( buffer ) );
+    RT_CHECK_ERROR( rtProgramDestroy( ray_gen_program ) );
+    RT_CHECK_ERROR( rtContextDestroy( context ) );
+
+    cout << "ok" << endl;
     return 0;
 }
 
