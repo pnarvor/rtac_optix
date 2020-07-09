@@ -1,9 +1,12 @@
-# NVIDIA OptiX library installation helper
+# NVIDIA OptiX helpers
 
-This is a cmake script allowing to install an interface target pointing to the NVIDIA OptiX SDK.
-
-The NVIDIA OptiX SDK is currently distributed without any installation
-procedure, and therefore cannot be properly added into a cmake-based workflow.
+Helpers for using the OptiX SDK from NVIDIA, such as :
+    - CMake wrapper : the OptiX SDK is shipped without a proper installation
+      procedure. This makes the use of the OptiX librairie in external projects
+      tedious at best (+ we are not sure if we have the right to distribute the
+      SDK with our code, so better make a proper interface).
+    - Various helpers to help with the use of the SDK (cuda jit compiler with
+      default options, etc...)
 
 # Usage :
 
