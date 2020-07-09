@@ -80,6 +80,13 @@ void NVRTC_Helper::add_compile_options(const StringList& options)
     }
 }
 
+std::string NVRTC_Helper::compile_cufile(const std::string& path,
+                                         const char* programName)
+{
+    std::string fileContent = NVRTC_Helper::load_source_file(path);
+    return this->compile(fileContent, programName);
+}
+
 std::string NVRTC_Helper::compile(const std::string& source,
                                   const char* programName)
 {

@@ -44,6 +44,8 @@ class NVRTC_Helper
     void add_compile_options(const std::string& options);
     void add_compile_options(const StringList& options);
     
+    std::string compile_cufile(const std::string& path,
+                               const char* programName = NULL);
     std::string compile(const std::string& source,
                         const char* programName = NULL);
     void update_log();
