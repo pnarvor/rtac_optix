@@ -36,7 +36,7 @@ int main(int argc, char** argv)
     RT_CHECK_ERROR( rtContextDeclareVariable( context, "result_buffer", &result_buffer ) );
     RT_CHECK_ERROR( rtVariableSetObject( result_buffer, buffer ) );
     
-    optix::NVRTC_Helper nvrtc;
+    optix_helpers::NVRTC_Helper nvrtc;
     auto ptx = nvrtc.compile(cusample::drawColor);
     RT_CHECK_ERROR( rtProgramCreateFromPTXString( context, ptx.c_str(), "draw_solid_color", &ray_gen_program) );
     RT_CHECK_ERROR( rtProgramDeclareVariable( ray_gen_program, "draw_color", &draw_color ) );

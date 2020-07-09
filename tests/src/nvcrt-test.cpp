@@ -4,7 +4,7 @@
 #include "cusamples.h"
 
 using namespace std;
-using namespace optix;
+using namespace optix_helpers;
 
 int main()
 {

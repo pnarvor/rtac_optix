@@ -8,7 +8,7 @@
 #include <list>
 #include <nvrtc.h>
 
-namespace optix {
+namespace optix_helpers {
 
 class NVRTC_Helper
 {
@@ -62,6 +62,6 @@ class NVRTC_Helper
 
 }; //namespace optix
 
-std::ostream& operator<<(std::ostream& os, const optix::NVRTC_Helper& nvrtc);
+std::ostream& operator<<(std::ostream& os, const optix_helpers::NVRTC_Helper& nvrtc);
 
 #endif //_DEF_OPTIX_HELPERS_NVRTC_H_

@@ -4,7 +4,7 @@
 #define NVRTC_INCLUDE_DIRS ""
 #endif
 
-namespace optix {
+namespace optix_helpers {
 
 NVRTC_Helper::NVRTC_Helper() :
     program_(0)
@@ -202,7 +202,7 @@ void NVRTC_Helper::check_error(nvrtcResult errorCode)
 
 }; //namespace optix
 
-std::ostream& operator<<(std::ostream& os, const optix::NVRTC_Helper& nvrtc)
+std::ostream& operator<<(std::ostream& os, const optix_helpers::NVRTC_Helper& nvrtc)
 {
     os << "NVRTC compile options :\n";
     os << "Include dirs :";
