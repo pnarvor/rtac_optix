@@ -54,6 +54,8 @@ class NVRTC_Helper
     StringList include_dirs()    const;
     StringList compile_options() const;
     std::string get_ptx()        const;
+    nvrtcProgram release_program(); //This won't destroy the program. This is to
+                                    //give the ownership to another scope.
 
     // static functions
     static StringList parse_option_string(const std::string& options,

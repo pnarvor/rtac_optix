@@ -144,6 +144,13 @@ std::string NVRTC_Helper::get_ptx() const
     return ptx;
 }
 
+nvrtcProgram NVRTC_Helper::release_program()
+{
+    nvrtcProgram program = program_;
+    program_ = 0;
+    return program;
+}
+
 std::vector<const char*> NVRTC_Helper::nvrtc_options() const
 {
     // build an array of const char* because that's what expects NVRTC as input
