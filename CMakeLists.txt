@@ -58,6 +58,7 @@ add_library(optix_helpers SHARED
 )
 set_target_properties(optix_helpers PROPERTIES 
     PUBLIC_HEADER "${optix_helpers_PUBLIC_HEADERS}"
+    # INSTALL_RPATH_USE_LINK_PATH True
 )
 target_include_directories(optix_helpers
     PUBLIC
@@ -71,10 +72,9 @@ target_link_libraries(optix_helpers PUBLIC
     ${optix_LIBRARY}
     ${optixu_LIBRARY}
     ${optix_prime_LIBRARY}
+    ${sutil_sdk_LIBRARY}
     ${CUDA_LIBRARIES}
     ${CUDA_nvrtc_LIBRARY}
-
-    ${sutil_sdk_LIBRARY}
     GLUT::GLUT
     OpenGL::GL
 )
