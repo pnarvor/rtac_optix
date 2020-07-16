@@ -10,7 +10,7 @@
 
 namespace optix_helpers {
 
-class NVRTC_Helper
+class Nvrtc
 {
     public :
 
@@ -29,8 +29,8 @@ class NVRTC_Helper
 
     public:
     
-    NVRTC_Helper();
-    ~NVRTC_Helper();
+    Nvrtc();
+    ~Nvrtc();
     void load_default_include_dirs();
     void load_default_compile_options();
     
@@ -64,8 +64,11 @@ class NVRTC_Helper
     static void check_error(nvrtcResult errorCode);
 };
 
+// For compatibility after class renaming
+using NVRTC_Helper = Nvrtc;
+
 }; //namespace optix
 
-std::ostream& operator<<(std::ostream& os, const optix_helpers::NVRTC_Helper& nvrtc);
+std::ostream& operator<<(std::ostream& os, const optix_helpers::Nvrtc& nvrtc);
 
 #endif //_DEF_OPTIX_HELPERS_NVRTC_H_
