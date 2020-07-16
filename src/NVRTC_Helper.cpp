@@ -1,5 +1,7 @@
 #include <optix_helpers/NVRTC_Helper.h>
 
+#include <cstring>
+
 #ifndef NVRTC_INCLUDE_DIRS
 #define NVRTC_INCLUDE_DIRS ""
 #endif
@@ -81,19 +83,19 @@ void Nvrtc::add_compile_options(const StringList& options)
 }
 
 std::string Nvrtc::compile_cufile(const std::string& path,
-                                         const char* programName)
+                                  const std::string& programName)
 {
     std::string fileContent = Nvrtc::load_source_file(path);
     return this->compile(fileContent, programName);
 }
 
 std::string Nvrtc::compile(const std::string& source,
-                                  const char* programName)
+                           const std::string& programName)
 {
     std::vector<const char*> options = this->nvrtc_options();
     
     this->clear_program();
-    check_error(nvrtcCreateProgram(&program_, source.c_str(), programName,
+    check_error(nvrtcCreateProgram(&program_, source.c_str(), programName.c_str(),
                                    0, NULL, NULL));
     try {
         check_error(nvrtcCompileProgram(program_, options.size(), options.data()));
@@ -104,7 +106,7 @@ std::string Nvrtc::compile(const std::string& source,
     }
     this->update_log();
 
-    return get_ptx();
+    return this->get_ptx();
 }
 
 void Nvrtc::update_log()
@@ -214,7 +216,7 @@ void Nvrtc::check_error(nvrtcResult errorCode)
     }
 }
 
-}; //namespace optix
+}; //namespace optix_helpers
 
 std::ostream& operator<<(std::ostream& os, const optix_helpers::Nvrtc& nvrtc)
 {

@@ -4,6 +4,7 @@
 #include <iostream>
 #include <fstream>
 #include <sstream>
+#include <string>
 #include <vector>
 #include <list>
 #include <nvrtc.h>
@@ -45,9 +46,9 @@ class Nvrtc
     void add_compile_options(const StringList& options);
     
     std::string compile_cufile(const std::string& path,
-                               const char* programName = NULL);
+                               const std::string& programName = "default_program");
     std::string compile(const std::string& source,
-                        const char* programName = NULL);
+                        const std::string& programName = "default_program");
     void update_log();
 
     // getters
@@ -67,7 +68,7 @@ class Nvrtc
 // For compatibility after class renaming
 using NVRTC_Helper = Nvrtc;
 
-}; //namespace optix
+}; //namespace optix_helpers
 
 std::ostream& operator<<(std::ostream& os, const optix_helpers::Nvrtc& nvrtc);
 
