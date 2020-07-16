@@ -2,6 +2,14 @@
 
 namespace optix_helpers {
 
+Program::Program() :
+    cuString_(NULL),
+    ptxString_(NULL),
+    name_("None"),
+    program_(0)
+{
+}
+
 Program::Program(const StringPtr& cuString, const StringPtr& ptxString,
                  const std::string& functionName, const optix::Program& program) :
     cuString_(cuString),

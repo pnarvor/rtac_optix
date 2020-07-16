@@ -26,13 +26,14 @@ class Program
 {
     protected:
     
-    const StringPtr      cuString_;
-    const StringPtr      ptxString_;
-    const std::string    name_;
-    const optix::Program program_;
+    StringPtr      cuString_;
+    StringPtr      ptxString_;
+    std::string    name_;
+    optix::Program program_;
     
     public:
 
+    Program();
     Program(const StringPtr& cuString, const StringPtr& ptxString,
             const std::string& functionName, const optix::Program& program);
 
