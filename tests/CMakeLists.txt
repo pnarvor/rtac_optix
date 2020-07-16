@@ -4,6 +4,7 @@ project(optix_helper_test VERSION 0.1)
 list(APPEND test_names
     base-test
     nvcrt-test
+    program_manager_test
 )
 list(APPEND test_deps
     optix_helpers
