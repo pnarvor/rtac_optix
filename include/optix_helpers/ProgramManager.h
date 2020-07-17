@@ -17,10 +17,6 @@ namespace optix_helpers {
 
 
 using StringPtr = std::shared_ptr<const std::string>;
-StringPtr StringPtrCreate(const std::string& other)
-{
-    return StringPtr(new std::string(other));
-}
 
 class Program
 {
@@ -36,11 +32,13 @@ class Program
     Program();
     Program(const StringPtr& cuString, const StringPtr& ptxString,
             const std::string& functionName, const optix::Program& program);
+    Program(const Program& other);
 
     StringPtr      cu_string() const;
     StringPtr      ptx_string() const;
     std::string    name() const;
     optix::Program program() const;
+    bool operator!() const;
 
     //static functions:
     static void print_source(const std::string& source, std::ostream& os);

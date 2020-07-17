@@ -2,6 +2,11 @@
 
 namespace optix_helpers {
 
+StringPtr StringPtrCreate(const std::string& other)
+{
+    return StringPtr(new std::string(other));
+}
+
 Program::Program() :
     cuString_(NULL),
     ptxString_(NULL),
@@ -16,6 +21,14 @@ Program::Program(const StringPtr& cuString, const StringPtr& ptxString,
     ptxString_(ptxString),
     name_(functionName),
     program_(program)
+{
+}
+
+Program::Program(const Program& other) :
+    cuString_(other.cuString_),
+    ptxString_(other.ptxString_),
+    name_(other.name_),
+    program_(other.program_)
 {
 }
 
@@ -37,6 +50,11 @@ std::string Program::name() const
 optix::Program Program::program() const
 {
     return program_;
+}
+
+bool Program::operator!() const
+{
+    return !this->program_;
 }
 
 //static functions
@@ -97,6 +115,7 @@ std::ostream& operator<<(std::ostream& os, const optix_helpers::Program& program
         source = program.ptx_string();
         if(!source) {
             os << "Invalid or Uninitialized program\n";
+            return os;
         }
     }
     os << "Optix program (function name : " << program.name() << ")\n";
