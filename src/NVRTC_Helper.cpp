@@ -15,6 +15,13 @@ Nvrtc::Nvrtc() :
     this->load_default_compile_options();
 }
 
+Nvrtc::Nvrtc(const Nvrtc& other) :
+    includeDirs_(other.includeDirs_),
+    compileOptions_(other.compileOptions_),
+    program_(0)
+{
+}
+
 Nvrtc::~Nvrtc()
 {
 }

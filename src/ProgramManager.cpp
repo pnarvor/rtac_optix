@@ -82,6 +82,12 @@ ProgramManager::ProgramManager(const optix::Context& context) :
 {
 }
 
+ProgramManager::ProgramManager(const ProgramManager& other) :
+    context_(other.context_),
+    nvrtc_(other.nvrtc_)
+{
+}
+
 Program ProgramManager::from_cufile(const std::string& path,
                                     const std::string& functionName)
 {

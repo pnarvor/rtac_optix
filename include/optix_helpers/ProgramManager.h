@@ -57,6 +57,7 @@ class ProgramManager
     public:
 
     ProgramManager(const optix::Context& context);
+    ProgramManager(const ProgramManager& other);
     
     Program from_cufile(const std::string& path,
                         const std::string& functionName);

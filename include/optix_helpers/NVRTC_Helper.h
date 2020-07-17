@@ -31,6 +31,7 @@ class Nvrtc
     public:
     
     Nvrtc();
+    Nvrtc(const Nvrtc& other);
     ~Nvrtc();
     void load_default_include_dirs();
     void load_default_compile_options();
