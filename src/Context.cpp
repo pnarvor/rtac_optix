@@ -1,4 +1,4 @@
-#include <optix_helpers/ProgramManager.h>
+#include <optix_helpers/Context.h>
 
 namespace optix_helpers {
 
@@ -76,25 +76,30 @@ std::string Program::print_source(const std::string& source)
     return oss.str();
 }
 
-//ProgramManager definition //////////////////////////////
-ProgramManager::ProgramManager(const optix::Context& context) :
-    context_(context)
+//Context definition //////////////////////////////
+ContextPtr Context::create()
+{
+    return ContextPtr(new Context());
+}
+
+Context::Context() :
+    context_(optix::Context::create())
 {
 }
 
-ProgramManager::ProgramManager(const ProgramManager& other) :
+Context::Context(const Context& other) :
     context_(other.context_),
     nvrtc_(other.nvrtc_)
 {
 }
 
-Program ProgramManager::from_cufile(const std::string& path,
+Program Context::from_cufile(const std::string& path,
                                     const std::string& functionName)
 {
     return this->from_custring(Nvrtc::load_source_file(path), functionName);
 }
 
-Program ProgramManager::from_custring(const std::string& cuString,
+Program Context::from_custring(const std::string& cuString,
                                       const std::string& functionName)
 {
     try {
@@ -110,6 +115,11 @@ Program ProgramManager::from_custring(const std::string& cuString,
         os << "\n" << e.what();
         throw std::runtime_error(os.str());
     }
+}
+
+optix::Context Context::context()
+{
+    return context_;
 }
 
 } //namespace optix_helpers

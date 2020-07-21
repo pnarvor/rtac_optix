@@ -3,17 +3,16 @@ using namespace std;
 
 #include <optixu/optixpp.h>
 
-#include <optix_helpers/ProgramManager.h>
+#include <optix_helpers/Context.h>
 using namespace optix_helpers;
 
 #include "cusamples.h"
 
 int main()
 {
-    optix::Context context = optix::Context::create();
-    ProgramManager manager(context);
+    ContextPtr context = Context::create();
     
-    Program program = manager.from_custring(cusample::drawColor, "draw_solid_color");
+    Program program = context->from_custring(cusample::drawColor, "draw_solid_color");
     cout << program << endl;
 
     Program nullProgram;

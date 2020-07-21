@@ -45,7 +45,11 @@ class Program
     static std::string print_source(const std::string& source);
 };
 
-class ProgramManager
+class Context;
+using ContextPtr      = std::shared_ptr<Context>;
+using ContextConstPtr = std::shared_ptr<const Context>;
+
+class Context
 {
     //The point of this class is to manage cached compiled files.
     //None of this is implemented yet. For now is only a "dumb" compiler.
@@ -56,13 +60,17 @@ class ProgramManager
 
     public:
 
-    ProgramManager(const optix::Context& context);
-    ProgramManager(const ProgramManager& other);
+    static ContextPtr create();
+
+    Context();
+    Context(const Context& other);
     
     Program from_cufile(const std::string& path,
                         const std::string& functionName);
     Program from_custring(const std::string& cuString,
                           const std::string& functionName);
+
+    optix::Context context();
 };
 
 }; // namespace optix_helpers
