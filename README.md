@@ -2,9 +2,10 @@
 
 Helpers for using the OptiX SDK from NVIDIA, such as :
     - CMake wrapper : the OptiX SDK is shipped without a proper installation
-      procedure. This makes the use of the OptiX librairie in external projects
-      tedious at best (+ we are not sure if we have the right to distribute the
-      SDK with our code, so better make a proper interface).
+      procedure. This makes the use of the OptiX library in external projects
+      tedious at best (+ it is not sure if we have the right to distribute the
+      SDK with our code, so better make a proper interface). Installation of
+      this package will create cmake target you can import in your own project.
     - Various helpers to help with the use of the SDK (cuda jit compiler with
       default options, etc...)
 
