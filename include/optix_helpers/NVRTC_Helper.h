@@ -47,9 +47,13 @@ class Nvrtc
     void add_compile_options(const StringList& options);
     
     std::string compile_cufile(const std::string& path,
-                               const std::string& programName = "default_program");
+                               const std::string& programName = "default_program",
+                               const StringList& additionalHeaders = StringList(),
+                               const StringList& headerNames = StringList());
     std::string compile(const std::string& source,
-                        const std::string& programName = "default_program");
+                        const std::string& programName = "default_program",
+                        const StringList& additionalHeaders = StringList(),
+                        const StringList& headerNames = StringList());
     void update_log();
 
     // getters

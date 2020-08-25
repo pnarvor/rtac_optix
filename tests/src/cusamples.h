@@ -30,12 +30,26 @@
 
 namespace cusample {
 
+std::string alphaHeader(R"(
+
+#ifndef _DEF_HEADER_ALPHA_H_
+#define _DEF_HEADER_ALPHA_H_
+
+#define ALPHA 0.f
+
+#endif //_DEF_HEADER_ALPHA_H_
+
+)");
+
 std::string drawColor(R"(
 
 #include <optix.h>
 #include <optixu/optixu_math_namespace.h>
 
 using namespace optix;
+
+#include <alpha.h>
+//#define ALPHA 0.f
 
 rtDeclareVariable(uint2, launch_index, rtLaunchIndex, );
 rtBuffer<float4, 2>   result_buffer;
@@ -44,7 +58,7 @@ rtDeclareVariable(float3,                draw_color, , );
 
 RT_PROGRAM void draw_solid_color()
 {
-  result_buffer[launch_index] = make_float4(draw_color, 0.f);
+  result_buffer[launch_index] = make_float4(draw_color, ALPHA);
 })");
 
 }; //namespace cusample

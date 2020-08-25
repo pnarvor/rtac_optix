@@ -53,6 +53,8 @@ class Context
 {
     //The point of this class is to manage cached compiled files.
     //None of this is implemented yet. For now is only a "dumb" compiler.
+    public: using StringList = NVRTC_Helper::StringList;
+
     protected:
 
     optix::Context context_;
@@ -66,9 +68,13 @@ class Context
     Context(const Context& other);
     
     Program from_cufile(const std::string& path,
-                        const std::string& functionName);
+                        const std::string& functionName,
+                        const StringList& additionalHeaders = StringList(),
+                        const StringList& headerNames = StringList());
     Program from_custring(const std::string& cuString,
-                          const std::string& functionName);
+                          const std::string& functionName,
+                          const StringList& additionalHeaders = StringList(),
+                          const StringList& headerNames = StringList());
 
     optix::Context context();
 };

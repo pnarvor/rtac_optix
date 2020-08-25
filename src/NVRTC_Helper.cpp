@@ -90,20 +90,36 @@ void Nvrtc::add_compile_options(const StringList& options)
 }
 
 std::string Nvrtc::compile_cufile(const std::string& path,
-                                  const std::string& programName)
+                                  const std::string& programName,
+                                  const StringList& additionalHeaders,
+                                  const StringList& headerNames)
 {
     std::string fileContent = Nvrtc::load_source_file(path);
     return this->compile(fileContent, programName);
 }
 
 std::string Nvrtc::compile(const std::string& source,
-                           const std::string& programName)
+                           const std::string& programName,
+                           const StringList& additionalHeaders,
+                           const StringList& headerNames)
 {
     std::vector<const char*> options = this->nvrtc_options();
+    std::vector<const char*> headers(additionalHeaders.size());
+    std::vector<const char*> hnames(additionalHeaders.size());
+
+    if(additionalHeaders.size() > 0 && additionalHeaders.size() == headerNames.size()) {
+        auto header = additionalHeaders.cbegin();
+        auto hname  = headerNames.cbegin();
+        for(int i = 0; i < headers.size(); i++) {
+            headers[i] = header->data();
+            hnames[i]  = hname->data();
+        }
+    }
     
     this->clear_program();
     check_error(nvrtcCreateProgram(&program_, source.c_str(), programName.c_str(),
-                                   0, NULL, NULL));
+                                   //0, NULL, NULL));
+                                   headers.size(), headers.data(), hnames.data()));
     try {
         check_error(nvrtcCompileProgram(program_, options.size(), options.data()));
     }

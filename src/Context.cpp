@@ -94,16 +94,20 @@ Context::Context(const Context& other) :
 }
 
 Program Context::from_cufile(const std::string& path,
-                                    const std::string& functionName)
+                             const std::string& functionName,
+                             const StringList& additionalHeaders,
+                             const StringList& headerNames)
 {
     return this->from_custring(Nvrtc::load_source_file(path), functionName);
 }
 
 Program Context::from_custring(const std::string& cuString,
-                                      const std::string& functionName)
+                               const std::string& functionName,
+                               const StringList& additionalHeaders,
+                               const StringList& headerNames)
 {
     try {
-        auto ptx = nvrtc_.compile(cuString, functionName);
+        auto ptx = nvrtc_.compile(cuString, functionName, additionalHeaders, headerNames);
         optix::Program program = context_->createProgramFromPTXString(ptx, functionName);
         return Program(StringPtrCreate(cuString),
                        StringPtrCreate(ptx),
