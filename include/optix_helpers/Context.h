@@ -11,6 +11,7 @@
 
 #include <optixu/optixpp.h>
 
+#include <optix_helpers/Source.h>
 #include <optix_helpers/NVRTC_Helper.h>
 
 namespace optix_helpers {
@@ -75,6 +76,7 @@ class Context
                           const std::string& functionName,
                           const StringList& additionalHeaders = StringList(),
                           const StringList& headerNames = StringList());
+    Program from_custring(const 
 
     optix::Context context();
 };

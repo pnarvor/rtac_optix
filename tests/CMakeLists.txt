@@ -5,6 +5,7 @@ list(APPEND test_names
     base-test
     nvcrt-test
     context_test
+    sources_test
 )
 list(APPEND test_deps
     optix_helpers

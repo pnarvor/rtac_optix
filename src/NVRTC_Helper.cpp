@@ -132,6 +132,18 @@ std::string Nvrtc::compile(const std::string& source,
     return this->get_ptx();
 }
 
+std::string Nvrtc::compile(const Source& source, const Sources& additionalHeaders)
+{
+    StringList headers;
+    StringList hnames;
+
+    for(auto& header : additionalHeaders) {
+        headers.push_back(header.source());
+        hnames.push_back(header.name());
+    }
+    return this->compile(source.source(), source.name(), headers, hnames);
+}
+
 void Nvrtc::update_log()
 {
     if(program_ == 0)

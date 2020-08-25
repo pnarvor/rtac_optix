@@ -9,6 +9,8 @@
 #include <list>
 #include <nvrtc.h>
 
+#include <optix_helpers/Source.h>
+
 namespace optix_helpers {
 
 class Nvrtc
@@ -54,6 +56,8 @@ class Nvrtc
                         const std::string& programName = "default_program",
                         const StringList& additionalHeaders = StringList(),
                         const StringList& headerNames = StringList());
+    std::string compile(const Source& source,
+                        const Sources& additionalHeaders = Sources());
     void update_log();
 
     // getters
