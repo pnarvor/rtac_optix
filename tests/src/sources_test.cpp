@@ -15,7 +15,7 @@ int main()
     
     Source rayGen(cusample::drawColor, "draw_solid_color");
     Source header(cusample::alphaHeader, "alpha.h");
-    Program program = context->from_custring(rayGen, {header});
+    Program program = context->create_program(rayGen, {header});
     //Program program = context->from_custring(cusample::drawColor, "draw_solid_color",
     //                                         {cusample::alphaHeader}, {"alpha.h"});
     cout << program << endl;

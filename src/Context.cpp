@@ -121,6 +121,17 @@ Program Context::from_custring(const std::string& cuString,
     }
 }
 
+Program Context::create_program(const Source& source, const Sources& additionalHeaders)
+{
+    StringList headers;
+    StringList hnames;
+    for(auto header : additionalHeaders) {
+        headers.push_back(header.source());
+        hnames.push_back(header.name());
+    }
+    return this->from_custring(source.source(), source.name(), headers, hnames);
+}
+
 optix::Context Context::context()
 {
     return context_;

@@ -76,7 +76,8 @@ class Context
                           const std::string& functionName,
                           const StringList& additionalHeaders = StringList(),
                           const StringList& headerNames = StringList());
-    Program from_custring(const 
+    Program create_program(const Source& source,
+                           const Sources& additionalHeaders = Sources());
 
     optix::Context context();
 };
