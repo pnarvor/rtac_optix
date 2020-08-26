@@ -18,6 +18,7 @@ class Source
     public:
 
     Source(const std::string& source = "", const std::string& name = "default_program");
+    Source(const Source& other);
 
     std::string source() const;
     std::string name()   const;

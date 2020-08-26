@@ -8,6 +8,12 @@ Source::Source(const std::string& source, const std::string& name) :
 {
 }
 
+Source::Source(const Source& other) :
+    source_(other.source()),
+    name_(other.name())
+{
+}
+
 std::string Source::source() const
 {
     return source_;
