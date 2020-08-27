@@ -20,7 +20,7 @@ const Sources ProgramObj::headers() const
     return headers_;
 }
 
-optix::Program ProgramObj::program()
+optix::Program ProgramObj::program() const
 {
     return program_;
 }
@@ -33,6 +33,11 @@ Program::Program(const Source& source, const Sources& headers,
                  const optix::Program& program) :
     Handle<ProgramObj>(new ProgramObj(source, headers, program))
 {
+}
+
+Program::operator optix::Program() const
+{
+    return (*this)->program();
 }
 
 }; //namespace optix_helpers

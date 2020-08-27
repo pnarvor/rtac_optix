@@ -15,16 +15,16 @@ class ProgramObj
 
     Source         source_;
     Sources        headers_;
-    optix::Program program_;
+    mutable optix::Program program_; // fix this
 
     public:
 
     ProgramObj(const Source& source, const Sources& headers,
                const optix::Program& program);
 
-    const Source  source()  const;
-    const Sources headers() const;
-    optix::Program program(); //? should be const ?
+    const Source  source()   const;
+    const Sources headers()  const;
+    optix::Program program() const; //? should be const ?
 };
 
 class Program : public Handle<ProgramObj>
@@ -34,6 +34,8 @@ class Program : public Handle<ProgramObj>
     Program();
     Program(const Source& source, const Sources& headers,
             const optix::Program& program);
+
+    operator optix::Program() const; // implicit conversion to optix native type
 };
 
 }; //namespace optix_helpers
