@@ -74,4 +74,26 @@ struct ColoredRay
 #endif //_DEF_RAYTYPE_COLORED_RAY_H_
 
 )");
+
+std::string whiteMaterial(R"(
+
+#include <optix.h>
+using namespace optix;
+
+#include <colored_ray.h>
+
+rtDeclareVariable(optix::Ray, ray, rtCurrentRay, );
+rtDeclareVariable(ColoredRay, rayPayload, rtPayload, );
+
+RT_PROGRAM void closest_hit_white()
+{
+    rayPayload.color.x = 1.0f;
+    rayPayload.color.y = 1.0f;
+    rayPayload.color.z = 1.0f;
+}
+
+)");
+
 }; //namespace cusample
+
+

@@ -6,13 +6,14 @@
 
 #include <optixu/optixpp.h>
 
+#include <optix_helpers/Handle.h>
 #include <optix_helpers/Source.h>
 #include <optix_helpers/Context.h>
 #include <optix_helpers/RayType.h>
 
 namespace optix_helpers {
 
-class Material
+class MaterialObj
 {
     //This is a class to help with material manipulations in optix
     public:
@@ -30,10 +31,13 @@ class Material
     ProgramCache    closestHitPrograms_;
     SourceCache     anyHitSources_;
     ProgramCache    anyHitPrograms_;
+
+    Program compile(const RayType& rayType, const Source& source,
+                    const Sources& additionalHeaders = Sources()) const;
     
     public:
 
-    Material(const Context& context);
+    MaterialObj(const Context& context);
 
     Program add_closest_hit_program(const RayType& rayType, const Source& source,
                                     const Sources& additionalHeaders = Sources());
@@ -45,6 +49,14 @@ class Material
     Program get_closest_hit_program(const RayType& rayType) const;
     Source  get_any_hit_source(const RayType& rayType)      const;
     Program get_any_hit_program(const RayType& rayType)     const;
+};
+
+class Material : public Handle<MaterialObj>
+{
+    public:
+
+    Material();
+    Material(const Context& context);
 };
 
 }; //namespace optix_helpers
