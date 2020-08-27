@@ -2,33 +2,40 @@
 
 namespace optix_helpers {
 
-RayType::RayType(Index rayTypeIndex, const Source& definition) :
+RayTypeObj::RayTypeObj(Index rayTypeIndex, const Source& definition) :
     rayTypeIndex_(rayTypeIndex),
     definition_(definition)
-{
-}
+{}
 
-RayType::RayType(const RayType& other) :
-    rayTypeIndex_(other.index()),
-    definition_(other.definition())
-{
-}
-
-RayType::Index RayType::index() const
+RayTypeObj::Index RayTypeObj::index() const
 {
     return rayTypeIndex_;
 }
 
-Source RayType::definition() const
+Source RayTypeObj::definition() const
 {
     return definition_;
 }
 
-bool RayType::is_defined() const
+RayType::RayType() :
+    Handle<RayTypeObj>()
+{}
+
+RayType::RayType(Index rayTypeIndex, const Source& definition) :
+    Handle<RayTypeObj>(new RayTypeObj(rayTypeIndex, definition))
+{}
+
+}; //namespace optix_helpers
+
+std::ostream& operator<<(std::ostream& os, const optix_helpers::RayType& rayType)
 {
-    return rayTypeIndex_ >= 0;
+    if(!rayType) {
+        os << "Empty ray.\n";
+        return os;
+    }
+    os << "RayType " << (int)rayType->index() << "\n" << rayType->definition() << "\n";
+    return os;
 }
 
 
-}; //namespace optix_helpers
 

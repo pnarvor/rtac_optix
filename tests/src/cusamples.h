@@ -61,4 +61,17 @@ RT_PROGRAM void draw_solid_color()
   result_buffer[launch_index] = make_float4(draw_color, ALPHA);
 })");
 
+std::string coloredRay(R"(
+
+#ifndef _DEF_RAYPAYLOAD_COLORED_RAY_H_
+#define _DEF_RAYPAYLOAD_COLORED_RAY_H_
+
+struct ColoredRay
+{
+    float3 color;
+};
+
+#endif //_DEF_RAYTYPE_COLORED_RAY_H_
+
+)");
 }; //namespace cusample

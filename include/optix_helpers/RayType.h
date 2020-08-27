@@ -3,11 +3,12 @@
 
 #include <iostream>
 
+#include <optix_helpers/Handle.h>
 #include <optix_helpers/Source.h>
 
 namespace optix_helpers {
 
-class RayType
+class RayTypeObj
 {
     public:
 
@@ -16,18 +17,28 @@ class RayType
     protected:
 
     Index  rayTypeIndex_; //Index of ray type as defined in optix kernels.
-    Source definition_; //Optix header defining the ray payload type.
+    Source definition_;   //Optix header defining the ray payload type.
 
     public:
     
-    RayType(Index rayTypeIndex = -1, const Source& definition = Source());
-    RayType(const RayType& other);
+    RayTypeObj(Index rayTypeIndex, const Source& definition);
 
     Index  index()      const;
     Source definition() const;
-    bool   is_defined() const;
+};
+
+class RayType : public Handle<RayTypeObj>
+{
+    public:
+
+    using Index = RayTypeObj::Index;
+
+    RayType();
+    RayType(Index rayTypeIndex, const Source& definition);
 };
 
 }; //namespace optix_helpers
+
+std::ostream& operator<<(std::ostream& os, const optix_helpers::RayType& rayType);
 
 #endif //_DEF_OPTIX_HELPERS_RAY_TYPE_H_

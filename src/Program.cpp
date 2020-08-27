@@ -41,6 +41,7 @@ std::ostream& operator<<(std::ostream& os, const optix_helpers::Program& program
 {
     if(!program) {
         os << "Empty program.\n";
+        return os;
     }
     os << "Program " << program->source()->name() << " :\n";
     for(auto header : program->headers()) {
