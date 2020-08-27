@@ -15,7 +15,7 @@ class Handle
 
     public:
 
-    Handle(T* obj) : obj_(obj) {}
+    Handle(T* obj = NULL) : obj_(obj) {}
 
     std::shared_ptr<T> operator->() { return obj_; }
     T& operator*() { return *obj_; }
@@ -26,6 +26,8 @@ class Handle
     const T* get() const { return obj_->get(); }
 
     Handle<T> copy() const { return Handle(new T(*obj_)); }
+
+    operator bool() const { return (bool)obj_; }
 };
 
 #endif //_DEF_OPTIX_HELPERS_HANDLE_H_
