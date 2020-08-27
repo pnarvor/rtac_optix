@@ -4,7 +4,7 @@ project(optix_helper_test VERSION 0.1)
 list(APPEND test_names
     sources_test
     nvcrt-test
-    # context_test
+    context_test
     # base-test
 )
 list(APPEND test_deps

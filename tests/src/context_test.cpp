@@ -10,10 +10,11 @@ using namespace optix_helpers;
 
 int main()
 {
-    ContextPtr context = Context::create();
+    Context context;
+    Source drawColor(cusample::drawColor, "draw_solid_color");
+    Source alpha(cusample::alphaHeader, "alpha.h");
     
-    Program program = context->from_custring(cusample::drawColor, "draw_solid_color",
-                                             {cusample::alphaHeader}, {"alpha.h"});
+    Program program = context->create_program(drawColor, {alpha});
     cout << program << endl;
 
     Program nullProgram;
