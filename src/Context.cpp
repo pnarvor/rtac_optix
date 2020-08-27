@@ -8,7 +8,7 @@ ContextObj::ContextObj() :
 }
 
 
-Program ContextObj::create_program(const Source& source, const Sources& additionalHeaders)
+Program ContextObj::create_program(const Source& source, const Sources& additionalHeaders) const
 {
     try {
         auto ptx = nvrtc_.compile(source, additionalHeaders);
@@ -20,6 +20,11 @@ Program ContextObj::create_program(const Source& source, const Sources& addition
         os << source <<  "\n" << e.what();
         throw std::runtime_error(os.str());
     }
+}
+
+optix::Context ContextObj::context() const
+{
+    return context_;
 }
 
 Context::Context() :

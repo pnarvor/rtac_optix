@@ -15,16 +15,19 @@ namespace optix_helpers {
 class ContextObj
 {
     protected:
-
-    optix::Context context_;
-    Nvrtc nvrtc_;
+    
+    // Fix the mutable keyword use
+    mutable optix::Context context_;
+    mutable Nvrtc nvrtc_;
 
     public:
 
     ContextObj();
 
     Program create_program(const Source& source,
-                           const Sources& additionalHeaders = Sources());
+                           const Sources& additionalHeaders = Sources()) const; 
+
+    optix::Context context() const; //? should be const ?
 };
 
 class Context : public Handle<ContextObj>

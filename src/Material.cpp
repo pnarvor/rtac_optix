@@ -2,65 +2,79 @@
 
 namespace optix_helpers {
 
-Material::Material(const Context& context) :
+MaterialObj::MaterialObj(const Context& context) :
     context_(context),
-    material_(context_.context()->createMaterial())
+    material_(context_->context()->createMaterial())
 {
 }
 
-Program Material::add_closest_hit_program(const RayType& rayType, const Source& source,
-                                          const Sources& additionalHeaders)
+Program MaterialObj::compile(const RayType& rayType, const Source& source,
+                             const Sources& additionalHeaders) const
 {
-    Program program(context_.create_program(source, additionalHeaders));
-    material_->setClosestHitProgram(rayType.index(), program.program());
+    Sources headers(additionalHeaders);
+    headers.push_back(rayType->definition());
+
+    return context_->create_program(source, headers);
+}
+
+Program MaterialObj::add_closest_hit_program(const RayType& rayType, const Source& source,
+                                             const Sources& additionalHeaders)
+{
+    Program program(this->compile(rayType, source, additionalHeaders));
+    material_->setClosestHitProgram(rayType->index(), program);
     
-    closestHitSources_[rayType.index()]  = source;
-    closestHitPrograms_[rayType.index()] = program;
-    rayTypes_[rayType.index()]           = rayType;
+    closestHitSources_[rayType->index()]  = source;
+    closestHitPrograms_[rayType->index()] = program;
+    rayTypes_[rayType->index()]           = rayType;
 
     return program;
 }
 
-Program Material::add_any_hit_program(const RayType& rayType, const Source& source,
-                                          const Sources& additionalHeaders)
+Program MaterialObj::add_any_hit_program(const RayType& rayType, const Source& source,
+                                         const Sources& additionalHeaders)
 {
-    Program program(context_.create_program(source, additionalHeaders));
-    material_->setAnyHitProgram(rayType.index(), program.program());
+    Program program(this->compile(rayType, source, additionalHeaders));
+    material_->setAnyHitProgram(rayType->index(), program);
     
-    anyHitSources_[rayType.index()]  = source;
-    anyHitPrograms_[rayType.index()] = program;
-    rayTypes_[rayType.index()]       = rayType;
+    anyHitSources_[rayType->index()]  = source;
+    anyHitPrograms_[rayType->index()] = program;
+    rayTypes_[rayType->index()]       = rayType;
 
     return program;
 }
 
-optix::Material Material::material() const
+optix::Material MaterialObj::material() const
 {
     return material_;
 }
 
-Source Material::get_closest_hit_source(const RayType& rayType) const
+Source MaterialObj::get_closest_hit_source(const RayType& rayType) const
 {
-    return closestHitSources_.at(rayType.index());
+    return closestHitSources_.at(rayType->index());
 }
 
-Program Material::get_closest_hit_program(const RayType& rayType) const
+Program MaterialObj::get_closest_hit_program(const RayType& rayType) const
 {
-    return closestHitPrograms_.at(rayType.index());
+    return closestHitPrograms_.at(rayType->index());
 }
 
-Source Material::get_any_hit_source(const RayType& rayType) const
+Source MaterialObj::get_any_hit_source(const RayType& rayType) const
 {
-    return anyHitSources_.at(rayType.index());
+    return anyHitSources_.at(rayType->index());
 }
 
-Program Material::get_any_hit_program(const RayType& rayType) const
+Program MaterialObj::get_any_hit_program(const RayType& rayType) const
 {
-    return anyHitPrograms_.at(rayType.index());
+    return anyHitPrograms_.at(rayType->index());
 }
 
+Material::Material() :
+    Handle<MaterialObj>()
+{}
 
-
+Material::Material(const Context& context) :
+    Handle<MaterialObj>(new MaterialObj(context))
+{}
 
 }; //namespace optix_helpers
 
