@@ -11,9 +11,8 @@ using namespace optix_helpers;
 int main()
 {
     Context context;
-    context->context()->setRayTypeCount(1);
 
-    RayType rayType0(0, Source(cusample::coloredRay, "colored_ray.h"));
+    RayType rayType0 = context->create_raytype(Source(cusample::coloredRay, "colored_ray.h"));
     cout << rayType0 << endl;
 
     Material white0(context);

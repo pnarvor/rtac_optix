@@ -9,6 +9,7 @@
 #include <optix_helpers/Nvrtc.h>
 #include <optix_helpers/Source.h>
 #include <optix_helpers/Program.h>
+#include <optix_helpers/RayType.h>
 
 namespace optix_helpers {
 
@@ -28,6 +29,9 @@ class ContextObj
                            const Sources& additionalHeaders = Sources()) const; 
 
     optix::Context context() const; //? should be const ?
+    unsigned int num_raytypes() const;
+
+    RayType create_raytype(const Source& rayDefinition) const;
 };
 
 class Context : public Handle<ContextObj>

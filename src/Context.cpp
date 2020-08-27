@@ -27,6 +27,18 @@ optix::Context ContextObj::context() const
     return context_;
 }
 
+unsigned int ContextObj::num_raytypes() const
+{
+    return this->context()->getRayTypeCount();
+}
+
+RayType ContextObj::create_raytype(const Source& rayDefinition) const
+{
+    unsigned int rayTypeIndex = this->num_raytypes();
+    this->context()->setRayTypeCount(rayTypeIndex + 1);
+    return RayType(rayTypeIndex, rayDefinition);
+}
+
 Context::Context() :
     Handle<ContextObj>(new ContextObj)
 {}

@@ -1,6 +1,7 @@
 #include <iostream>
 using namespace std;
 
+#include <optix_helpers/Context.h>
 #include <optix_helpers/RayType.h>
 using namespace optix_helpers;
 
@@ -8,7 +9,9 @@ using namespace optix_helpers;
 
 int main()
 {
-    RayType rayType0(0, Source(cusample::coloredRay, "colored_ray.h"));
+    Context context;
+
+    RayType rayType0 = context->create_raytype(Source(cusample::coloredRay, "colored_ray.h"));
     cout << rayType0 << endl;
 
     return 0;
