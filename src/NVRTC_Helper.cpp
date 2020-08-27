@@ -134,14 +134,19 @@ std::string Nvrtc::compile(const std::string& source,
 
 std::string Nvrtc::compile(const Source& source, const Sources& additionalHeaders)
 {
+    if(!source)
+        throw std::runtime_error("NVRTC : empty source file ! Cannot compile.");
+
     StringList headers;
     StringList hnames;
 
     for(auto& header : additionalHeaders) {
-        headers.push_back(header.source());
-        hnames.push_back(header.name());
+        if(header) {
+            headers.push_back(header->source());
+            hnames.push_back(header->name());
+        }
     }
-    return this->compile(source.source(), source.name(), headers, hnames);
+    return this->compile(source->source(), source->name(), headers, hnames);
 }
 
 void Nvrtc::update_log()
