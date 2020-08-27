@@ -4,7 +4,7 @@
 
 #include <sutil.h>
 
-#include <optix_helpers/NVRTC_Helper.h>
+#include <optix_helpers/Nvrtc.h>
 
 #include "cusamples.h"
 
@@ -36,8 +36,8 @@ int main(int argc, char** argv)
     RT_CHECK_ERROR( rtContextDeclareVariable( context, "result_buffer", &result_buffer ) );
     RT_CHECK_ERROR( rtVariableSetObject( result_buffer, buffer ) );
     
-    optix_helpers::NVRTC_Helper nvrtc;
-    auto ptx = nvrtc.compile(cusample::drawColor);
+    optix_helpers::Nvrtc nvrtc;
+    auto ptx = nvrtc.compile(cusample::drawColor, "draw_solid_color", {cusample::alphaHeader}, {"alpha.h"});
     RT_CHECK_ERROR( rtProgramCreateFromPTXString( context, ptx.c_str(), "draw_solid_color", &ray_gen_program) );
     RT_CHECK_ERROR( rtProgramDeclareVariable( ray_gen_program, "draw_color", &draw_color ) );
     RT_CHECK_ERROR( rtVariableSet3f( draw_color, 0.462f, 0.725f, 0.0f ) );
