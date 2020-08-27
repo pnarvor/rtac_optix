@@ -1,4 +1,4 @@
-#include <optix_helpers/NVRTC_Helper.h>
+#include <optix_helpers/Nvrtc.h>
 
 #include <cstring>
 
