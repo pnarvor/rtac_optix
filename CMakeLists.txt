@@ -51,18 +51,19 @@ find_library(CUDA_nvrtc_LIBRARY nvrtc
 
 
 list(APPEND optix_helpers_PUBLIC_HEADERS
+    include/optix_helpers/Handle.h
     include/optix_helpers/Source.h
-    include/optix_helpers/NVRTC_Helper.h
-    include/optix_helpers/Context.h
-    include/optix_helpers/RayType.h
-    include/optix_helpers/Material.h
+    # include/optix_helpers/NVRTC_Helper.h
+    # include/optix_helpers/Context.h
+    # include/optix_helpers/RayType.h
+    # include/optix_helpers/Material.h
 )
 add_library(optix_helpers SHARED
     src/Source.cpp
-    src/NVRTC_Helper.cpp
-    src/Context.cpp
-    src/RayType.cpp
-    src/Material.cpp
+    # src/NVRTC_Helper.cpp
+    # src/Context.cpp
+    # src/RayType.cpp
+    # src/Material.cpp
 )
 set_target_properties(optix_helpers PROPERTIES 
     PUBLIC_HEADER "${optix_helpers_PUBLIC_HEADERS}"
