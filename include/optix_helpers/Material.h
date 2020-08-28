@@ -7,8 +7,7 @@
 #include <optixu/optixpp.h>
 
 #include <optix_helpers/Handle.h>
-#include <optix_helpers/Source.h>
-#include <optix_helpers/Context.h>
+#include <optix_helpers/Program.h>
 #include <optix_helpers/RayType.h>
 
 namespace optix_helpers {
@@ -19,35 +18,24 @@ class MaterialObj
     public:
 
     using RayTypeCache = std::unordered_map<RayType::Index, RayType>;
-    using SourceCache  = std::unordered_map<RayType::Index, Source>;
     using ProgramCache = std::unordered_map<RayType::Index, Program>;
 
     protected:
     
-    Context         context_;
     optix::Material material_;
     RayTypeCache    rayTypes_;
-    SourceCache     closestHitSources_;
     ProgramCache    closestHitPrograms_;
-    SourceCache     anyHitSources_;
     ProgramCache    anyHitPrograms_;
 
-    Program compile(const RayType& rayType, const Source& source,
-                    const Sources& additionalHeaders = Sources()) const;
-    
     public:
 
-    MaterialObj(const Context& context);
+    MaterialObj(const optix::Material& material);
 
-    Program add_closest_hit_program(const RayType& rayType, const Source& source,
-                                    const Sources& additionalHeaders = Sources());
-    Program add_any_hit_program(const RayType& rayType, const Source& source,
-                                const Sources& additionalHeaders = Sources());
+    Program add_closest_hit_program(const RayType& rayType, const Program& program);
+    Program add_any_hit_program(const RayType& rayType, const Program& program);
 
     optix::Material material() const;
-    Source  get_closest_hit_source(const RayType& rayType)  const;
     Program get_closest_hit_program(const RayType& rayType) const;
-    Source  get_any_hit_source(const RayType& rayType)      const;
     Program get_any_hit_program(const RayType& rayType)     const;
 };
 
@@ -56,7 +44,7 @@ class Material : public Handle<MaterialObj>
     public:
 
     Material();
-    Material(const Context& context);
+    Material(const optix::Material& material);
 };
 
 }; //namespace optix_helpers

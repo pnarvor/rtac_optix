@@ -10,6 +10,7 @@
 #include <optix_helpers/Source.h>
 #include <optix_helpers/Program.h>
 #include <optix_helpers/RayType.h>
+#include <optix_helpers/Material.h>
 
 namespace optix_helpers {
 
@@ -25,13 +26,14 @@ class ContextObj
 
     ContextObj();
 
-    Program create_program(const Source& source,
-                           const Sources& additionalHeaders = Sources()) const; 
-
     optix::Context context() const; //? should be const ?
     unsigned int num_raytypes() const;
 
+    Program create_program(const Source& source,
+                           const Sources& additionalHeaders = Sources()) const; 
+
     RayType create_raytype(const Source& rayDefinition) const;
+    Material create_material() const;
 };
 
 class Context : public Handle<ContextObj>
