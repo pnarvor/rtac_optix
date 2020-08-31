@@ -94,7 +94,7 @@ RT_PROGRAM void closest_hit_white()
 
 )");
 
-std::string spheresource = R"(
+std::string sphere = R"(
 #include <optix.h>
 #include <optix_math.h>
 

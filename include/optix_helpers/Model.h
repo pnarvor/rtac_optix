@@ -8,6 +8,7 @@
 #include <optix_helpers/Handle.h>
 #include <optix_helpers/Geometry.h>
 #include <optix_helpers/GeometryTriangles.h>
+#include <optix_helpers/Material.h>
 
 namespace optix_helpers
 {
@@ -17,23 +18,19 @@ class ModelObj
     protected:
 
     optix::GeometryInstance geomInstance_;
-    optix::Transform        pose_;
     Geometry                geometry_;
     GeometryTriangles       geometryTriangles_;
+    Materials               materials_;
 
     public:
 
-    ModelObj(const optix::GeometryInstance& geomInstance,
-             const optix::Transform& pose);
+    ModelObj(const optix::GeometryInstance& geomInstance);
 
     void set_geometry(const Geometry& geometry);
     void set_geometry(const GeometryTriangles& geometry);
-    void set_pose(const float* mat, bool transpose = false,
-                  const float* inverted = NULL);
+    void add_material(const Material& material);
 
     optix::GeometryInstance geometry_instance() const;
-    optix::Transform pose() const;
-    optix::Transform node() const;
 };
 
 class Model : public Handle<ModelObj>
@@ -41,8 +38,7 @@ class Model : public Handle<ModelObj>
     public:
 
     Model();
-    Model(const optix::GeometryInstance& geomInstance,
-          const optix::Transform& pose);
+    Model(const optix::GeometryInstance& geomInstance);
 };
 
 };

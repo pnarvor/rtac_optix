@@ -3,12 +3,9 @@
 namespace optix_helpers
 {
 
-ModelObj::ModelObj(const optix::GeometryInstance& geomInstance,
-                   const optix::Transform& pose) :
-    geomInstance_(geomInstance),
-    pose_(pose)
+ModelObj::ModelObj(const optix::GeometryInstance& geomInstance) :
+    geomInstance_(geomInstance)
 {
-    pose_->setChild(geomInstance_);
 }
 
 void ModelObj::set_geometry(const Geometry& geometry)
@@ -25,10 +22,11 @@ void ModelObj::set_geometry(const GeometryTriangles& geometry)
     geomInstance_->setGeometryTriangles(geometryTriangles_);
 }
 
-void ModelObj::set_pose(const float* mat, bool transpose, const float* inverted)
+void ModelObj::add_material(const Material& material)
 {
-    //expects a 4x4 row-major homogeneous matrix.
-    pose_->setMatrix(transpose, mat, inverted);
+    geomInstance_->setMaterialCount(materials_.size() + 1);
+    geomInstance_->setMaterial(materials_.size(), material);
+    materials_.push_back(material);
 }
 
 optix::GeometryInstance ModelObj::geometry_instance() const
@@ -36,23 +34,12 @@ optix::GeometryInstance ModelObj::geometry_instance() const
     return geomInstance_;
 }
 
-optix::Transform ModelObj::pose() const
-{
-    return pose_;
-}
-
-optix::Transform ModelObj::node() const
-{
-    return this->pose();
-}
-
 Model::Model() :
     Handle<ModelObj>()
 {}
 
-Model::Model(const optix::GeometryInstance& geomInstance,
-             const optix::Transform& pose) :
-    Handle<ModelObj>(new ModelObj(geomInstance, pose))
+Model::Model(const optix::GeometryInstance& geomInstance) :
+    Handle<ModelObj>(new ModelObj(geomInstance))
 {}
 
 
