@@ -61,6 +61,7 @@ list(APPEND optix_helpers_PUBLIC_HEADERS
     include/optix_helpers/Geometry.h
     include/optix_helpers/GeometryTriangles.h
     include/optix_helpers/Model.h
+    include/optix_helpers/RayGenerator.h
 )
 add_library(optix_helpers SHARED
     src/Source.cpp
@@ -72,6 +73,7 @@ add_library(optix_helpers SHARED
     src/Geometry.cpp
     src/GeometryTriangles.cpp
     src/Model.cpp
+    src/RayGenerator.cpp
 )
 set_target_properties(optix_helpers PROPERTIES 
     PUBLIC_HEADER "${optix_helpers_PUBLIC_HEADERS}"
