@@ -59,6 +59,7 @@ list(APPEND optix_helpers_PUBLIC_HEADERS
     include/optix_helpers/RayType.h
     include/optix_helpers/Material.h
     include/optix_helpers/Geometry.h
+    include/optix_helpers/GeometryTriangles.h
     include/optix_helpers/Model.h
 )
 add_library(optix_helpers SHARED
@@ -69,6 +70,7 @@ add_library(optix_helpers SHARED
     src/RayType.cpp
     src/Material.cpp
     src/Geometry.cpp
+    src/GeometryTriangles.cpp
     src/Model.cpp
 )
 set_target_properties(optix_helpers PROPERTIES 
