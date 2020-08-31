@@ -36,5 +36,9 @@ Geometry::Geometry(const optix::Geometry& geometry,
     Handle<GeometryObj>(new GeometryObj(geometry, intersectionProgram, boundingboxProgram))
 {}
 
+Geometry::operator optix::Geometry() const
+{
+    return (*this)->geometry();
+}
 
 }; //namespace optix_helpers

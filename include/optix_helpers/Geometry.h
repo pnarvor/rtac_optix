@@ -37,6 +37,8 @@ class Geometry : public Handle<GeometryObj>
     Geometry(const optix::Geometry& geometry,
              const Program& intersectionProgram = Program(),
              const Program& boundingboxProgram = Program());
+
+    operator optix::Geometry() const;
 };
 
 };
