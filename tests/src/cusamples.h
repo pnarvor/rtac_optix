@@ -94,6 +94,50 @@ RT_PROGRAM void closest_hit_white()
 
 )");
 
+std::string spheresource = R"(
+#include <optix.h>
+#include <optix_math.h>
+
+rtDeclareVariable(optix::Ray, ray, rtCurrentRay,);
+
+RT_PROGRAM void intersection(int)
+{
+    // Intersection of sphere and ray
+    // assuming a = 1.0
+    float a = 1.0; // = dot(ray.direction, ray.direction);
+    float b = dot(ray.origin, ray.direction);
+    float c = dot(ray.origin, ray.origin) - 1.0f;
+    float delta = 4*(b*b - c);
+
+    if(delta < 0.0f) return;
+
+    float tmin = 0.5*(-b - sqrt(delta));
+    float tmax = 0.5*(-b + sqrt(delta));
+    if(tmin > 0.0f) {
+        if(rtPotentialIntersection(tmin)) {
+            rtReportIntersection(0);
+        }
+    }
+    else if(tmax > 0.0f) {
+        if(rtPotentialIntersection(tmax)) {
+            rtReportIntersection(0);
+        }
+    }
+}
+
+RT_PROGRAM void bounds(int, float bbox[6])
+{
+    bbox[0] = -1;
+    bbox[1] = -1;
+    bbox[2] = -1;
+    bbox[3] =  1;
+    bbox[4] =  1;
+    bbox[5] =  1;
+}
+
+)";
+
+
 }; //namespace cusample
 
 
