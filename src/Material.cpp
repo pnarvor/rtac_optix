@@ -48,5 +48,10 @@ Material::Material(const optix::Material& material) :
     Handle<MaterialObj>(new MaterialObj(material))
 {}
 
+Material::operator optix::Material() const
+{
+    return (*this)->material();
+}
+
 }; //namespace optix_helpers
 

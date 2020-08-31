@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <unordered_map>
+#include <vector>
 
 #include <optixu/optixpp.h>
 
@@ -45,7 +46,12 @@ class Material : public Handle<MaterialObj>
 
     Material();
     Material(const optix::Material& material);
+
+    operator optix::Material() const;
 };
+
+using Materials = std::vector<Material>;
+
 
 }; //namespace optix_helpers
 
