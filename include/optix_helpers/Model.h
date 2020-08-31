@@ -39,6 +39,8 @@ class Model : public Handle<ModelObj>
 
     Model();
     Model(const optix::GeometryInstance& geomInstance);
+
+    operator optix::GeometryInstance() const;
 };
 
 };

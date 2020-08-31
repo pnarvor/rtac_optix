@@ -42,5 +42,10 @@ Model::Model(const optix::GeometryInstance& geomInstance) :
     Handle<ModelObj>(new ModelObj(geomInstance))
 {}
 
+Model::operator optix::GeometryInstance() const
+{
+    return (*this)->geometry_instance();
+}
+
 
 };
