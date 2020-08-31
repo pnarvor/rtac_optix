@@ -44,9 +44,10 @@ Material ContextObj::create_material() const
     return Material(this->context()->createMaterial());
 }
 
-Geometry ContextObj::create_geometry() const
+Geometry ContextObj::create_geometry(const Program& intersection,
+                                     const Program& boundingbox) const
 {
-    return Geometry(context_->createGeometry());
+    return Geometry(context_->createGeometry(), intersection, boundingbox);
 }
 
 GeometryTriangles ContextObj::create_geometry_triangles() const
@@ -56,7 +57,7 @@ GeometryTriangles ContextObj::create_geometry_triangles() const
 
 Model ContextObj::create_model() const
 {
-    return Model(context_->createGeometryInstance(), context_->createTransform());
+    return Model(context_->createGeometryInstance());
 }
 
 Context::Context() :

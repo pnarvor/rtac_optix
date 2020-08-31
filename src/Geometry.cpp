@@ -11,6 +11,18 @@ GeometryObj::GeometryObj(const optix::Geometry& geometry,
 {
 }
 
+void GeometryObj::set_intersection_program(const Program& program)
+{
+    intersectionProgram_ = program;
+    geometry_->setIntersectionProgram(program);
+}
+
+void GeometryObj::set_boundingbox_program(const Program& program)
+{
+    boundingboxProgram_ = program;
+    geometry_->setBoundingBoxProgram(program);
+}
+
 optix::Geometry GeometryObj::geometry() const
 {
     return geometry_;

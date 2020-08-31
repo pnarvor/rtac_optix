@@ -23,6 +23,9 @@ class GeometryObj
     GeometryObj(const optix::Geometry& geometry,
                 const Program& intersectionProgram = Program(),
                 const Program& boundingboxProgram = Program());
+    
+    void set_intersection_program(const Program& program);
+    void set_boundingbox_program(const Program& program);
 
     optix::Geometry geometry()     const;
     Program intersection_program() const;
