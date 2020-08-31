@@ -11,6 +11,9 @@
 #include <optix_helpers/Program.h>
 #include <optix_helpers/RayType.h>
 #include <optix_helpers/Material.h>
+#include <optix_helpers/Geometry.h>
+#include <optix_helpers/GeometryTriangles.h>
+#include <optix_helpers/Model.h>
 
 namespace optix_helpers {
 
@@ -32,8 +35,11 @@ class ContextObj
     Program create_program(const Source& source,
                            const Sources& additionalHeaders = Sources()) const; 
 
-    RayType create_raytype(const Source& rayDefinition) const;
+    RayType  create_raytype(const Source& rayDefinition) const;
     Material create_material() const;
+    Geometry create_geometry() const;
+    GeometryTriangles create_geometry_triangles() const;
+    Model create_model() const;
 };
 
 class Context : public Handle<ContextObj>

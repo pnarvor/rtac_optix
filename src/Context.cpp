@@ -44,6 +44,21 @@ Material ContextObj::create_material() const
     return Material(this->context()->createMaterial());
 }
 
+Geometry ContextObj::create_geometry() const
+{
+    return Geometry(context_->createGeometry());
+}
+
+GeometryTriangles ContextObj::create_geometry_triangles() const
+{
+    return GeometryTriangles(context_->createGeometryTriangles());
+}
+
+Model ContextObj::create_model() const
+{
+    return Model(context_->createGeometryInstance(), context_->createTransform());
+}
+
 Context::Context() :
     Handle<ContextObj>(new ContextObj)
 {}
