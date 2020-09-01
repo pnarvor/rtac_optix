@@ -57,6 +57,21 @@ void RayGeneratorObj::set_miss_program(const Program& program)
     missProgram_ = program;
 }
 
+optix::Buffer RayGeneratorObj::render_buffer() const
+{
+    return renderBuffer_;
+}
+
+RayGenerationProgram RayGeneratorObj::raygen_program() const
+{
+    return raygenProgram_;
+}
+
+Program RayGeneratorObj::miss_program() const
+{
+    return missProgram_;
+}
+
 RayGenerator::RayGenerator() :
     Handle<RayGeneratorObj>()
 {}

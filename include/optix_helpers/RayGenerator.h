@@ -49,6 +49,10 @@ class RayGeneratorObj
 
     void set_raygen_program(const RayGenerationProgram& program);
     void set_miss_program(const Program& program);
+
+    optix::Buffer render_buffer() const;
+    RayGenerationProgram raygen_program() const;
+    Program miss_program() const;
 };
 
 class RayGenerator : public Handle<RayGeneratorObj>
