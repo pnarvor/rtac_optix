@@ -39,6 +39,7 @@ class RayGeneratorObj
     Program              missProgram_;
 
     void update_buffer_size();
+    void update_buffer_variable();
 
     public:
 

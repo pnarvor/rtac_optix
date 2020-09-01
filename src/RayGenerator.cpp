@@ -38,18 +38,42 @@ RayGeneratorObj::RayGeneratorObj(size_t width, size_t height, size_t depth,
     missProgram_(miss)
 {
     this->update_buffer_size();
+    this->update_buffer_variable();
 } 
  
 void RayGeneratorObj::update_buffer_size()
 {
     if(!renderBuffer_) 
         return;
-    renderBuffer_->setSize(shape_.width, shape_.height, shape_.depth);
+    switch(shape_.depth) {
+        case 1:
+            renderBuffer_->setFormat(RT_FORMAT_FLOAT);
+            break;
+        case 2:
+            renderBuffer_->setFormat(RT_FORMAT_FLOAT2);
+            break;
+        case 3:
+            renderBuffer_->setFormat(RT_FORMAT_FLOAT3);
+            break;
+        case 4:
+            renderBuffer_->setFormat(RT_FORMAT_FLOAT4);
+            break;
+        default:
+            throw std::runtime_error("Invalid buffer depth (should be [1-4])");
+    }
+    renderBuffer_->setSize(shape_.width, shape_.height);
+}
+
+void RayGeneratorObj::update_buffer_variable()
+{
+    if(raygenProgram_)
+        raygenProgram_->set_render_buffer(renderBuffer_);
 }
 
 void RayGeneratorObj::set_raygen_program(const RayGenerationProgram& program)
 {
     raygenProgram_ = program;
+    this->update_buffer_variable();
 }
 
 void RayGeneratorObj::set_miss_program(const Program& program)
