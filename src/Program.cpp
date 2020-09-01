@@ -68,6 +68,11 @@ RayGenerationProgramObj::RayGenerationProgramObj(const ProgramObj& program,
     renderBufferName_(renderBufferName)
 {}
 
+void RayGenerationProgramObj::set_render_buffer(const optix::Buffer& buffer)
+{
+    (*this)[renderBufferName_]->set(buffer);
+}
+
 std::string RayGenerationProgramObj::render_buffer_name() const
 {
     return renderBufferName_;

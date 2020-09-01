@@ -54,7 +54,8 @@ class RayGenerationProgramObj : public ProgramObj
                             const std::string& renderBufferName,
                             const Source& source, const Sources& headers = Sources());
     RayGenerationProgramObj(const ProgramObj& program, const std::string& renderBufferName);
-
+    
+    void set_render_buffer(const optix::Buffer& buffer);
     std::string render_buffer_name() const;
 };
 
