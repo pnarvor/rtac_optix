@@ -7,8 +7,13 @@ ProgramObj::ProgramObj(const Source& source, const Sources& headers,
     source_(source),
     headers_(headers),
     program_(program)
-{
-}
+{}
+
+ProgramObj::ProgramObj(const ProgramObj& other) :
+    source_(other.source_),
+    headers_(other.headers_),
+    program_(other.program_)
+{}
 
 const Source ProgramObj::source() const
 {
@@ -39,6 +44,40 @@ Program::operator optix::Program() const
 {
     return (*this)->program();
 }
+
+RayGenerationProgramObj::RayGenerationProgramObj(const optix::Program& program,
+                                                 const std::string& renderBufferName,
+                                                 const Source& source, const Sources& headers) :
+    ProgramObj(source, headers, program),
+    renderBufferName_(renderBufferName)
+{}
+
+RayGenerationProgramObj::RayGenerationProgramObj(const ProgramObj& program,
+                                                 const std::string& renderBufferName) :
+    ProgramObj(program),
+    renderBufferName_(renderBufferName)
+{}
+
+std::string RayGenerationProgramObj::render_buffer_name() const
+{
+    return renderBufferName_;
+}
+
+RayGenerationProgram::RayGenerationProgram() :
+    Handle<RayGenerationProgramObj>()
+{}
+
+RayGenerationProgram::RayGenerationProgram(const optix::Program& program,
+                                           const std::string& renderBufferName,
+                                           const Source& source, const Sources& headers) :
+    Handle<RayGenerationProgramObj>(new RayGenerationProgramObj(program, renderBufferName,
+                                                                source, headers))
+{}
+
+RayGenerationProgram::RayGenerationProgram(const Program& program,
+                                           const std::string& renderBufferName) :
+    Handle<RayGenerationProgramObj>(new RayGenerationProgramObj(*program, renderBufferName))
+{}
 
 }; //namespace optix_helpers
 

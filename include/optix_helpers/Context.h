@@ -34,6 +34,9 @@ class ContextObj
 
     Program create_program(const Source& source,
                            const Sources& additionalHeaders = Sources()) const; 
+    RayGenerationProgram create_raygen_program(const std::string renderBufferName,
+                                               const Source& source,
+                                               const Sources& additionalHeaders = Sources()) const; 
 
     RayType  create_raytype(const Source& rayDefinition) const;
     Material create_material() const;

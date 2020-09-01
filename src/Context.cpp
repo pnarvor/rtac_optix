@@ -32,6 +32,14 @@ Program ContextObj::create_program(const Source& source, const Sources& addition
     }
 }
 
+RayGenerationProgram ContextObj::create_raygen_program(const std::string renderBufferName,
+                                                       const Source& source,
+                                                       const Sources& additionalHeaders) const
+{
+    return RayGenerationProgram(this->create_program(source, additionalHeaders),
+                                renderBufferName);
+}
+
 RayType ContextObj::create_raytype(const Source& rayDefinition) const
 {
     unsigned int rayTypeIndex = this->num_raytypes();

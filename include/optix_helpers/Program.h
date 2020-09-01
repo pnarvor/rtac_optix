@@ -21,6 +21,7 @@ class ProgramObj
 
     ProgramObj(const Source& source, const Sources& headers,
                const optix::Program& program);
+    ProgramObj(const ProgramObj& other);
 
     const Source  source()   const;
     const Sources headers()  const;
@@ -36,6 +37,33 @@ class Program : public Handle<ProgramObj>
             const optix::Program& program);
 
     operator optix::Program() const; // implicit conversion to optix native type
+};
+
+class RayGenerationProgramObj : public ProgramObj
+{
+    protected:
+
+    std::string renderBufferName_;
+
+    public:
+
+    RayGenerationProgramObj(const optix::Program& program,
+                            const std::string& renderBufferName,
+                            const Source& source, const Sources& headers = Sources());
+    RayGenerationProgramObj(const ProgramObj& program, const std::string& renderBufferName);
+
+    std::string render_buffer_name() const;
+};
+
+class RayGenerationProgram : public Handle<RayGenerationProgramObj>
+{
+    public:
+
+    RayGenerationProgram();
+    RayGenerationProgram(const optix::Program& program,
+                         const std::string& renderBufferName,
+                         const Source& source, const Sources& headers = Sources());
+    RayGenerationProgram(const Program& program, const std::string& renderBufferName);
 };
 
 }; //namespace optix_helpers
