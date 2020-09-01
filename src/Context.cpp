@@ -53,9 +53,10 @@ Material ContextObj::create_material() const
 }
 
 Geometry ContextObj::create_geometry(const Program& intersection,
-                                     const Program& boundingbox) const
+                                     const Program& boundingbox,
+                                     size_t primitiveCount) const
 {
-    return Geometry(context_->createGeometry(), intersection, boundingbox);
+    return Geometry(context_->createGeometry(), intersection, boundingbox, primitiveCount);
 }
 
 GeometryTriangles ContextObj::create_geometry_triangles() const

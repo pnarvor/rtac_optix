@@ -42,7 +42,8 @@ class ContextObj
     RayType  create_raytype(const Source& rayDefinition) const;
     Material create_material() const;
     Geometry create_geometry(const Program& intersection = Program(),
-                             const Program& boundingbox = Program()) const;
+                             const Program& boundingbox = Program(),
+                             size_t primitiveCount = 1) const;
     GeometryTriangles create_geometry_triangles() const;
     Model create_model() const;
     RayGenerator create_raygenerator(size_t width, size_t height, size_t depth=1) const;
