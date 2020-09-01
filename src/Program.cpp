@@ -30,6 +30,11 @@ optix::Program ProgramObj::program() const
     return program_;
 }
 
+optix::Handle<optix::VariableObj> ProgramObj::operator[](const std::string& varname)
+{
+    return program_[varname];
+}
+
 Program::Program() :
     Handle<ProgramObj>()
 {}
@@ -43,6 +48,11 @@ Program::Program(const Source& source, const Sources& headers,
 Program::operator optix::Program() const
 {
     return (*this)->program();
+}
+
+optix::Handle<optix::VariableObj> Program::operator[](const std::string& varname)
+{
+    return (*this)[varname];
 }
 
 RayGenerationProgramObj::RayGenerationProgramObj(const optix::Program& program,
@@ -78,6 +88,11 @@ RayGenerationProgram::RayGenerationProgram(const Program& program,
                                            const std::string& renderBufferName) :
     Handle<RayGenerationProgramObj>(new RayGenerationProgramObj(*program, renderBufferName))
 {}
+
+optix::Handle<optix::VariableObj> RayGenerationProgram::operator[](const std::string& varname)
+{
+    return (*this)[varname];
+}
 
 }; //namespace optix_helpers
 
