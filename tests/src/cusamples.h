@@ -131,10 +131,11 @@ RT_PROGRAM void ortho_z()
 
     ColoredRay payload;
     payload.color = make_float3(0.0f,0.0f,0.0f);
-    optix::Ray ray(origin, direction, 0, 10.0f);
+    optix::Ray ray(origin, direction, 0, .1f);
 
     rtTrace(topObject, ray, payload);
     render_buffer[launch_index] = payload.color.x;
+    //render_buffer[launch_index] = ray.origin.y;
 }
 
 )";
@@ -151,6 +152,8 @@ rtDeclareVariable(ColoredRay, rayPayload, rtPayload, );
 RT_PROGRAM void black_miss()
 {
     rayPayload.color.x = 0.0f;
+    //rayPayload.color.x = 1.0f;
+    //rayPayload.color.x = 0.5f;
     rayPayload.color.y = 0.0f;
     rayPayload.color.z = 0.0f;
 }
