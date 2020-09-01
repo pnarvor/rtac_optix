@@ -14,6 +14,7 @@
 #include <optix_helpers/Geometry.h>
 #include <optix_helpers/GeometryTriangles.h>
 #include <optix_helpers/Model.h>
+#include <optix_helpers/RayGenerator.h>
 
 namespace optix_helpers {
 
@@ -44,6 +45,7 @@ class ContextObj
                              const Program& boundingbox = Program()) const;
     GeometryTriangles create_geometry_triangles() const;
     Model create_model() const;
+    RayGenerator create_raygenerator(size_t width, size_t height, size_t depth=1) const;
 };
 
 class Context : public Handle<ContextObj>

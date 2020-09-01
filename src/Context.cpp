@@ -68,6 +68,11 @@ Model ContextObj::create_model() const
     return Model(context_->createGeometryInstance());
 }
 
+RayGenerator ContextObj::create_raygenerator(size_t width, size_t height, size_t depth) const
+{
+    return RayGenerator(width, height, depth, context_->createBuffer(RT_BUFFER_OUTPUT));
+}
+
 Context::Context() :
     Handle<ContextObj>(new ContextObj)
 {}

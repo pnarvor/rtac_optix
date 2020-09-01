@@ -33,17 +33,22 @@ class RayGeneratorObj
 
     protected:
     
-    Shape         shape_;
-    optix::Buffer renderBuffer_; //buffer where the image will be rendered.
-    Program       raygenProgram_;
-    Program       missProgram_;
+    Shape                shape_;
+    optix::Buffer        renderBuffer_; //buffer where the image will be rendered.
+    RayGenerationProgram raygenProgram_;
+    Program              missProgram_;
+
+    void update_buffer_size();
 
     public:
 
     RayGeneratorObj(size_t width, size_t height, size_t depth,
                     const optix::Buffer& buffer,
-                    const Program& raygen = Program(),
+                    const RayGenerationProgram& raygen = RayGenerationProgram(),
                     const Program& miss = Program());
+
+    void set_raygen_program(const RayGenerationProgram& program);
+    void set_miss_program(const Program& program);
 };
 
 class RayGenerator : public Handle<RayGeneratorObj>
@@ -53,7 +58,7 @@ class RayGenerator : public Handle<RayGeneratorObj>
     RayGenerator();
     RayGenerator(size_t width, size_t height, size_t depth,
                  const optix::Buffer& buffer,
-                 const Program& raygen = Program(),
+                 const RayGenerationProgram& raygen = RayGenerationProgram(),
                  const Program& miss = Program());
 };
 

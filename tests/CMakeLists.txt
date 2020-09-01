@@ -9,6 +9,7 @@ list(APPEND test_names
     raytype_test
     material_test
     model_test
+    render_test
 )
 list(APPEND test_deps
     optix_helpers

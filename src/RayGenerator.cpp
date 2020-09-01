@@ -30,13 +30,32 @@ size_t RayGeneratorObj::Shape::size() const
 
 RayGeneratorObj::RayGeneratorObj(size_t width, size_t height, size_t depth,
                                  const optix::Buffer& buffer,
-                                 const Program& raygen,
+                                 const RayGenerationProgram& raygen,
                                  const Program& miss) :
     shape_(width, height, depth),
     renderBuffer_(buffer),
     raygenProgram_(raygen),
     missProgram_(miss)
-{}
+{
+    this->update_buffer_size();
+} 
+ 
+void RayGeneratorObj::update_buffer_size()
+{
+    if(!renderBuffer_) 
+        return;
+    renderBuffer_->setSize(shape_.width, shape_.height, shape_.depth);
+}
+
+void RayGeneratorObj::set_raygen_program(const RayGenerationProgram& program)
+{
+    raygenProgram_ = program;
+}
+
+void RayGeneratorObj::set_miss_program(const Program& program)
+{
+    missProgram_ = program;
+}
 
 RayGenerator::RayGenerator() :
     Handle<RayGeneratorObj>()
@@ -44,7 +63,7 @@ RayGenerator::RayGenerator() :
 
 RayGenerator::RayGenerator(size_t width, size_t height, size_t depth,
                            const optix::Buffer& buffer,
-                           const Program& raygen,
+                           const RayGenerationProgram& raygen,
                            const Program& miss) :
     Handle<RayGeneratorObj>(new RayGeneratorObj(width, height, depth, buffer, raygen, miss))
 {}
