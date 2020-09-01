@@ -47,6 +47,8 @@ class ContextObj
     GeometryTriangles create_geometry_triangles() const;
     Model create_model() const;
     RayGenerator create_raygenerator(size_t width, size_t height, size_t depth=1) const;
+
+    optix::Handle<optix::VariableObj> operator[](const std::string& varname);
 };
 
 class Context : public Handle<ContextObj>
@@ -54,6 +56,7 @@ class Context : public Handle<ContextObj>
     public:
 
     Context();
+    optix::Handle<optix::VariableObj> operator[](const std::string& varname);
 };
 
 }; // namespace optix_helpers

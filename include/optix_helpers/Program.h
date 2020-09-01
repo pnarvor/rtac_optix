@@ -28,6 +28,7 @@ class ProgramObj
     optix::Program program() const; //? should be const ?
 
     optix::Handle<optix::VariableObj> operator[](const std::string& varname);
+    optix::Handle<optix::VariableObj> operator[](const char* varname);
 };
 
 class Program : public Handle<ProgramObj>
@@ -40,6 +41,7 @@ class Program : public Handle<ProgramObj>
 
     operator optix::Program() const; // implicit conversion to optix native type
     optix::Handle<optix::VariableObj> operator[](const std::string& varname);
+    optix::Handle<optix::VariableObj> operator[](const char* varname);
 };
 
 class RayGenerationProgramObj : public ProgramObj
@@ -71,6 +73,7 @@ class RayGenerationProgram : public Handle<RayGenerationProgramObj>
 
     operator optix::Program() const; // implicit conversion to optix native type
     optix::Handle<optix::VariableObj> operator[](const std::string& varname);
+    optix::Handle<optix::VariableObj> operator[](const char* varname);
 };
 
 }; //namespace optix_helpers

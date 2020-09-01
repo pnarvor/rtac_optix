@@ -35,6 +35,11 @@ optix::Handle<optix::VariableObj> ProgramObj::operator[](const std::string& varn
     return program_[varname];
 }
 
+optix::Handle<optix::VariableObj> ProgramObj::operator[](const char* varname)
+{
+    return program_[varname];
+}
+
 Program::Program() :
     Handle<ProgramObj>()
 {}
@@ -51,6 +56,11 @@ Program::operator optix::Program() const
 }
 
 optix::Handle<optix::VariableObj> Program::operator[](const std::string& varname)
+{
+    return (*this)[varname];
+}
+
+optix::Handle<optix::VariableObj> Program::operator[](const char* varname)
 {
     return (*this)[varname];
 }
@@ -100,6 +110,11 @@ RayGenerationProgram::operator optix::Program() const
 }
 
 optix::Handle<optix::VariableObj> RayGenerationProgram::operator[](const std::string& varname)
+{
+    return (*this)[varname];
+}
+
+optix::Handle<optix::VariableObj> RayGenerationProgram::operator[](const char* varname)
 {
     return (*this)[varname];
 }

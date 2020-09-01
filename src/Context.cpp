@@ -74,9 +74,19 @@ RayGenerator ContextObj::create_raygenerator(size_t width, size_t height, size_t
     return RayGenerator(width, height, depth, context_->createBuffer(RT_BUFFER_OUTPUT));
 }
 
+optix::Handle<optix::VariableObj> ContextObj::operator[](const std::string& varname)
+{
+    return context_[varname];
+}
+
 Context::Context() :
     Handle<ContextObj>(new ContextObj)
 {}
+
+optix::Handle<optix::VariableObj> Context::operator[](const std::string& varname)
+{
+    return (*this)[varname];
+}
 
 } //namespace optix_helpers
 
