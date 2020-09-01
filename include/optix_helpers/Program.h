@@ -68,6 +68,7 @@ class RayGenerationProgram : public Handle<RayGenerationProgramObj>
                          const Source& source, const Sources& headers = Sources());
     RayGenerationProgram(const Program& program, const std::string& renderBufferName);
 
+    operator optix::Program() const; // implicit conversion to optix native type
     optix::Handle<optix::VariableObj> operator[](const std::string& varname);
 };
 

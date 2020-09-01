@@ -89,6 +89,11 @@ RayGenerationProgram::RayGenerationProgram(const Program& program,
     Handle<RayGenerationProgramObj>(new RayGenerationProgramObj(*program, renderBufferName))
 {}
 
+RayGenerationProgram::operator optix::Program() const
+{
+    return (*this)->program();
+}
+
 optix::Handle<optix::VariableObj> RayGenerationProgram::operator[](const std::string& varname)
 {
     return (*this)[varname];
