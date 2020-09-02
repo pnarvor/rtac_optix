@@ -54,6 +54,7 @@ class RayGeneratorObj
     optix::Buffer render_buffer() const;
     RayGenerationProgram raygen_program() const;
     Program miss_program() const;
+    Shape shape() const;
 };
 
 class RayGenerator : public Handle<RayGeneratorObj>

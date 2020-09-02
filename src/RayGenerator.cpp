@@ -96,6 +96,11 @@ Program RayGeneratorObj::miss_program() const
     return missProgram_;
 }
 
+RayGeneratorObj::Shape RayGeneratorObj::shape() const
+{
+    return shape_;
+}
+
 RayGenerator::RayGenerator() :
     Handle<RayGeneratorObj>()
 {}

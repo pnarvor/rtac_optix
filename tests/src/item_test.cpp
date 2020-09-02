@@ -9,12 +9,16 @@ using namespace std;
 #include <optix_helpers/SceneItem.h>
 using namespace optix_helpers;
 
+#include <rtac_tools/files.h>
+using rtac::files::write_pgm;
+
 #include "cusamples.h"
 
 int main()
 {
     //int W = 32, H = 16;
-    int W = 64, H = 32;
+    //int W = 64, H = 32;
+    int W = 512, H = 512;
     Context context;
 
     RayType rayType0 = context->create_raytype(Source(cusample::coloredRay, "colored_ray.h"));
@@ -47,7 +51,7 @@ int main()
     
     SceneItem item0 = context->create_scene_item(sphere0);
     item0->set_acceleration(context->context()->createAcceleration("Trbvh"));
-    float pose[16] = {1.0,0.0,0.0,1.0,
+    float pose[16] = {1.0,0.0,0.0,0.0,
                       0.0,1.0,0.0,0.0,
                       0.0,0.0,1.0,0.0,
                       0.0,0.0,0.0,1.0};
@@ -58,16 +62,22 @@ int main()
     context->context()->launch(0,W,H);
 
     float* data = (float*)renderer->render_buffer()->map();
-    std::ostringstream oss;
-    for(int h = 0; h < H; h++) {
-        for(int w = 0; w < W; w++) {
-            //cout << (int)(255.0*data[h*W + w]) << " ";
-            oss << (int)data[h*W + w];
-        }
-        oss << "\n";
+    std::vector<uint8_t> imgData(renderer->shape().size());
+    for(int i = 0; i < imgData.size(); i++) {
+        imgData[i] = 255*data[i];
     }
+    //std::ostringstream oss;
+    //for(int h = 0; h < H; h++) {
+    //    for(int w = 0; w < W; w++) {
+    //        //cout << (int)(255.0*data[h*W + w]) << " ";
+    //        oss << (int)data[h*W + w];
+    //    }
+    //    oss << "\n";
+    //}
+    //cout << oss.str() << endl;
     renderer->render_buffer()->unmap();
-    cout << oss.str() << endl;
+    write_pgm("out.pgm", renderer->shape().width, renderer->shape().height, (const char*)imgData.data());
+
 
     return 0;
 }
