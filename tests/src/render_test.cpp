@@ -44,8 +44,7 @@ int main()
     optix::GeometryGroup topObject = context->context()->createGeometryGroup();
     topObject->setAcceleration(context->context()->createAcceleration("Trbvh"));
     topObject->addChild(sphere0);
-    context->context()["topObject"]->set(topObject);
-    //renderer->raygen_program()["topObject"]->set(topObject);
+    renderer->raygen_program()["topObject"]->set(topObject);
 
     context->context()->launch(0,W,H);
 

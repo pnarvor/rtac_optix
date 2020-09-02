@@ -57,12 +57,12 @@ Program::operator optix::Program() const
 
 optix::Handle<optix::VariableObj> Program::operator[](const std::string& varname)
 {
-    return (*this)[varname];
+    return (*(*this))[varname];
 }
 
 optix::Handle<optix::VariableObj> Program::operator[](const char* varname)
 {
-    return (*this)[varname];
+    return (*(*this))[varname];
 }
 
 RayGenerationProgramObj::RayGenerationProgramObj(const optix::Program& program,
@@ -111,12 +111,12 @@ RayGenerationProgram::operator optix::Program() const
 
 optix::Handle<optix::VariableObj> RayGenerationProgram::operator[](const std::string& varname)
 {
-    return (*this)[varname];
+    return (*(*this))[varname];
 }
 
 optix::Handle<optix::VariableObj> RayGenerationProgram::operator[](const char* varname)
 {
-    return (*this)[varname];
+    return (*(*this))[varname];
 }
 
 }; //namespace optix_helpers
