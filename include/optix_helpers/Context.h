@@ -51,7 +51,7 @@ class ContextObj
                                   size_t numFaces,  const Tf* faces) const;
     Model create_model() const;
     RayGenerator create_raygenerator(size_t width, size_t height, size_t depth=1) const;
-    SceneItem create_scene_item(const Model& model) const;
+    SceneItem create_scene_item(const Model& model, const char* acceleration = "Trbvh") const;
 
     optix::Handle<optix::VariableObj> operator[](const std::string& varname);
 };

@@ -22,6 +22,7 @@ class SceneItemObj
 
     SceneItemObj(const optix::GeometryGroup& geomGroup,
                  const optix::Transform& transform,
+                 const optix::Acceleration& acceleration = optix::Acceleration(),
                  const Model& model = Model());
     
     void set_pose(const float* mat, const float* inv = NULL, 
@@ -42,6 +43,7 @@ class SceneItem : public Handle<SceneItemObj>
     SceneItem();
     SceneItem(const optix::GeometryGroup& geomGroup,
               const optix::Transform& transform,
+              const optix::Acceleration& acceleration = optix::Acceleration(),
               const Model& model = Model());
 };
 

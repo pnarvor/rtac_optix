@@ -76,10 +76,11 @@ RayGenerator ContextObj::create_raygenerator(size_t width, size_t height, size_t
     return RayGenerator(width, height, depth, context_->createBuffer(RT_BUFFER_OUTPUT));
 }
 
-SceneItem ContextObj::create_scene_item(const Model& model) const
+SceneItem ContextObj::create_scene_item(const Model& model, const char* acceleration) const
 {
     return SceneItem(context_->createGeometryGroup(),
                      context_->createTransform(),
+                     context_->createAcceleration(acceleration),
                      model);
 }
 

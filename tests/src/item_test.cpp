@@ -51,26 +51,26 @@ int main()
         context->create_program(Source(cusample::sphere, "intersection")),
         context->create_program(Source(cusample::sphere, "bounds"))));
     sphere0->add_material(white);
-    optix::GeometryGroup item0 = context->context()->createGeometryGroup();
-    item0->setAcceleration(context->context()->createAcceleration("Trbvh"));
-    item0->addChild(sphere0);
+    SceneItem item0 = context->create_scene_item(sphere0);
+    float pose0[16] = {1.0,0.0,0.0,-0.25,
+                       0.0,1.0,0.0,0.0,
+                       0.0,0.0,1.0,0.0,
+                       0.0,0.0,0.0,1.0};
+    item0->set_pose(pose0);
 
     auto mesh = Mesh<float,uint32_t>::cube(0.5);
     Model cube0 = context->create_model();
-    //GeometryTriangles test = context->create_mesh(mesh.num_points(), mesh.points().data(),
-    //                                              mesh.num_faces(),  mesh.faces().data());
     cube0->set_geometry(context->create_mesh(mesh.num_points(), mesh.points().data(),
                                              mesh.num_faces(),  mesh.faces().data()));
     cube0->add_material(white);
     SceneItem item1 = context->create_scene_item(cube0);
-    item1->set_acceleration(context->context()->createAcceleration("Trbvh"));
-    float pose[16] = {1.0,0.0,0.0,0.25,
-                      0.0,1.0,0.0,0.0,
-                      0.0,0.0,1.0,0.0,
-                      0.0,0.0,0.0,1.0};
-    item1->set_pose(pose);
+    float pose1[16] = {1.0,0.0,0.0,0.25,
+                       0.0,1.0,0.0,0.0,
+                       0.0,0.0,1.0,0.0,
+                       0.0,0.0,0.0,1.0};
+    item1->set_pose(pose1);
 
-    //topObject->addChild(item0);
+    topObject->addChild(item0->node());
     topObject->addChild(item1->node());
 
     context->context()->launch(0,W,H);
@@ -80,15 +80,6 @@ int main()
     for(int i = 0; i < imgData.size(); i++) {
         imgData[i] = 255*data[i];
     }
-    //std::ostringstream oss;
-    //for(int h = 0; h < H; h++) {
-    //    for(int w = 0; w < W; w++) {
-    //        //cout << (int)(255.0*data[h*W + w]) << " ";
-    //        oss << (int)data[h*W + w];
-    //    }
-    //    oss << "\n";
-    //}
-    //cout << oss.str() << endl;
     renderer->render_buffer()->unmap();
     write_pgm("out.pgm", renderer->shape().width, renderer->shape().height, (const char*)imgData.data());
     system("eog out.pgm");
