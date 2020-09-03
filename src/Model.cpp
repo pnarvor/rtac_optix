@@ -20,6 +20,8 @@ void ModelObj::set_geometry(const GeometryTriangles& geometry)
     geometry_          = Geometry();
     geometryTriangles_ = geometry;
     geomInstance_->setGeometryTriangles(geometryTriangles_);
+    geomInstance_["vertex_buffer"]->set(geometryTriangles_->points());
+    geomInstance_["index_buffer"]->set(geometryTriangles_->faces());
 }
 
 void ModelObj::add_material(const Material& material)

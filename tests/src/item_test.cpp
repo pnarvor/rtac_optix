@@ -12,6 +12,9 @@ using namespace optix_helpers;
 #include <rtac_tools/files.h>
 using rtac::files::write_pgm;
 
+#include <rtac_tools/types/Mesh.h>
+using rtac::types::Mesh;
+
 #include "cusamples.h"
 
 int main()
@@ -48,16 +51,27 @@ int main()
         context->create_program(Source(cusample::sphere, "intersection")),
         context->create_program(Source(cusample::sphere, "bounds"))));
     sphere0->add_material(white);
-    
-    SceneItem item0 = context->create_scene_item(sphere0);
-    item0->set_acceleration(context->context()->createAcceleration("Trbvh"));
-    float pose[16] = {1.0,0.0,0.0,0.0,
+    optix::GeometryGroup item0 = context->context()->createGeometryGroup();
+    item0->setAcceleration(context->context()->createAcceleration("Trbvh"));
+    item0->addChild(sphere0);
+
+    auto mesh = Mesh<float,uint32_t>::cube(0.5);
+    Model cube0 = context->create_model();
+    //GeometryTriangles test = context->create_mesh(mesh.num_points(), mesh.points().data(),
+    //                                              mesh.num_faces(),  mesh.faces().data());
+    cube0->set_geometry(context->create_mesh(mesh.num_points(), mesh.points().data(),
+                                             mesh.num_faces(),  mesh.faces().data()));
+    cube0->add_material(white);
+    SceneItem item1 = context->create_scene_item(cube0);
+    item1->set_acceleration(context->context()->createAcceleration("Trbvh"));
+    float pose[16] = {1.0,0.0,0.0,0.25,
                       0.0,1.0,0.0,0.0,
                       0.0,0.0,1.0,0.0,
                       0.0,0.0,0.0,1.0};
-    item0->set_pose(pose);
+    item1->set_pose(pose);
 
-    topObject->addChild(item0->node());
+    //topObject->addChild(item0);
+    topObject->addChild(item1->node());
 
     context->context()->launch(0,W,H);
 
@@ -77,8 +91,8 @@ int main()
     //cout << oss.str() << endl;
     renderer->render_buffer()->unmap();
     write_pgm("out.pgm", renderer->shape().width, renderer->shape().height, (const char*)imgData.data());
-
-
+    system("eog out.pgm");
+    
     return 0;
 }
 

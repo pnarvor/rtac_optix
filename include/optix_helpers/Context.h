@@ -46,6 +46,9 @@ class ContextObj
                              const Program& boundingbox = Program(),
                              size_t primitiveCount = 1) const;
     GeometryTriangles create_geometry_triangles() const;
+    template <typename Tp, typename Tf>
+    GeometryTriangles create_mesh(size_t numPoints, const Tp* points,
+                                  size_t numFaces,  const Tf* faces) const;
     Model create_model() const;
     RayGenerator create_raygenerator(size_t width, size_t height, size_t depth=1) const;
     SceneItem create_scene_item(const Model& model) const;
@@ -60,6 +63,16 @@ class Context : public Handle<ContextObj>
     Context();
     optix::Handle<optix::VariableObj> operator[](const std::string& varname);
 };
+
+template <typename Tp, typename Tf>
+GeometryTriangles ContextObj::create_mesh(size_t numPoints, const Tp* points,
+                                          size_t numFaces,  const Tf* faces) const
+{
+    GeometryTriangles mesh = this->create_geometry_triangles();
+    mesh->set_points(numPoints, points);
+    mesh->set_faces(numFaces, faces);
+    return mesh;
+}
 
 }; // namespace optix_helpers
 

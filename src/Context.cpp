@@ -61,7 +61,9 @@ Geometry ContextObj::create_geometry(const Program& intersection,
 
 GeometryTriangles ContextObj::create_geometry_triangles() const
 {
-    return GeometryTriangles(context_->createGeometryTriangles());
+    return GeometryTriangles(context_->createGeometryTriangles(),
+                             context_->createBuffer(RT_BUFFER_INPUT, RT_FORMAT_FLOAT3),
+                             context_->createBuffer(RT_BUFFER_INPUT, RT_FORMAT_UNSIGNED_INT3));
 }
 
 Model ContextObj::create_model() const
