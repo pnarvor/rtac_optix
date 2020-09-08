@@ -2,6 +2,7 @@
 #define _DEF_OPTIX_HELPERS_PROGRAM_H_
 
 #include <iostream>
+#include <memory>
 
 #include <optixu/optixpp.h>
 
@@ -9,7 +10,7 @@
 
 namespace optix_helpers {
 
-class Program
+class ProgramObj
 {
     protected:
 
@@ -19,19 +20,19 @@ class Program
 
     public:
 
-    Program(const Source& source, const Sources& headers,
+    ProgramObj(const Source& source, const Sources& headers,
                const optix::Program& program);
-    Program(const Program& other);
-
-    const Source  source()   const;
-    const Sources headers()  const;
-    optix::Program program() const; //? should be const ?
 
     optix::Handle<optix::VariableObj> operator[](const std::string& varname);
     optix::Handle<optix::VariableObj> operator[](const char* varname);
 
-    operator optix::Program() const;
+    const Source  source()      const;
+    const Sources headers()     const;
+    optix::Program program()    const; //? should be const ?
+    operator optix::Program()   const;
+    optix::Program operator->() const; //? should be const ?
 };
+using Program = std::shared_ptr<ProgramObj>;
 
 }; //namespace optix_helpers
 

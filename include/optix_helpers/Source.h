@@ -2,16 +2,15 @@
 #define _DEF_RTAC_OPTIX_SOURCE_H_
 
 #include <iostream>
+#include <memory>
 #include <sstream>
 #include <iomanip>
 #include <algorithm>
 #include <vector>
 
-#include <optix_helpers/Handle.h>
-
 namespace optix_helpers {
 
-class Source
+class SourceObj
 {
     protected:
 
@@ -21,8 +20,8 @@ class Source
 
     public:
 
-    Source(const std::string& source, const std::string& name);
-    Source(const Source& other);
+    SourceObj(const std::string& source, const std::string& name);
+    SourceObj(const SourceObj& other);
 
     std::string source() const;
     std::string name()   const;
@@ -31,9 +30,11 @@ class Source
     const char* name_str() const;
 
     int num_lines() const;
-    std::ostream& print(std::ostream& os)  const;
 };
+using Source = std::shared_ptr<SourceObj>;
 using Sources = std::vector<Source>;
+
+Source create_source(const std::string& source, const std::string& name);
 
 }; //namespace optix_helpers
 

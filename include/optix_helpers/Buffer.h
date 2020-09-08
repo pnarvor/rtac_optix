@@ -2,12 +2,13 @@
 #define _DEF_OPTIX_HELPERS_BUFFER_H_
 
 #include <iostream>
+#include <memory>
 
 #include <optixu/optixpp.h>
 
 namespace optix_helpers {
 
-class Buffer
+class BufferObj
 {
     protected:
 
@@ -16,13 +17,14 @@ class Buffer
 
     public:
     
-    Buffer(const optix::Buffer& buffer, const std::string& name);
+    BufferObj(const optix::Buffer& buffer, const std::string& name);
 
     optix::Buffer operator->();
     optix::Buffer operator->() const;
     optix::Buffer buffer() const;
     std::string name() const;
 };
+using Buffer = std::shared_ptr<BufferObj>;
 
 }; //namespace optix_helpers
 

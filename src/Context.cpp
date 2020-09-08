@@ -2,17 +2,17 @@
 
 namespace optix_helpers {
 
-Context::Context() :
+ContextObj::ContextObj() :
     context_(optix::Context::create())
 {
 }
 
-Program Context::create_program(const Source& source, const Sources& additionalHeaders) const
+Program ContextObj::create_program(const Source& source, const Sources& additionalHeaders) const
 {
     try {
         auto ptx = nvrtc_.compile(source, additionalHeaders);
-        optix::Program program = context_->createProgramFromPTXString(ptx, source.name());
-        return Program(source, additionalHeaders, program);
+        optix::Program program = context_->createProgramFromPTXString(ptx, source->name());
+        return Program(new ProgramObj(source, additionalHeaders, program));
     }
     catch(const std::runtime_error& e) {
         std::ostringstream os;
@@ -21,48 +21,50 @@ Program Context::create_program(const Source& source, const Sources& additionalH
     }
 }
 
-Buffer Context::create_buffer(RTbuffertype bufferType, const std::string& name) const
+Buffer ContextObj::create_buffer(RTbuffertype bufferType, const std::string& name) const
 {
-    return Buffer(context_->createBuffer(bufferType), name);
+    return Buffer(new BufferObj(context_->createBuffer(bufferType), name));
 }
 
-RayType Context::create_raytype(const Source& rayDefinition) const
+RayType ContextObj::create_raytype(const Source& rayDefinition) const
 {
     unsigned int rayTypeIndex = context_->getRayTypeCount();
     context_->setRayTypeCount(rayTypeIndex + 1);
-    return RayType(rayTypeIndex, rayDefinition);
+    return RayType(new RayTypeObj(rayTypeIndex, rayDefinition));
 }
 
-Material Context::create_material() const
+Material ContextObj::create_material() const
 {
-    return Material(this->context()->createMaterial());
+    return Material(new MaterialObj(this->context()->createMaterial()));
 }
 
-Geometry Context::create_geometry(const Program& intersection,
+Geometry ContextObj::create_geometry(const Program& intersection,
                                      const Program& boundingbox,
                                      size_t primitiveCount) const
 {
-    return Geometry(context_->createGeometry(), intersection, boundingbox, primitiveCount);
+    return Geometry(new GeometryObj(context_->createGeometry(),
+                                    intersection, boundingbox,
+                                    primitiveCount));
 }
 
-//GeometryTriangles Context::create_geometry_triangles() const
+//GeometryTriangles ContextObj::create_geometry_triangles() const
 //{
 //    return GeometryTriangles(context_->createGeometryTriangles(),
 //                             context_->createBuffer(RT_BUFFER_INPUT, RT_FORMAT_FLOAT3),
 //                             context_->createBuffer(RT_BUFFER_INPUT, RT_FORMAT_UNSIGNED_INT3));
 //}
 //
-//Model Context::create_model() const
+//Model ContextObj::create_model() const
 //{
 //    return Model(context_->createGeometryInstance());
 //}
 //
-//RayGenerator Context::create_raygenerator(size_t width, size_t height, size_t depth) const
+//RayGenerator ContextObj::create_raygenerator(size_t width, size_t height, size_t depth) const
 //{
 //    return RayGenerator(width, height, depth, context_->createBuffer(RT_BUFFER_OUTPUT));
 //}
 //
-//SceneItem Context::create_scene_item(const Model& model, const char* acceleration) const
+//SceneItem ContextObj::create_scene_item(const Model& model, const char* acceleration) const
 //{
 //    return SceneItem(context_->createGeometryGroup(),
 //                     context_->createTransform(),
@@ -70,29 +72,34 @@ Geometry Context::create_geometry(const Program& intersection,
 //                     model);
 //}
 
-optix::Handle<optix::VariableObj> Context::operator[](const std::string& varname)
+optix::Handle<optix::VariableObj> ContextObj::operator[](const std::string& varname)
 {
     return context_[varname];
 }
 
-Context::operator optix::Context() const
+ContextObj::operator optix::Context() const
 {
     return context_;
 }
 
-optix::Context Context::operator->()
+optix::Context ContextObj::operator->()
 {
     return context_;
 }
 
-optix::Context Context::operator->() const
+optix::Context ContextObj::operator->() const
 {
     return context_;
 }
 
-optix::Context Context::context() const
+optix::Context ContextObj::context() const
 {
     return context_;
+}
+
+Context create_context()
+{
+    return Context(new ContextObj());
 }
 
 } //namespace optix_helpers

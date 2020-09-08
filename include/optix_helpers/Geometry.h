@@ -10,7 +10,7 @@
 
 namespace optix_helpers {
 
-class Geometry
+class GeometryObj
 {
     protected:
     
@@ -20,10 +20,10 @@ class Geometry
 
     public:
 
-    Geometry(const optix::Geometry& geometry,
-             const Program& intersectionProgram,
-             const Program& boundingboxProgram,
-             size_t primitiveCount);
+    GeometryObj(const optix::Geometry& geometry,
+                const Program& intersectionProgram,
+                const Program& boundingboxProgram,
+                size_t primitiveCount);
     
     Program intersection_program() const;
     Program boundingbox_program()  const;
@@ -32,6 +32,7 @@ class Geometry
     operator optix::Geometry()   const;
     optix::Geometry operator->() const;
 };
+using Geometry = std::shared_ptr<GeometryObj>;
 
 };
 

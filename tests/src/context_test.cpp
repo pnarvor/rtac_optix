@@ -10,15 +10,15 @@ using namespace optix_helpers;
 
 int main()
 {
-    Context context;
-    Source drawColor(cusample::drawColor, "draw_solid_color");
-    Source alpha(cusample::alphaHeader, "alpha.h");
+    Context context = create_context();
+    Source drawColor = create_source(cusample::drawColor, "draw_solid_color");
+    Source alpha = create_source(cusample::alphaHeader, "alpha.h");
     
-    Program program = context.create_program(drawColor, {alpha});
+    Program program = context->create_program(drawColor, {alpha});
     cout << program << endl;
 
-    context->setRayTypeCount(5);
-    cout << "Num ray types : " << context->getRayTypeCount() << endl;
+    (*context)->setRayTypeCount(5);
+    cout << "Num ray types : " << (*context)->getRayTypeCount() << endl;
 
     return 0;
 }

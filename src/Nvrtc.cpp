@@ -97,13 +97,13 @@ std::string Nvrtc::compile(const Source& source, const Sources& additionalHeader
 
     auto header = additionalHeaders.cbegin();
     for(int i = 0; i < headers.size(); i++) {
-        headers[i] = header->source_str();
-        hnames[i]  = header->name_str();
+        headers[i] = (*header)->source_str();
+        hnames[i]  = (*header)->name_str();
         header++;
     }
     
     this->clear_program();
-    check_error(nvrtcCreateProgram(&program_, source.source().c_str(), source.name().c_str(),
+    check_error(nvrtcCreateProgram(&program_, source->source_str(), source->name_str(),
                                    headers.size(), headers.data(), hnames.data()));
     try {
         check_error(nvrtcCompileProgram(program_, options.size(), options.data()));

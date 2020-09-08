@@ -2,6 +2,7 @@
 #define _DEF_OPTIX_HELPERS_CONTEXT_H_
 
 #include <iostream>
+#include <memory>
 
 #include <optixu/optixpp.h>
 
@@ -20,7 +21,7 @@
 
 namespace optix_helpers {
 
-class Context
+class ContextObj
 {
     protected:
     
@@ -30,7 +31,7 @@ class Context
 
     public:
 
-    Context();
+    ContextObj();
 
     Program create_program(const Source& source,
                            const Sources& additionalHeaders = Sources()) const; 
@@ -56,6 +57,8 @@ class Context
     optix::Context operator->() const;
     optix::Context context()    const; //? should be const ?
 };
+using Context = std::shared_ptr<ContextObj>;
+Context create_context();
 
 //template <typename Tp, typename Tf>
 //GeometryTriangles ContextObj::create_mesh(size_t numPoints, const Tp* points,
