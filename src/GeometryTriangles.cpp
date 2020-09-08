@@ -10,11 +10,6 @@ GeometryTrianglesObj::GeometryTrianglesObj(const optix::GeometryTriangles& geome
     faces_(faces)
 {}
 
-optix::GeometryTriangles GeometryTrianglesObj::geometry() const
-{
-    return geometry_;
-}
-
 optix::Buffer GeometryTrianglesObj::points() const
 {
     return points_;
@@ -25,19 +20,19 @@ optix::Buffer GeometryTrianglesObj::faces() const
     return faces_;
 }
 
-GeometryTriangles::GeometryTriangles() :
-    Handle<GeometryTrianglesObj>()
-{}
-
-GeometryTriangles::GeometryTriangles(const optix::GeometryTriangles& geometry,
-                                     const optix::Buffer& points,
-                                     const optix::Buffer& faces) :
-    Handle<GeometryTrianglesObj>(new GeometryTrianglesObj(geometry, points, faces))
-{}
-
-GeometryTriangles::operator optix::GeometryTriangles() const
+optix::GeometryTriangles GeometryTrianglesObj::geometry() const
 {
-    return (*this)->geometry();
+    return geometry_;
+}
+
+GeometryTrianglesObj::operator optix::GeometryTriangles() const
+{
+    return geometry_;
+}
+
+optix::GeometryTriangles GeometryTrianglesObj::operator->() const
+{
+    return geometry_;
 }
 
 }; //namespace optix_helpers
