@@ -7,17 +7,17 @@ BufferObj::BufferObj(const optix::Buffer& buffer, const std::string& name) :
     name_(name)
 {}
 
-optix::Buffer BufferObj::operator->()
+optix::Buffer BufferObj::buffer() const
+{
+    return buffer_;
+}
+
+BufferObj::operator optix::Buffer() const
 {
     return buffer_;
 }
 
 optix::Buffer BufferObj::operator->() const
-{
-    return buffer_;
-}
-
-optix::Buffer BufferObj::buffer() const
 {
     return buffer_;
 }

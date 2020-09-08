@@ -7,6 +7,7 @@
 
 #include <optix_helpers/Handle.h>
 #include <optix_helpers/Source.h>
+#include <optix_helpers/Buffer.h>
 
 namespace optix_helpers {
 
@@ -22,6 +23,8 @@ class ProgramObj
 
     ProgramObj(const Source& source, const Sources& headers,
                const optix::Program& program);
+
+    void set_buffer(const Buffer& buffer);
 
     optix::Handle<optix::VariableObj> operator[](const std::string& varname);
     optix::Handle<optix::VariableObj> operator[](const char* varname);

@@ -20,9 +20,9 @@ class BufferObj
     
     BufferObj(const optix::Buffer& buffer, const std::string& name);
 
-    optix::Buffer operator->();
-    optix::Buffer operator->() const;
     optix::Buffer buffer() const;
+    operator optix::Buffer() const;
+    optix::Buffer operator->() const;
     std::string name() const;
 };
 using Buffer = Handle<BufferObj>;
