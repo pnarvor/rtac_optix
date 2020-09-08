@@ -16,6 +16,7 @@
 #include <optix_helpers/Model.h>
 #include <optix_helpers/SceneItem.h>
 #include <optix_helpers/RayGenerator.h>
+#include <optix_helpers/Buffer.h>
 
 namespace optix_helpers {
 
@@ -52,6 +53,8 @@ class ContextObj
     Model create_model() const;
     RayGenerator create_raygenerator(size_t width, size_t height, size_t depth=1) const;
     SceneItem create_scene_item(const Model& model, const char* acceleration = "Trbvh") const;
+
+    Buffer create_buffer(RTbuffertype bufferType, const std::string& name = "buffer") const;
 
     optix::Handle<optix::VariableObj> operator[](const std::string& varname);
 };

@@ -84,6 +84,11 @@ SceneItem ContextObj::create_scene_item(const Model& model, const char* accelera
                      model);
 }
 
+Buffer ContextObj::create_buffer(RTbuffertype bufferType, const std::string& name) const
+{
+    return Buffer(context_->createBuffer(bufferType), name);
+}
+
 optix::Handle<optix::VariableObj> ContextObj::operator[](const std::string& varname)
 {
     return context_[varname];

@@ -65,6 +65,7 @@ list(APPEND optix_helpers_PUBLIC_HEADERS
     include/optix_helpers/SceneItem.h
     include/optix_helpers/RayGenerator.h
     include/optix_helpers/ViewGeometry.h
+    include/optix_helpers/Buffer.h
 )
 add_library(optix_helpers SHARED
     src/Source.cpp
@@ -79,6 +80,7 @@ add_library(optix_helpers SHARED
     src/SceneItem.cpp
     src/RayGenerator.cpp
     src/ViewGeometry.cpp
+    src/Buffer.cpp
 )
 set_target_properties(optix_helpers PROPERTIES 
     PUBLIC_HEADER "${optix_helpers_PUBLIC_HEADERS}"
