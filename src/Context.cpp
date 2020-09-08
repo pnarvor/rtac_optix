@@ -60,18 +60,19 @@ Model ContextObj::create_model() const
     return Model(new ModelObj(context_->createGeometryInstance()));
 }
 
+SceneItem ContextObj::create_scene_item(const Model& model, const char* acceleration) const
+{
+    return SceneItem(new SceneItemObj(context_->createGeometryGroup(),
+                                      context_->createTransform(),
+                                      context_->createAcceleration(acceleration),
+                                      model));
+}
+
 //RayGenerator ContextObj::create_raygenerator(size_t width, size_t height, size_t depth) const
 //{
 //    return RayGenerator(width, height, depth, context_->createBuffer(RT_BUFFER_OUTPUT));
 //}
 //
-//SceneItem ContextObj::create_scene_item(const Model& model, const char* acceleration) const
-//{
-//    return SceneItem(context_->createGeometryGroup(),
-//                     context_->createTransform(),
-//                     context_->createAcceleration(acceleration),
-//                     model);
-//}
 
 optix::Handle<optix::VariableObj> ContextObj::operator[](const std::string& varname)
 {

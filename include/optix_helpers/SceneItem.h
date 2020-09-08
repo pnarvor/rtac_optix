@@ -22,8 +22,8 @@ class SceneItemObj
 
     SceneItemObj(const optix::GeometryGroup& geomGroup,
                  const optix::Transform& transform,
-                 const optix::Acceleration& acceleration = optix::Acceleration(),
-                 const Model& model = Model());
+                 const optix::Acceleration& acceleration,
+                 const Model& model);
     
     void set_pose(const float* mat, const float* inv = NULL, 
                   bool transpose = false);
@@ -35,17 +35,7 @@ class SceneItemObj
     optix::Transform     transform() const;
     optix::Transform     node() const;
 };
-
-class SceneItem : public Handle<SceneItemObj>
-{
-    public:
-
-    SceneItem();
-    SceneItem(const optix::GeometryGroup& geomGroup,
-              const optix::Transform& transform,
-              const optix::Acceleration& acceleration = optix::Acceleration(),
-              const Model& model = Model());
-};
+using SceneItem = std::shared_ptr<SceneItemObj>;
 
 }; //namespace optix_helpers
 
