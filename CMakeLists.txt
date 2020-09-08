@@ -48,6 +48,7 @@ find_library(CUDA_nvrtc_LIBRARY nvrtc
     PATHS ${CUDA_TOOLKIT_ROOT_DIR}
     PATH_SUFFIXES lib lib64
 )
+find_package(rtac_base REQUIRED)
 
 
 list(APPEND optix_helpers_PUBLIC_HEADERS
@@ -100,6 +101,7 @@ target_link_libraries(optix_helpers PUBLIC
     ${CUDA_nvrtc_LIBRARY}
     GLUT::GLUT
     OpenGL::GL
+    rtac_base
 )
 set(NVRTC_INCLUDE_DIRS "${OPTIX_INCLUDE_DIR}")
 set(NVRTC_INCLUDE_DIRS "${NVRTC_INCLUDE_DIRS}\\\;${OPTIX_INCLUDE_DIR}/optixu")

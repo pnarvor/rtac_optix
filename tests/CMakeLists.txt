@@ -1,8 +1,6 @@
 cmake_minimum_required(VERSION 3.10)
 project(optix_helper_test VERSION 0.1)
 
-find_package(rtac_tools REQUIRED)
-
 list(APPEND test_names
     nvcrt-test
     # sources_test
@@ -17,7 +15,6 @@ list(APPEND test_names
 )
 list(APPEND test_deps
     optix_helpers
-    rtac_tools
 )
 
 foreach(name ${test_names})
