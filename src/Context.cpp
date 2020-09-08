@@ -26,13 +26,13 @@ Buffer Context::create_buffer(RTbuffertype bufferType, const std::string& name) 
     return Buffer(context_->createBuffer(bufferType), name);
 }
 
-//RayType Context::create_raytype(const Source& rayDefinition) const
-//{
-//    unsigned int rayTypeIndex = this->num_raytypes();
-//    this->context()->setRayTypeCount(rayTypeIndex + 1);
-//    return RayType(rayTypeIndex, rayDefinition);
-//}
-//
+RayType Context::create_raytype(const Source& rayDefinition) const
+{
+    unsigned int rayTypeIndex = context_->getRayTypeCount();
+    context_->setRayTypeCount(rayTypeIndex + 1);
+    return RayType(rayTypeIndex, rayDefinition);
+}
+
 //Material Context::create_material() const
 //{
 //    return Material(this->context()->createMaterial());

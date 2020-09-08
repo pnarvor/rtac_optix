@@ -58,7 +58,7 @@ list(APPEND optix_helpers_PUBLIC_HEADERS
     include/optix_helpers/Buffer.h
     include/optix_helpers/Program.h
     include/optix_helpers/Context.h
-    # include/optix_helpers/RayType.h
+    include/optix_helpers/RayType.h
     # include/optix_helpers/Material.h
     # include/optix_helpers/Geometry.h
     # include/optix_helpers/GeometryTriangles.h
@@ -73,7 +73,7 @@ add_library(optix_helpers SHARED
     src/Buffer.cpp
     src/Program.cpp
     src/Context.cpp
-    # src/RayType.cpp
+    src/RayType.cpp
     # src/Material.cpp
     # src/Geometry.cpp
     # src/GeometryTriangles.cpp

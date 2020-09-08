@@ -10,7 +10,7 @@
 #include <optix_helpers/Source.h>
 #include <optix_helpers/Program.h>
 #include <optix_helpers/Buffer.h>
-//#include <optix_helpers/RayType.h>
+#include <optix_helpers/RayType.h>
 //#include <optix_helpers/Material.h>
 //#include <optix_helpers/Geometry.h>
 //#include <optix_helpers/GeometryTriangles.h>
@@ -36,7 +36,7 @@ class Context
                            const Sources& additionalHeaders = Sources()) const; 
     Buffer create_buffer(RTbuffertype bufferType, const std::string& name = "buffer") const;
 
-    //RayType  create_raytype(const Source& rayDefinition) const;
+    RayType  create_raytype(const Source& rayDefinition) const;
     //Material create_material() const;
     //Geometry create_geometry(const Program& intersection = Program(),
     //                         const Program& boundingbox = Program(),

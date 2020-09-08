@@ -8,7 +8,10 @@
 
 namespace optix_helpers {
 
-class RayTypeObj
+// Forward declaration for Context as friend of RayType
+class Context;
+
+class RayType
 {
     public:
 
@@ -19,22 +22,14 @@ class RayTypeObj
     Index  rayTypeIndex_; //Index of ray type as defined in optix kernels.
     Source definition_;   //Optix header defining the ray payload type.
 
+    RayType(Index rayTypeIndex, const Source& definition);
+
     public:
-    
-    RayTypeObj(Index rayTypeIndex, const Source& definition);
 
     Index  index()      const;
     Source definition() const;
-};
 
-class RayType : public Handle<RayTypeObj>
-{
-    public:
-
-    using Index = RayTypeObj::Index;
-
-    RayType();
-    RayType(Index rayTypeIndex, const Source& definition);
+    friend class Context; // Make Context only creator of RayTypes
 };
 
 }; //namespace optix_helpers
