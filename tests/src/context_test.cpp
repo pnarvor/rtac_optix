@@ -14,18 +14,11 @@ int main()
     Source drawColor(cusample::drawColor, "draw_solid_color");
     Source alpha(cusample::alphaHeader, "alpha.h");
     
-    Program program = context->create_program(drawColor, {alpha});
+    Program program = context.create_program(drawColor, {alpha});
     cout << program << endl;
 
-    Program nullProgram;
-    if(!nullProgram) cout << "Program is null" << endl;
-    //// Not compiling
-    //if(nullProgram) {
-    //    cout << "Program is not null" << endl;
-    //}
-    //else {
-    //    cout << "Program is null" << endl;
-    //}
+    context->setRayTypeCount(5);
+    cout << "Num ray types : " << context->getRayTypeCount() << endl;
 
     return 0;
 }

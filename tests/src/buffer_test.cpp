@@ -11,7 +11,7 @@ int main()
 {
     Context context;
 
-    Buffer buffer(context->create_buffer(RT_BUFFER_OUTPUT));
+    Buffer buffer(context.create_buffer(RT_BUFFER_OUTPUT));
 
     buffer->setFormat(RT_FORMAT_FLOAT);
     cout << "buffer format : " << buffer->getFormat() << endl;

@@ -9,7 +9,7 @@
 
 namespace optix_helpers {
 
-class ProgramObj
+class Program
 {
     protected:
 
@@ -19,9 +19,9 @@ class ProgramObj
 
     public:
 
-    ProgramObj(const Source& source, const Sources& headers,
+    Program(const Source& source, const Sources& headers,
                const optix::Program& program);
-    ProgramObj(const ProgramObj& other);
+    Program(const Program& other);
 
     const Source  source()   const;
     const Sources headers()  const;
@@ -29,51 +29,8 @@ class ProgramObj
 
     optix::Handle<optix::VariableObj> operator[](const std::string& varname);
     optix::Handle<optix::VariableObj> operator[](const char* varname);
-};
 
-class Program : public Handle<ProgramObj>
-{
-    public:
-
-    Program();
-    Program(const Source& source, const Sources& headers,
-            const optix::Program& program);
-
-    operator optix::Program() const; // implicit conversion to optix native type
-    optix::Handle<optix::VariableObj> operator[](const std::string& varname);
-    optix::Handle<optix::VariableObj> operator[](const char* varname);
-};
-
-class RayGenerationProgramObj : public ProgramObj
-{
-    protected:
-
-    std::string renderBufferName_;
-
-    public:
-
-    RayGenerationProgramObj(const optix::Program& program,
-                            const std::string& renderBufferName,
-                            const Source& source, const Sources& headers = Sources());
-    RayGenerationProgramObj(const ProgramObj& program, const std::string& renderBufferName);
-    
-    void set_render_buffer(const optix::Buffer& buffer);
-    std::string render_buffer_name() const;
-};
-
-class RayGenerationProgram : public Handle<RayGenerationProgramObj>
-{
-    public:
-
-    RayGenerationProgram();
-    RayGenerationProgram(const optix::Program& program,
-                         const std::string& renderBufferName,
-                         const Source& source, const Sources& headers = Sources());
-    RayGenerationProgram(const Program& program, const std::string& renderBufferName);
-
-    operator optix::Program() const; // implicit conversion to optix native type
-    optix::Handle<optix::VariableObj> operator[](const std::string& varname);
-    optix::Handle<optix::VariableObj> operator[](const char* varname);
+    operator optix::Program() const;
 };
 
 }; //namespace optix_helpers
