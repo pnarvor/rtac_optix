@@ -60,7 +60,7 @@ list(APPEND optix_helpers_PUBLIC_HEADERS
     include/optix_helpers/Context.h
     include/optix_helpers/RayType.h
     include/optix_helpers/Material.h
-    # include/optix_helpers/Geometry.h
+    include/optix_helpers/Geometry.h
     # include/optix_helpers/GeometryTriangles.h
     # include/optix_helpers/Model.h
     # include/optix_helpers/SceneItem.h
@@ -75,7 +75,7 @@ add_library(optix_helpers SHARED
     src/Context.cpp
     src/RayType.cpp
     src/Material.cpp
-    # src/Geometry.cpp
+    src/Geometry.cpp
     # src/GeometryTriangles.cpp
     # src/Model.cpp
     # src/SceneItem.cpp

@@ -38,13 +38,13 @@ Material Context::create_material() const
     return Material(this->context()->createMaterial());
 }
 
-//Geometry Context::create_geometry(const Program& intersection,
-//                                     const Program& boundingbox,
-//                                     size_t primitiveCount) const
-//{
-//    return Geometry(context_->createGeometry(), intersection, boundingbox, primitiveCount);
-//}
-//
+Geometry Context::create_geometry(const Program& intersection,
+                                     const Program& boundingbox,
+                                     size_t primitiveCount) const
+{
+    return Geometry(context_->createGeometry(), intersection, boundingbox, primitiveCount);
+}
+
 //GeometryTriangles Context::create_geometry_triangles() const
 //{
 //    return GeometryTriangles(context_->createGeometryTriangles(),

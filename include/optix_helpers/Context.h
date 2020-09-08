@@ -12,7 +12,7 @@
 #include <optix_helpers/Buffer.h>
 #include <optix_helpers/RayType.h>
 #include <optix_helpers/Material.h>
-//#include <optix_helpers/Geometry.h>
+#include <optix_helpers/Geometry.h>
 //#include <optix_helpers/GeometryTriangles.h>
 //#include <optix_helpers/Model.h>
 //#include <optix_helpers/SceneItem.h>
@@ -38,9 +38,9 @@ class Context
 
     RayType  create_raytype(const Source& rayDefinition) const;
     Material create_material() const;
-    //Geometry create_geometry(const Program& intersection = Program(),
-    //                         const Program& boundingbox = Program(),
-    //                         size_t primitiveCount = 1) const;
+    Geometry create_geometry(const Program& intersection,
+                             const Program& boundingbox,
+                             size_t primitiveCount) const;
     //GeometryTriangles create_geometry_triangles() const;
     //template <typename Tp, typename Tf>
     //GeometryTriangles create_mesh(size_t numPoints, const Tp* points,

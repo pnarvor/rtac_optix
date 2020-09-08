@@ -21,6 +21,7 @@ int main()
                                 {rayType0.definition()}));
 
     cout << white0.get_closest_hit_program(rayType0) << endl;
+    white0->getContext()->setRayTypeCount(10);
 
     return 0;
 }
