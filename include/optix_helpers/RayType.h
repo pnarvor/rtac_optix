@@ -11,6 +11,7 @@ namespace optix_helpers {
 
 // Forward declaration for Context as friend of RayType
 class ContextObj;
+class RayType;
 
 class RayTypeObj
 {
@@ -31,9 +32,23 @@ class RayTypeObj
     Source definition() const;
 
     friend class ContextObj; // Make Context only creator of RayTypes
+    friend class RayType;
 };
-using RayType      = std::shared_ptr<RayTypeObj>;
-using RayTypeIndex = RayTypeObj::Index;
+
+class RayType : public Handle<RayTypeObj>
+{
+    public:
+
+    using Index = RayTypeObj::Index;
+
+    RayType();
+
+    protected:
+
+    RayType(Index rayTypeIndex, const Source& definition);
+
+    friend class ContextObj; // Make Context only creator of RayTypes
+};
 
 }; //namespace optix_helpers
 

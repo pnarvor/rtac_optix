@@ -2,10 +2,10 @@
 #define _DEF_OPTIX_HELPERS_GEOMETRY_TRIANGLES_H_
 
 #include <iostream>
-#include <memory>
 
 #include <optixu/optixpp.h>
 
+#include <optix_helpers/Handle.h>
 #include <optix_helpers/Program.h>
 
 namespace optix_helpers {
@@ -35,7 +35,7 @@ class GeometryTrianglesObj
     operator optix::GeometryTriangles()   const;
     optix::GeometryTriangles operator->() const;
 };
-using GeometryTriangles = std::shared_ptr<GeometryTrianglesObj>;
+using GeometryTriangles = Handle<GeometryTrianglesObj>;
 
 template <typename T>
 void GeometryTrianglesObj::set_points(size_t numPoints, const T* points)

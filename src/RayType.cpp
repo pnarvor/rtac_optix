@@ -17,6 +17,14 @@ Source RayTypeObj::definition() const
     return definition_;
 }
 
+RayType::RayType() :
+    Handle<RayTypeObj>()
+{}
+
+RayType::RayType(Index rayTypeIndex, const Source& definition) :
+    Handle<RayTypeObj>(new RayTypeObj(rayTypeIndex, definition))
+{}
+
 }; //namespace optix_helpers
 
 std::ostream& operator<<(std::ostream& os, const optix_helpers::RayType& rayType)

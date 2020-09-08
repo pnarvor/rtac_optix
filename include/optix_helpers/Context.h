@@ -57,8 +57,13 @@ class ContextObj
     optix::Context operator->() const;
     optix::Context context()    const; //? should be const ?
 };
-using Context = std::shared_ptr<ContextObj>;
-Context create_context();
+
+class Context : public Handle<ContextObj>
+{
+    public:
+
+    Context();
+};
 
 //template <typename Tp, typename Tf>
 //GeometryTriangles ContextObj::create_mesh(size_t numPoints, const Tp* points,

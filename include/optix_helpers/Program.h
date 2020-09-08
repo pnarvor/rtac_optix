@@ -2,10 +2,10 @@
 #define _DEF_OPTIX_HELPERS_PROGRAM_H_
 
 #include <iostream>
-#include <memory>
 
 #include <optixu/optixpp.h>
 
+#include <optix_helpers/Handle.h>
 #include <optix_helpers/Source.h>
 
 namespace optix_helpers {
@@ -32,7 +32,7 @@ class ProgramObj
     operator optix::Program()   const;
     optix::Program operator->() const; //? should be const ?
 };
-using Program = std::shared_ptr<ProgramObj>;
+using Program = Handle<ProgramObj>;
 
 }; //namespace optix_helpers
 

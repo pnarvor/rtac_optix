@@ -32,7 +32,7 @@ class GeometryObj
     operator optix::Geometry()   const;
     optix::Geometry operator->() const;
 };
-using Geometry = std::shared_ptr<GeometryObj>;
+using Geometry = Handle<GeometryObj>;
 
 };
 

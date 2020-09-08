@@ -35,7 +35,7 @@ class SceneItemObj
     optix::Transform     transform() const;
     optix::Transform     node() const;
 };
-using SceneItem = std::shared_ptr<SceneItemObj>;
+using SceneItem = Handle<SceneItemObj>;
 
 }; //namespace optix_helpers
 

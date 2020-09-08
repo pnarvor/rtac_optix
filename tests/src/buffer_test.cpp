@@ -9,7 +9,7 @@ using namespace optix_helpers;
 
 int main()
 {
-    Context context(create_context());
+    Context context;
 
     Buffer buffer(context->create_buffer(RT_BUFFER_OUTPUT));
 

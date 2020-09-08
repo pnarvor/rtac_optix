@@ -9,9 +9,9 @@ using namespace optix_helpers;
 
 int main()
 {
-    Context context = create_context();
+    Context context;
 
-    RayType rayType0 = context->create_raytype(create_source(cusample::coloredRay, "colored_ray.h"));
+    RayType rayType0 = context->create_raytype(Source(cusample::coloredRay, "colored_ray.h"));
     cout << rayType0 << endl;
 
     // Won't compile. Only Context can create RayTypes.

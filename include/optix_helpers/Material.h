@@ -2,12 +2,12 @@
 #define _DEF_OPTIX_HELPERS_MATERIAL_H_
 
 #include <iostream>
-#include <memory>
 #include <unordered_map>
 #include <vector>
 
 #include <optixu/optixpp.h>
 
+#include <optix_helpers/Handle.h>
 #include <optix_helpers/Program.h>
 #include <optix_helpers/RayType.h>
 
@@ -18,8 +18,8 @@ class MaterialObj
     //This is a class to help with material manipulations in optix
     public:
 
-    using RayTypeCache = std::unordered_map<RayTypeIndex, RayType>;
-    using ProgramCache = std::unordered_map<RayTypeIndex, Program>;
+    using RayTypeCache = std::unordered_map<RayType::Index, RayType>;
+    using ProgramCache = std::unordered_map<RayType::Index, Program>;
 
     protected:
     
@@ -41,7 +41,7 @@ class MaterialObj
     optix::Material operator->() const;
     operator optix::Material() const;
 };
-using Material  = std::shared_ptr<MaterialObj>;
+using Material  = Handle<MaterialObj>;
 using Materials = std::vector<Material>;
 
 }; //namespace optix_helpers

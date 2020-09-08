@@ -2,9 +2,10 @@
 #define _DEF_OPTIX_HELPERS_BUFFER_H_
 
 #include <iostream>
-#include <memory>
 
 #include <optixu/optixpp.h>
+
+#include <optix_helpers/Handle.h>
 
 namespace optix_helpers {
 
@@ -24,7 +25,7 @@ class BufferObj
     optix::Buffer buffer() const;
     std::string name() const;
 };
-using Buffer = std::shared_ptr<BufferObj>;
+using Buffer = Handle<BufferObj>;
 
 }; //namespace optix_helpers
 

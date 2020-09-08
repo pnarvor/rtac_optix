@@ -8,12 +8,6 @@ SourceObj::SourceObj(const std::string& source, const std::string& name) :
 {
 }
 
-SourceObj::SourceObj(const SourceObj& other) :
-    source_(other.source()),
-    name_(other.name())
-{
-}
-
 std::string SourceObj::source() const
 {
     return source_;
@@ -39,10 +33,13 @@ int SourceObj::num_lines() const
     return std::count(source_.begin(), source_.end(), '\n');
 }
 
-Source create_source(const std::string& source, const std::string& name)
-{
-    return Source(new SourceObj(source, name));
-}
+Source::Source() :
+    Handle<SourceObj>()
+{}
+
+Source::Source(const std::string& source, const std::string& name) :
+    Handle<SourceObj>(new SourceObj(source, name))
+{}
 
 }; //namespace optix_helpers
 

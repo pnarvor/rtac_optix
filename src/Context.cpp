@@ -30,7 +30,7 @@ RayType ContextObj::create_raytype(const Source& rayDefinition) const
 {
     unsigned int rayTypeIndex = context_->getRayTypeCount();
     context_->setRayTypeCount(rayTypeIndex + 1);
-    return RayType(new RayTypeObj(rayTypeIndex, rayDefinition));
+    return RayType(rayTypeIndex, rayDefinition);
 }
 
 Material ContextObj::create_material() const
@@ -99,10 +99,9 @@ optix::Context ContextObj::context() const
     return context_;
 }
 
-Context create_context()
-{
-    return Context(new ContextObj());
-}
+Context::Context() :
+    Handle<ContextObj>(new ContextObj())
+{}
 
 } //namespace optix_helpers
 

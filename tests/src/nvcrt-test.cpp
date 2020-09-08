@@ -11,8 +11,8 @@ int main()
 {
     NVRTC_Helper nvrtc;
 
-    Source drawColor = create_source(cusample::drawColor, "draw_color");
-    Source alpha = create_source(cusample::alphaHeader, "alpha.h");
+    Source drawColor = Source(cusample::drawColor, "draw_color");
+    Source alpha = Source(cusample::alphaHeader, "alpha.h");
     auto ptx1 = nvrtc.compile(drawColor, {alpha});
     cout << ptx1 << endl;
     return 0;

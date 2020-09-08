@@ -10,9 +10,9 @@ using namespace optix_helpers;
 
 int main()
 {
-    Context context = create_context();
-    Source drawColor = create_source(cusample::drawColor, "draw_solid_color");
-    Source alpha = create_source(cusample::alphaHeader, "alpha.h");
+    Context context;
+    Source drawColor = Source(cusample::drawColor, "draw_solid_color");
+    Source alpha = Source(cusample::alphaHeader, "alpha.h");
     
     Program program = context->create_program(drawColor, {alpha});
     cout << program << endl;
