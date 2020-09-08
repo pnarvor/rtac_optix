@@ -11,7 +11,7 @@
 
 namespace optix_helpers {
 
-class SourceObj
+class Source
 {
     protected:
 
@@ -21,22 +21,17 @@ class SourceObj
 
     public:
 
-    SourceObj(const std::string& source, const std::string& name);
-    SourceObj(const SourceObj& other);
+    Source(const std::string& source, const std::string& name);
+    Source(const Source& other);
 
     std::string source() const;
     std::string name()   const;
 
+    const char* source_str() const;
+    const char* name_str() const;
+
     int num_lines() const;
     std::ostream& print(std::ostream& os)  const;
-};
-
-class Source : public Handle<SourceObj>
-{
-    public:
-
-    Source();
-    Source(const std::string& source, const std::string& name);
 };
 using Sources = std::vector<Source>;
 

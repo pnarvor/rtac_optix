@@ -2,9 +2,10 @@ cmake_minimum_required(VERSION 3.10)
 project(optix_helper_test VERSION 0.1)
 
 list(APPEND test_names
+    sources_test
     nvcrt-test
-    # sources_test
     # context_test
+    # buffer_test
     # base-test
     # raytype_test
     # material_test
@@ -12,7 +13,6 @@ list(APPEND test_names
     # render_test
     # item_test
     # pinhole_test
-    buffer_test
 )
 list(APPEND test_deps
     optix_helpers

@@ -55,32 +55,32 @@ list(APPEND optix_helpers_PUBLIC_HEADERS
     include/optix_helpers/Handle.h
     include/optix_helpers/Source.h
     include/optix_helpers/Nvrtc.h
-    include/optix_helpers/Program.h
-    include/optix_helpers/Context.h
-    include/optix_helpers/RayType.h
-    include/optix_helpers/Material.h
-    include/optix_helpers/Geometry.h
-    include/optix_helpers/GeometryTriangles.h
-    include/optix_helpers/Model.h
-    include/optix_helpers/SceneItem.h
-    include/optix_helpers/RayGenerator.h
-    include/optix_helpers/ViewGeometry.h
     include/optix_helpers/Buffer.h
+    # include/optix_helpers/Program.h
+    # include/optix_helpers/Context.h
+    # include/optix_helpers/RayType.h
+    # include/optix_helpers/Material.h
+    # include/optix_helpers/Geometry.h
+    # include/optix_helpers/GeometryTriangles.h
+    # include/optix_helpers/Model.h
+    # include/optix_helpers/SceneItem.h
+    # include/optix_helpers/RayGenerator.h
+    # include/optix_helpers/ViewGeometry.h
 )
 add_library(optix_helpers SHARED
     src/Source.cpp
     src/Nvrtc.cpp
-    src/Program.cpp
-    src/Context.cpp
-    src/RayType.cpp
-    src/Material.cpp
-    src/Geometry.cpp
-    src/GeometryTriangles.cpp
-    src/Model.cpp
-    src/SceneItem.cpp
-    src/RayGenerator.cpp
-    src/ViewGeometry.cpp
     src/Buffer.cpp
+    # src/Program.cpp
+    # src/Context.cpp
+    # src/RayType.cpp
+    # src/Material.cpp
+    # src/Geometry.cpp
+    # src/GeometryTriangles.cpp
+    # src/Model.cpp
+    # src/SceneItem.cpp
+    # src/RayGenerator.cpp
+    # src/ViewGeometry.cpp
 )
 set_target_properties(optix_helpers PROPERTIES 
     PUBLIC_HEADER "${optix_helpers_PUBLIC_HEADERS}"

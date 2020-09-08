@@ -1,5 +1,6 @@
 #include <iostream>
 #include <optix_helpers/Nvrtc.h>
+#include <optix_helpers/Source.h>
 
 #include "cusamples.h"
 
@@ -9,11 +10,6 @@ using namespace optix_helpers;
 int main()
 {
     NVRTC_Helper nvrtc;
-    //cout << nvrtc << endl;
-    
-    auto ptx = nvrtc.compile(cusample::drawColor, "draw_color",
-                             {cusample::alphaHeader}, {"alpha.h"});
-    cout << ptx << endl;
 
     Source drawColor(cusample::drawColor, "draw_color");
     Source alpha(cusample::alphaHeader, "alpha.h");

@@ -9,9 +9,7 @@ using namespace optix_helpers;
 int main()
 {
     Source src0(cusample::alphaHeader, "alpha.h");
-    
     cout << src0 << endl;
-    cout << Source() << endl;
     return 0;
 }
 

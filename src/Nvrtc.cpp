@@ -89,36 +89,21 @@ void Nvrtc::add_compile_options(const StringList& options)
     }
 }
 
-std::string Nvrtc::compile_cufile(const std::string& path,
-                                  const std::string& programName,
-                                  const StringList& additionalHeaders,
-                                  const StringList& headerNames)
-{
-    std::string fileContent = Nvrtc::load_source_file(path);
-    return this->compile(fileContent, programName);
-}
-
-std::string Nvrtc::compile(const std::string& source,
-                           const std::string& programName,
-                           const StringList& additionalHeaders,
-                           const StringList& headerNames)
+std::string Nvrtc::compile(const Source& source, const Sources& additionalHeaders)
 {
     std::vector<const char*> options = this->nvrtc_options();
     std::vector<const char*> headers(additionalHeaders.size());
     std::vector<const char*> hnames(additionalHeaders.size());
 
-    if(additionalHeaders.size() > 0 && additionalHeaders.size() == headerNames.size()) {
-        auto header = additionalHeaders.cbegin();
-        auto hname  = headerNames.cbegin();
-        for(int i = 0; i < headers.size(); i++) {
-            headers[i] = header->data();
-            hnames[i]  = hname->data();
-        }
+    auto header = additionalHeaders.cbegin();
+    for(int i = 0; i < headers.size(); i++) {
+        headers[i] = header->source_str();
+        hnames[i]  = header->name_str();
+        header++;
     }
     
     this->clear_program();
-    check_error(nvrtcCreateProgram(&program_, source.c_str(), programName.c_str(),
-                                   //0, NULL, NULL));
+    check_error(nvrtcCreateProgram(&program_, source.source().c_str(), source.name().c_str(),
                                    headers.size(), headers.data(), hnames.data()));
     try {
         check_error(nvrtcCompileProgram(program_, options.size(), options.data()));
@@ -130,23 +115,6 @@ std::string Nvrtc::compile(const std::string& source,
     this->update_log();
 
     return this->get_ptx();
-}
-
-std::string Nvrtc::compile(const Source& source, const Sources& additionalHeaders)
-{
-    if(!source)
-        throw std::runtime_error("NVRTC : empty source file ! Cannot compile.");
-
-    StringList headers;
-    StringList hnames;
-
-    for(auto& header : additionalHeaders) {
-        if(header) {
-            headers.push_back(header->source());
-            hnames.push_back(header->name());
-        }
-    }
-    return this->compile(source->source(), source->name(), headers, hnames);
 }
 
 void Nvrtc::update_log()
