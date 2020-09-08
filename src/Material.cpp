@@ -2,55 +2,51 @@
 
 namespace optix_helpers {
 
-MaterialObj::MaterialObj(const optix::Material& material) :
+Material::Material(const optix::Material& material) :
     material_(material)
-{
-}
+{}
 
-Program MaterialObj::add_closest_hit_program(const RayType& rayType, const Program& program)
+Program Material::add_closest_hit_program(const RayType& rayType, const Program& program)
 {
-    material_->setClosestHitProgram(rayType->index(), program);
-    closestHitPrograms_[rayType->index()] = program;
-    rayTypes_[rayType->index()]           = rayType;
+    material_->setClosestHitProgram(rayType.index(), program);
+    closestHitPrograms_.insert({rayType.index(), program});
+    rayTypes_.insert({rayType.index(), rayType});
 
     return program;
 }
 
-Program MaterialObj::add_any_hit_program(const RayType& rayType, const Program& program)
+Program Material::add_any_hit_program(const RayType& rayType, const Program& program)
 {
-    material_->setAnyHitProgram(rayType->index(), program);
-    anyHitPrograms_[rayType->index()] = program;
-    rayTypes_[rayType->index()]       = rayType;
+    material_->setAnyHitProgram(rayType.index(), program);
+    anyHitPrograms_.insert({rayType.index(), program});
+    rayTypes_.insert({rayType.index(), rayType});
 
     return program;
 }
 
-optix::Material MaterialObj::material() const
+Program Material::get_closest_hit_program(const RayType& rayType) const
+{
+    return closestHitPrograms_.at(rayType.index());
+}
+
+Program Material::get_any_hit_program(const RayType& rayType) const
+{
+    return anyHitPrograms_.at(rayType.index());
+}
+
+optix::Material Material::material() const
 {
     return material_;
 }
 
-Program MaterialObj::get_closest_hit_program(const RayType& rayType) const
+optix::Material Material::operator->() const
 {
-    return closestHitPrograms_.at(rayType->index());
+    return material_;
 }
-
-Program MaterialObj::get_any_hit_program(const RayType& rayType) const
-{
-    return anyHitPrograms_.at(rayType->index());
-}
-
-Material::Material() :
-    Handle<MaterialObj>()
-{}
-
-Material::Material(const optix::Material& material) :
-    Handle<MaterialObj>(new MaterialObj(material))
-{}
 
 Material::operator optix::Material() const
 {
-    return (*this)->material();
+    return material_;
 }
 
 }; //namespace optix_helpers

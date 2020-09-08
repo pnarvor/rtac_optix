@@ -13,7 +13,7 @@
 
 namespace optix_helpers {
 
-class MaterialObj
+class Material
 {
     //This is a class to help with material manipulations in optix
     public:
@@ -30,23 +30,15 @@ class MaterialObj
 
     public:
 
-    MaterialObj(const optix::Material& material);
+    Material(const optix::Material& material);
 
     Program add_closest_hit_program(const RayType& rayType, const Program& program);
     Program add_any_hit_program(const RayType& rayType, const Program& program);
 
-    optix::Material material() const;
     Program get_closest_hit_program(const RayType& rayType) const;
     Program get_any_hit_program(const RayType& rayType)     const;
-};
-
-class Material : public Handle<MaterialObj>
-{
-    public:
-
-    Material();
-    Material(const optix::Material& material);
-
+    optix::Material material() const;
+    optix::Material operator->() const;
     operator optix::Material() const;
 };
 

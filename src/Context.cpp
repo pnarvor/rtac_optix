@@ -33,11 +33,11 @@ RayType Context::create_raytype(const Source& rayDefinition) const
     return RayType(rayTypeIndex, rayDefinition);
 }
 
-//Material Context::create_material() const
-//{
-//    return Material(this->context()->createMaterial());
-//}
-//
+Material Context::create_material() const
+{
+    return Material(this->context()->createMaterial());
+}
+
 //Geometry Context::create_geometry(const Program& intersection,
 //                                     const Program& boundingbox,
 //                                     size_t primitiveCount) const

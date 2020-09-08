@@ -8,7 +8,7 @@ list(APPEND test_names
     context_test
     buffer_test
     raytype_test
-    # material_test
+    material_test
     # model_test
     # render_test
     # item_test
