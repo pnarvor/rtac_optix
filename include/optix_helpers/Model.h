@@ -2,6 +2,7 @@
 #define _DEF_OPTIX_HELPERS_MODEL_H_
 
 #include <iostream>
+#include <memory>
 
 #include <optixu/optixpp.h>
 
@@ -31,17 +32,12 @@ class ModelObj
     void add_material(const Material& material);
 
     optix::GeometryInstance geometry_instance() const;
+    operator optix::GeometryInstance()          const;
+    optix::GeometryInstance operator->()        const;
 };
 
-class Model : public Handle<ModelObj>
-{
-    public:
+using Model = std::shared_ptr<ModelObj>;
 
-    Model();
-    Model(const optix::GeometryInstance& geomInstance);
-
-    operator optix::GeometryInstance() const;
-};
 
 };
 

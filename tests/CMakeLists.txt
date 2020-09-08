@@ -9,7 +9,7 @@ list(APPEND test_names
     buffer_test
     raytype_test
     material_test
-    # model_test
+    model_test
     # render_test
     # item_test
     # pinhole_test

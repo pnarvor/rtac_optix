@@ -12,14 +12,14 @@ void ModelObj::set_geometry(const Geometry& geometry)
 {
     geometry_          = geometry;
     geometryTriangles_ = GeometryTriangles();
-    geomInstance_->setGeometry(geometry_);
+    geomInstance_->setGeometry(*geometry_);
 }
 
 void ModelObj::set_geometry(const GeometryTriangles& geometry)
 {
     geometry_          = Geometry();
     geometryTriangles_ = geometry;
-    geomInstance_->setGeometryTriangles(geometryTriangles_);
+    geomInstance_->setGeometryTriangles(*geometryTriangles_);
     geomInstance_["vertex_buffer"]->set(geometryTriangles_->points());
     geomInstance_["index_buffer"]->set(geometryTriangles_->faces());
 }
@@ -27,7 +27,7 @@ void ModelObj::set_geometry(const GeometryTriangles& geometry)
 void ModelObj::add_material(const Material& material)
 {
     geomInstance_->setMaterialCount(materials_.size() + 1);
-    geomInstance_->setMaterial(materials_.size(), material);
+    geomInstance_->setMaterial(materials_.size(), *material);
     materials_.push_back(material);
 }
 
@@ -36,18 +36,14 @@ optix::GeometryInstance ModelObj::geometry_instance() const
     return geomInstance_;
 }
 
-Model::Model() :
-    Handle<ModelObj>()
-{}
-
-Model::Model(const optix::GeometryInstance& geomInstance) :
-    Handle<ModelObj>(new ModelObj(geomInstance))
-{}
-
-Model::operator optix::GeometryInstance() const
+ModelObj::operator optix::GeometryInstance() const
 {
-    return (*this)->geometry_instance();
+    return geomInstance_;
 }
 
+optix::GeometryInstance ModelObj::operator->() const
+{
+    return geomInstance_;
+}
 
 };

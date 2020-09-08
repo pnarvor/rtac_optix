@@ -55,11 +55,11 @@ GeometryTriangles ContextObj::create_geometry_triangles() const
         context_->createBuffer(RT_BUFFER_INPUT, RT_FORMAT_UNSIGNED_INT3)));
 }
 
-//Model ContextObj::create_model() const
-//{
-//    return Model(context_->createGeometryInstance());
-//}
-//
+Model ContextObj::create_model() const
+{
+    return Model(new ModelObj(context_->createGeometryInstance()));
+}
+
 //RayGenerator ContextObj::create_raygenerator(size_t width, size_t height, size_t depth) const
 //{
 //    return RayGenerator(width, height, depth, context_->createBuffer(RT_BUFFER_OUTPUT));

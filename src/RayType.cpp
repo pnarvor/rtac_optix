@@ -21,7 +21,11 @@ Source RayTypeObj::definition() const
 
 std::ostream& operator<<(std::ostream& os, const optix_helpers::RayType& rayType)
 {
-    os << "RayType " << (int)rayType->index() << "\n" << rayType->definition() << "\n";
+    if(rayType)
+        os << "RayType " << (int)rayType->index() << "\n" << rayType->definition() << "\n";
+    else
+        os << "Empty RayType.\n";
+
     return os;
 }
 

@@ -15,7 +15,7 @@
 #include <optix_helpers/Material.h>
 #include <optix_helpers/Geometry.h>
 #include <optix_helpers/GeometryTriangles.h>
-//#include <optix_helpers/Model.h>
+#include <optix_helpers/Model.h>
 //#include <optix_helpers/SceneItem.h>
 //#include <optix_helpers/RayGenerator.h>
 
@@ -46,7 +46,7 @@ class ContextObj
     //template <typename Tp, typename Tf>
     //GeometryTriangles create_mesh(size_t numPoints, const Tp* points,
     //                              size_t numFaces,  const Tf* faces) const;
-    //Model create_model() const;
+    Model create_model() const;
     //RayGenerator create_raygenerator(size_t width, size_t height, size_t depth=1) const;
     //SceneItem create_scene_item(const Model& model, const char* acceleration = "Trbvh") const;
 
