@@ -21,9 +21,10 @@ Program ContextObj::create_program(const Source& source, const Sources& addition
     }
 }
 
-Buffer ContextObj::create_buffer(RTbuffertype bufferType, const std::string& name) const
+Buffer ContextObj::create_buffer(RTbuffertype bufferType, RTformat format, 
+                                 const std::string& name) const
 {
-    return Buffer(new BufferObj(context_->createBuffer(bufferType), name));
+    return Buffer(new BufferObj(context_->createBuffer(bufferType, format), name));
 }
 
 RayType ContextObj::create_raytype(const Source& rayDefinition) const

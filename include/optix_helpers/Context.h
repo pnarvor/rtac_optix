@@ -35,7 +35,8 @@ class ContextObj
 
     Program create_program(const Source& source,
                            const Sources& additionalHeaders = Sources()) const; 
-    Buffer create_buffer(RTbuffertype bufferType, const std::string& name = "buffer") const;
+    Buffer create_buffer(RTbuffertype bufferType, RTformat format, 
+                         const std::string& name = "buffer") const;
 
     RayType  create_raytype(const Source& rayDefinition) const;
     Material create_material() const;
