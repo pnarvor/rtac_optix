@@ -29,9 +29,9 @@ void RayGeneratorObj::set_range(float zNear, float zFar)
     //range modifier
 }
 
-void RayGeneratorObj::look_at(const Vector3& target, const Vector3& up)
+void RayGeneratorObj::look_at(const Vector3& target)
 {
-    this->look_at(target, pose_.translation(), up);
+    this->look_at(target, pose_.translation(), {0.0,0.0,1.0});
 }
 
 void RayGeneratorObj::look_at(const Vector3& target,

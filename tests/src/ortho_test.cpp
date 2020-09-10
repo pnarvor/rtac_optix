@@ -58,7 +58,7 @@ int main()
     OrthoView ortho(context->create_buffer(RT_BUFFER_OUTPUT, RT_FORMAT_FLOAT, "renderBuffer"),
                     raygenProgram);
     ortho->set_size(W,H);
-    ortho->look_at({2,2,1});
+    ortho->look_at({2,2,1},{0.0,0.0,0.0});
 
     (*context)->setRayGenerationProgram(0, *raygenProgram);
 

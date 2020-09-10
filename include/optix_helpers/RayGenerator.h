@@ -38,7 +38,7 @@ class RayGeneratorObj
     virtual void set_size(size_t width, size_t height);
     virtual void set_range(float zNear, float zFar);
 
-    void look_at(const Vector3& target, const Vector3& up = {0.0,0.0,1.0});
+    void look_at(const Vector3& target);
     void look_at(const Vector3& target,
                  const Vector3& position,
                  const Vector3& up = {0.0,0.0,1.0});
