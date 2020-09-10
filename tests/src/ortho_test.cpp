@@ -59,6 +59,7 @@ int main()
                     raygenProgram);
     ortho->set_size(W,H);
     ortho->look_at({2,2,1},{0.0,0.0,0.0});
+    //ortho->set_bounds({-100,100,-100,100});
 
     (*context)->setRayGenerationProgram(0, *raygenProgram);
 

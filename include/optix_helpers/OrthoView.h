@@ -33,7 +33,7 @@ class OrthoViewObj : public RayGeneratorObj
 
     Bounds bounds_;
 
-    void update_device_ortho();
+    void update_device_geometry();
 
     public:
 
@@ -41,10 +41,12 @@ class OrthoViewObj : public RayGeneratorObj
                  const Program& raygenProgram,
                  const Bounds& bounds = Bounds({-1.0,1.0,-1.0,1.0}),
                  const Pose& pose = Pose());
-
+    
     virtual void set_pose(const Pose& pose);
     virtual void set_size(size_t width, size_t height);
     virtual void set_range(float zNear, float zFar);
+
+    void set_bounds(const Bounds& bounds);
 };
 
 class OrthoView : public Handle<OrthoViewObj>

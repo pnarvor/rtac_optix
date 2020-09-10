@@ -37,7 +37,7 @@ OrthoViewObj::OrthoViewObj(const Buffer& renderBuffer,
     this->set_range(0.0, RT_DEFAULT_MAX);
 }
 
-void OrthoViewObj::update_device_ortho()
+void OrthoViewObj::update_device_geometry()
 {
     size_t w, h;
     (*renderBuffer_)->getSize(w, h);
@@ -66,18 +66,24 @@ void OrthoViewObj::update_device_ortho()
 void OrthoViewObj::set_pose(const Pose& pose)
 {
     this->RayGeneratorObj::set_pose(pose);
-    this->update_device_ortho();
+    this->update_device_geometry();
 }
 
 void OrthoViewObj::set_size(size_t width, size_t height)
 {
     this->RayGeneratorObj::set_size(width, height);
-    this->update_device_ortho();
+    this->update_device_geometry();
 }
 
 void OrthoViewObj::set_range(float zNear, float zFar)
 {
     (*raygenProgram_)["range"]->setFloat(optix::make_float2(zNear, zFar));
+}
+
+void OrthoViewObj::set_bounds(const Bounds& bounds)
+{
+    bounds_ = bounds;
+    this->update_device_geometry();
 }
 
 const Source& OrthoView::rayGeometryDefinition = OrthoViewObj::rayGeometryDefinition;
