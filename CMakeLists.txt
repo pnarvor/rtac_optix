@@ -67,6 +67,7 @@ list(APPEND optix_helpers_PUBLIC_HEADERS
     include/optix_helpers/SceneItem.h
     include/optix_helpers/RayGenerator.h
     include/optix_helpers/OrthoView.h
+    include/optix_helpers/PinHoleView.h
     # include/optix_helpers/ViewGeometry.h
 )
 add_library(optix_helpers SHARED
@@ -83,6 +84,7 @@ add_library(optix_helpers SHARED
     src/SceneItem.cpp
     src/RayGenerator.cpp
     src/OrthoView.cpp
+    src/PinHoleView.cpp
     # src/ViewGeometry.cpp
 )
 set_target_properties(optix_helpers PROPERTIES 

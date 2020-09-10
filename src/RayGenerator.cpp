@@ -63,10 +63,6 @@ void RayGeneratorObj::look_at(const Vector3& target,
     r(all,0) = x; r(all,1) = y; r(all,2) = z;
 
     this->set_pose(Pose(position, r));
-
-    using namespace std;
-    //cout << "Mat  :\n" << r << endl;
-    cout << "Pose :\n" << pose_.rotation_matrix() << endl;
 }
  
 Buffer RayGeneratorObj::render_buffer() const

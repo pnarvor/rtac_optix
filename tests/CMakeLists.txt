@@ -10,7 +10,8 @@ list(APPEND test_names
     # raytype_test
     # material_test
     # model_test
-    ortho_test
+    # ortho_test
+    pinhole_test
     # render_test
     # item_test
     # pinhole_test
