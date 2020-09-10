@@ -12,9 +12,6 @@ list(APPEND test_names
     # model_test
     # ortho_test
     pinhole_test
-    # render_test
-    # item_test
-    # pinhole_test
 )
 list(APPEND test_deps
     optix_helpers
