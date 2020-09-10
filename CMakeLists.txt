@@ -68,7 +68,8 @@ list(APPEND optix_helpers_PUBLIC_HEADERS
     include/optix_helpers/RayGenerator.h
     include/optix_helpers/OrthoView.h
     include/optix_helpers/PinHoleView.h
-    # include/optix_helpers/ViewGeometry.h
+    include/optix_helpers/samples/geometries.h
+    include/optix_helpers/samples/models.h
 )
 add_library(optix_helpers SHARED
     src/Source.cpp
@@ -85,7 +86,8 @@ add_library(optix_helpers SHARED
     src/RayGenerator.cpp
     src/OrthoView.cpp
     src/PinHoleView.cpp
-    # src/ViewGeometry.cpp
+    src/samples/geometries.cpp
+    src/samples/models.cpp
 )
 set_target_properties(optix_helpers PROPERTIES 
     PUBLIC_HEADER "${optix_helpers_PUBLIC_HEADERS}"

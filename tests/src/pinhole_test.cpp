@@ -14,6 +14,10 @@ using Pose = rtac::types::Pose<float>;
 #include <optix_helpers/PinHoleView.h>
 using namespace optix_helpers;
 
+//#include <optix_helpers/samples/geometries.h>
+#include <optix_helpers/samples/models.h>
+using namespace optix_helpers::samples;
+
 #include "cusamples.h"
 
 const std::string raygenSource = R"(
@@ -70,16 +74,12 @@ int main()
                                 {rayType0->definition()}));
 
 
-    Model cubeModel = context->create_model();
-    cubeModel->set_geometry(context->create_geometry_triangles(Mesh::cube(0.5)));
+    Model cubeModel = models::cube(context, 0.5);
     cubeModel->add_material(white);
     SceneItem cube0 = context->create_scene_item(cubeModel);
     cube0->set_pose(Pose({0.0,0.0,0.9}));
 
-    Model sphereModel = context->create_model();
-    sphereModel->set_geometry(context->create_geometry(
-        context->create_program(Source(cusample::sphere, "intersection")),
-        context->create_program(Source(cusample::sphere, "bounds")), 1));
+    Model sphereModel = models::sphere(context, 0.5);
     sphereModel->add_material(white);
     SceneItem sphere0 = context->create_scene_item(sphereModel);
 
