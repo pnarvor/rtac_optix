@@ -36,7 +36,8 @@ PinHoleViewObj::PinHoleViewObj(const Buffer& renderBuffer,
     RayGeneratorObj(renderBuffer, raygenProgram, pose),
     fovy_(fovy)
 {
-    this->set_range(0.0, RT_DEFAULT_MAX);
+    //this->set_range(0.0, RT_DEFAULT_MAX);
+    this->set_range(0.0, 2.f);
 }
 
 void PinHoleViewObj::update_device_geometry()
@@ -47,7 +48,7 @@ void PinHoleViewObj::update_device_geometry()
     // Assuming unit distance from camera focal point to a virtual image plane.
     // fovy_ is the field of view in the minimal image dimension.
     // resolution is the physical pixel size of the virtual image plane.
-    float resolution = 2.0*std::tan(0.5f*fovy_) / std::min(w,h);
+    float resolution = 2.0*std::tan(0.5f*M_PI*fovy_/180.0) / std::min(w,h);
 
     Matrix3 R = pose_.rotation_matrix();
     // We take center of pixels for ray origin. So topLest is shifted by half a pixel.
