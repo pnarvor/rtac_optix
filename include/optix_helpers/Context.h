@@ -6,6 +6,8 @@
 
 #include <optixu/optixpp.h>
 
+#include <rtac_base/types/Mesh.h>
+
 #include <optix_helpers/Handle.h>
 #include <optix_helpers/Nvrtc.h>
 #include <optix_helpers/Source.h>
@@ -44,9 +46,8 @@ class ContextObj
                              const Program& boundingbox,
                              size_t primitiveCount) const;
     GeometryTriangles create_geometry_triangles() const;
-    //template <typename Tp, typename Tf>
-    //GeometryTriangles create_mesh(size_t numPoints, const Tp* points,
-    //                              size_t numFaces,  const Tf* faces) const;
+    template <typename Tp, typename Tf>
+    GeometryTriangles create_geometry_triangles(const rtac::types::Mesh<Tp,Tf,3>& mesh) const;
     Model create_model() const;
     SceneItem create_scene_item(const Model& model, const char* acceleration = "Trbvh") const;
     //RayGenerator create_raygenerator(size_t width, size_t height, size_t depth=1) const;
@@ -66,15 +67,13 @@ class Context : public Handle<ContextObj>
     Context();
 };
 
-//template <typename Tp, typename Tf>
-//GeometryTriangles ContextObj::create_mesh(size_t numPoints, const Tp* points,
-//                                          size_t numFaces,  const Tf* faces) const
-//{
-//    GeometryTriangles mesh = this->create_geometry_triangles();
-//    mesh->set_points(numPoints, points);
-//    mesh->set_faces(numFaces, faces);
-//    return mesh;
-//}
+template <typename Tp, typename Tf>
+GeometryTriangles ContextObj::create_geometry_triangles(const rtac::types::Mesh<Tp,Tf,3>& mesh) const
+{
+    GeometryTriangles geom(this->create_geometry_triangles());
+    geom->set_mesh(mesh);
+    return geom;
+}
 
 }; // namespace optix_helpers
 

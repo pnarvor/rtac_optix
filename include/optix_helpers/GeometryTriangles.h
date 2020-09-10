@@ -5,6 +5,8 @@
 
 #include <optixu/optixpp.h>
 
+#include <rtac_base/types/Mesh.h>
+
 #include <optix_helpers/Handle.h>
 #include <optix_helpers/Program.h>
 
@@ -28,6 +30,8 @@ class GeometryTrianglesObj
     void set_points(size_t numPoints, const T* points);
     template <typename T>
     void set_faces(size_t numFaces, const T* faces);
+    template <typename Tp, typename Tf>
+    void set_mesh(const rtac::types::Mesh<Tp,Tf,3>& mesh);
 
     optix::Buffer points() const;
     optix::Buffer faces() const;
@@ -59,6 +63,35 @@ void GeometryTrianglesObj::set_faces(size_t numFaces, const T* faces)
     }
     faces_->unmap();
     geometry_->setPrimitiveCount(numFaces);
+    geometry_->setTriangleIndices(faces_, faces_->getFormat());
+}
+
+template <typename Tp, typename Tf>
+void GeometryTrianglesObj::set_mesh(const rtac::types::Mesh<Tp,Tf,3>& mesh)
+{
+    // cannot use directly set_poitn and set_face because Eigen in column-wise order
+    // change this.
+    points_->setSize(mesh.num_points());
+    auto points = mesh.points();
+    float* devicePoints = static_cast<float*>(points_->map());
+    for(int i = 0; i < mesh.num_points(); i++) {
+        devicePoints[3*i]     = points(i,0);
+        devicePoints[3*i + 1] = points(i,1);
+        devicePoints[3*i + 2] = points(i,2);
+    }
+    points_->unmap();
+    geometry_->setVertices(mesh.num_points(), points_, points_->getFormat());
+
+    faces_->setSize(mesh.num_faces());
+    auto faces = mesh.faces();
+    uint32_t* deviceFaces = static_cast<uint32_t*>(faces_->map());
+    for(int i = 0; i < mesh.num_faces(); i++) {
+        deviceFaces[3*i]     = faces(i,0);
+        deviceFaces[3*i + 1] = faces(i,1);
+        deviceFaces[3*i + 2] = faces(i,2);
+    }
+    faces_->unmap();
+    geometry_->setPrimitiveCount(mesh.num_faces());
     geometry_->setTriangleIndices(faces_, faces_->getFormat());
 }
 
