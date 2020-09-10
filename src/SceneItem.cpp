@@ -23,6 +23,11 @@ void SceneItemObj::set_pose(const float* mat, const float* inv, bool transpose)
     transform_->setMatrix(transpose, mat, inv);
 }
 
+void SceneItemObj::set_pose(const Pose& pose)
+{
+    this->set_pose(pose.homogeneous_matrix().data(), NULL, true);
+}
+
 void SceneItemObj::set_acceleration(const optix::Acceleration& acceleration)
 {
     if(geomGroup_)

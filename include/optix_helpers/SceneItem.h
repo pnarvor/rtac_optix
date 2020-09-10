@@ -5,6 +5,8 @@
 
 #include <optixu/optixpp.h>
 
+#include <rtac_base/types/Pose.h>
+
 #include <optix_helpers/Handle.h>
 #include <optix_helpers/Model.h>
 
@@ -12,6 +14,10 @@ namespace optix_helpers {
 
 class SceneItemObj
 {
+    public:
+
+    using Pose = rtac::types::Pose<float>;
+
     protected:
 
     Model model_;
@@ -27,6 +33,7 @@ class SceneItemObj
     
     void set_pose(const float* mat, const float* inv = NULL, 
                   bool transpose = false);
+    void set_pose(const Pose& pose);
     void set_acceleration(const optix::Acceleration& acceleration);
     void set_model(const Model& model);
 

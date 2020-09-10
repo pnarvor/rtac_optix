@@ -5,6 +5,9 @@ using namespace std;
 using namespace rtac::files;
 
 #include <rtac_base/types/Mesh.h>
+#include <rtac_base/types/Pose.h>
+using Mesh = rtac::types::Mesh<float,uint32_t,3>;
+using Pose = rtac::types::Pose<float>;
 
 #include <optix_helpers/Context.h>
 #include <optix_helpers/RayType.h>
@@ -68,9 +71,10 @@ int main()
 
 
     Model cubeModel = context->create_model();
-    cubeModel->set_geometry(context->create_geometry_triangles(rtac::types::Mesh<float,uint32_t,3>::cube(0.7)));
+    cubeModel->set_geometry(context->create_geometry_triangles(Mesh::cube(0.5)));
     cubeModel->add_material(white);
     SceneItem cube0 = context->create_scene_item(cubeModel);
+    cube0->set_pose(Pose({0.0,0.0,0.9}));
 
     Model sphereModel = context->create_model();
     sphereModel->set_geometry(context->create_geometry(
