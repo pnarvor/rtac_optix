@@ -32,8 +32,8 @@ class MaterialObj
 
     MaterialObj(const optix::Material& material);
 
-    Program add_closest_hit_program(const RayType& rayType, const Program& program);
-    Program add_any_hit_program(const RayType& rayType, const Program& program);
+    virtual Program add_closest_hit_program(const RayType& rayType, const Program& program);
+    virtual Program add_any_hit_program(const RayType& rayType, const Program& program);
 
     Program get_closest_hit_program(const RayType& rayType) const;
     Program get_any_hit_program(const RayType& rayType)     const;
