@@ -73,6 +73,7 @@ list(APPEND optix_helpers_PUBLIC_HEADERS
     include/optix_helpers/samples/geometries.h
     include/optix_helpers/samples/models.h
     include/optix_helpers/samples/items.h
+    include/optix_helpers/samples/utils.h
 )
 add_library(optix_helpers SHARED
     src/Source.cpp
@@ -94,6 +95,7 @@ add_library(optix_helpers SHARED
     src/samples/geometries.cpp
     src/samples/models.cpp
     src/samples/items.cpp
+    src/samples/utils.cpp
 )
 set_target_properties(optix_helpers PROPERTIES 
     PUBLIC_HEADER "${optix_helpers_PUBLIC_HEADERS}"

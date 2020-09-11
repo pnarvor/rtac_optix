@@ -19,6 +19,7 @@ using namespace optix_helpers;
 #include <optix_helpers/samples/geometries.h>
 #include <optix_helpers/samples/models.h>
 #include <optix_helpers/samples/items.h>
+#include <optix_helpers/samples/utils.h>
 using namespace optix_helpers::samples;
 
 #include "cusamples.h"
@@ -88,23 +89,26 @@ int main()
 
     (*raygenProgram)["topObject"]->set(topObject);
     (*context)->launch(0,W,H);
+    
+    utils::display_ascii(pinhole->render_buffer(), 9);
+    utils::display(pinhole->render_buffer());
 
-    const float* data = static_cast<const float*>((*pinhole->render_buffer())->map());
-    //for(int h = 0; h < H; h++) {
-    //    for(int w = 0; w < W; w++) {
-    //        int index = 3*(W*h + w);
-    //        //cout << data[index] << " ";
-    //        cout << (int)(100*data[index]) << " ";
-    //        //cout << (int)(data[index]) << " ";
-    //    }
-    //    cout << "\n";
-    //}
-    //cout << endl;
-    //write_pgm("out.pgm", W, H, data);
-    //system("eog out.pgm");
-    write_ppm("out.ppm", W, H, data);
-    system("eog out.ppm");
-    (*pinhole->render_buffer())->unmap();
+    //const float* data = static_cast<const float*>((*pinhole->render_buffer())->map());
+    ////for(int h = 0; h < H; h++) {
+    ////    for(int w = 0; w < W; w++) {
+    ////        int index = 3*(W*h + w);
+    ////        //cout << data[index] << " ";
+    ////        cout << (int)(100*data[index]) << " ";
+    ////        //cout << (int)(data[index]) << " ";
+    ////    }
+    ////    cout << "\n";
+    ////}
+    ////cout << endl;
+    ////write_pgm("out.pgm", W, H, data);
+    ////system("eog out.pgm");
+    //write_ppm("out.ppm", W, H, data);
+    //system("eog out.ppm");
+    //(*pinhole->render_buffer())->unmap();
 
     return 0;
 }
