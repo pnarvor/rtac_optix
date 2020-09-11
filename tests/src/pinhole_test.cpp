@@ -18,6 +18,7 @@ using namespace optix_helpers;
 #include <optix_helpers/samples/materials.h>
 #include <optix_helpers/samples/geometries.h>
 #include <optix_helpers/samples/models.h>
+#include <optix_helpers/samples/items.h>
 using namespace optix_helpers::samples;
 
 #include "cusamples.h"
@@ -63,14 +64,10 @@ int main()
     raytypes::RGB rayType0(context);
     cout << rayType0 << endl;
 
-    Model cubeModel = models::cube(context, 0.5);
-    cubeModel->add_material(materials::rgb(context, rayType0, {0.2, 0.0, 0.0}));
-    SceneItem cube0 = context->create_scene_item(cubeModel);
+    SceneItem cube0 = items::cube(context, rayType0, 0.5, {0.2,0.0,0.0});
     cube0->set_pose(Pose({0.0,0.0,0.9}));
 
-    Model sphereModel = models::sphere(context, 0.5);
-    sphereModel->add_material(materials::green(context, rayType0));
-    SceneItem sphere0 = context->create_scene_item(sphereModel);
+    SceneItem sphere0 = items::sphere(context, rayType0, 0.5);
 
     optix::Group topObject = (*context)->createGroup();
     topObject->setAcceleration((*context)->createAcceleration("Trbvh"));
