@@ -53,6 +53,7 @@ find_package(rtac_base REQUIRED)
 
 list(APPEND optix_helpers_PUBLIC_HEADERS
     include/optix_helpers/utils.h
+    include/optix_helpers/NamedObject.h
     include/optix_helpers/Handle.h
     include/optix_helpers/Source.h
     include/optix_helpers/Nvrtc.h

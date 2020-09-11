@@ -5,25 +5,19 @@
 
 #include <optixu/optixpp.h>
 
+#include <optix_helpers/NamedObject.h>
 #include <optix_helpers/Handle.h>
 
 namespace optix_helpers {
 
-class BufferObj
+class BufferObj : public NamedObject<optix::Buffer>
 {
-    protected:
-
-    optix::Buffer buffer_;
-    std::string name_;
-
     public:
     
     BufferObj(const optix::Buffer& buffer, const std::string& name);
 
-    optix::Buffer buffer() const;
-    operator optix::Buffer() const;
-    optix::Buffer operator->() const;
-    std::string name() const;
+    optix::Buffer       buffer();
+    const optix::Buffer buffer() const;
 };
 using Buffer = Handle<BufferObj>;
 

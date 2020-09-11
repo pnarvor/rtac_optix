@@ -3,28 +3,17 @@
 namespace optix_helpers {
 
 BufferObj::BufferObj(const optix::Buffer& buffer, const std::string& name) :
-    buffer_(buffer),
-    name_(name)
+    NamedObject<optix::Buffer>(buffer, name)
 {}
 
-optix::Buffer BufferObj::buffer() const
+const optix::Buffer BufferObj::buffer() const
 {
-    return buffer_;
+    return object_;
 }
 
-BufferObj::operator optix::Buffer() const
+optix::Buffer BufferObj::buffer()
 {
-    return buffer_;
-}
-
-optix::Buffer BufferObj::operator->() const
-{
-    return buffer_;
-}
-
-std::string BufferObj::name() const
-{
-    return name_;
+    return object_;
 }
 
 }; //namespace optix_helpers
