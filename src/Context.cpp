@@ -2,9 +2,10 @@
 
 namespace optix_helpers {
 
-ContextObj::ContextObj() :
+ContextObj::ContextObj(int entryPointCount) :
     context_(optix::Context::create())
 {
+    context_->setEntryPointCount(entryPointCount);
 }
 
 Program ContextObj::create_program(const Source& source, const Sources& additionalHeaders) const
@@ -100,8 +101,8 @@ optix::Context ContextObj::context() const
     return context_;
 }
 
-Context::Context() :
-    Handle<ContextObj>(new ContextObj())
+Context::Context(int entryPointCount) :
+    Handle<ContextObj>(new ContextObj(entryPointCount))
 {}
 
 } //namespace optix_helpers

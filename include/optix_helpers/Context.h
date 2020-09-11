@@ -33,7 +33,7 @@ class ContextObj
 
     public:
 
-    ContextObj();
+    ContextObj(int entryPointCount = 1);
 
     Program create_program(const Source& source,
                            const Sources& additionalHeaders = Sources()) const; 
@@ -64,7 +64,7 @@ class Context : public Handle<ContextObj>
 {
     public:
 
-    Context();
+    Context(int entryPointCount = 1);
 };
 
 template <typename Tp, typename Tf>

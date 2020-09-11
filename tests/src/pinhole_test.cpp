@@ -59,7 +59,6 @@ int main()
     int W = 800, H = 600;
 
     Context context;
-    (*context)->setEntryPointCount(1);
     
     raytypes::RGB rayType0(context);
     cout << rayType0 << endl;
