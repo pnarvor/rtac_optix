@@ -68,6 +68,8 @@ list(APPEND optix_helpers_PUBLIC_HEADERS
     include/optix_helpers/RayGenerator.h
     include/optix_helpers/OrthoView.h
     include/optix_helpers/PinHoleView.h
+    include/optix_helpers/samples/raytypes.h
+    include/optix_helpers/samples/materials.h
     include/optix_helpers/samples/geometries.h
     include/optix_helpers/samples/models.h
 )
@@ -86,6 +88,8 @@ add_library(optix_helpers SHARED
     src/RayGenerator.cpp
     src/OrthoView.cpp
     src/PinHoleView.cpp
+    src/samples/raytypes.cpp
+    src/samples/materials.cpp
     src/samples/geometries.cpp
     src/samples/models.cpp
 )

@@ -14,7 +14,9 @@ using Pose = rtac::types::Pose<float>;
 #include <optix_helpers/PinHoleView.h>
 using namespace optix_helpers;
 
-//#include <optix_helpers/samples/geometries.h>
+#include <optix_helpers/samples/raytypes.h>
+#include <optix_helpers/samples/materials.h>
+#include <optix_helpers/samples/geometries.h>
 #include <optix_helpers/samples/models.h>
 using namespace optix_helpers::samples;
 
@@ -26,7 +28,7 @@ const std::string raygenSource = R"(
 
 using namespace optix;
 
-#include <colored_ray.h>
+#include <rays/RGB.h>
 #include <view/pinhole.h>
 
 rtBuffer<float, 2> renderBuffer;
@@ -36,7 +38,7 @@ rtDeclareVariable(rtObject, topObject,,);
 
 RT_PROGRAM void pinhole_test()
 {
-    ColoredRay payload;
+    raytypes::RGB payload;
     payload.color = make_float3(0.0f,0.0f,0.0f);
 
     Ray ray = pinhole_ray(launchIndex);
@@ -65,14 +67,10 @@ int main()
     Context context;
     (*context)->setEntryPointCount(1);
     
-    RayType rayType0 = context->create_raytype(Source(cusample::coloredRay, "colored_ray.h"));
+    raytypes::RGB rayType0(context);
     cout << rayType0 << endl;
 
-    Material white(context->create_material());
-    white->add_closest_hit_program(rayType0,
-        context->create_program(Source(cusample::whiteMaterial, "closest_hit_white"),
-                                {rayType0->definition()}));
-
+    Material white = materials::white(context, rayType0);
 
     Model cubeModel = models::cube(context, 0.5);
     cubeModel->add_material(white);
@@ -98,8 +96,7 @@ int main()
     //pinhole->look_at({0.0,1.0,0.0});
 
     (*context)->setRayGenerationProgram(0, *raygenProgram);
-    (*context)->setMissProgram(0, *context->create_program(Source(cusample::coloredMiss, "black_miss"),
-                                                           {rayType0->definition()}));
+    (*context)->setMissProgram(0, *raytypes::RGB::black_miss_program(context));
 
     (*raygenProgram)["topObject"]->set(topObject);
     (*context)->launch(0,W,H);
