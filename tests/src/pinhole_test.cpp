@@ -70,15 +70,13 @@ int main()
     raytypes::RGB rayType0(context);
     cout << rayType0 << endl;
 
-    Material white = materials::white(context, rayType0);
-
     Model cubeModel = models::cube(context, 0.5);
-    cubeModel->add_material(white);
+    cubeModel->add_material(materials::rgb(context, rayType0, {0.2, 0.0, 0.0}));
     SceneItem cube0 = context->create_scene_item(cubeModel);
     cube0->set_pose(Pose({0.0,0.0,0.9}));
 
     Model sphereModel = models::sphere(context, 0.5);
-    sphereModel->add_material(white);
+    sphereModel->add_material(materials::green(context, rayType0));
     SceneItem sphere0 = context->create_scene_item(sphereModel);
 
     optix::Group topObject = (*context)->createGroup();

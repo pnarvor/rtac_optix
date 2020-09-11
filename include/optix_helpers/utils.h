@@ -1,6 +1,8 @@
 #ifndef _DEF_OPTIX_HELPERS_UTILS_H_
 #define _DEF_OPTIX_HELPERS_UTILS_H_
 
+#include <array>
+
 #include <rtac_base/types/common.h>
 #include <optixu/optixpp.h>
 
@@ -10,6 +12,12 @@ template<typename Derived>
 inline optix::float3 make_float3(const Eigen::DenseBase<Derived>& v)
 {
     return optix::make_float3(v(0), v(1), v(2));
+}
+
+template<typename T>
+inline optix::float3 make_float3(const std::array<T,3>& v)
+{
+    return optix::make_float3(v[0], v[1], v[2]);
 }
 
 }; //namespace optix_helpers
