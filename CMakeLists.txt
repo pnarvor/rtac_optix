@@ -60,6 +60,7 @@ list(APPEND optix_helpers_PUBLIC_HEADERS
     include/optix_helpers/Program.h
     include/optix_helpers/Context.h
     include/optix_helpers/Buffer.h
+    include/optix_helpers/TextureSampler.h
     include/optix_helpers/RayType.h
     include/optix_helpers/Material.h
     include/optix_helpers/Geometry.h
@@ -82,6 +83,7 @@ add_library(optix_helpers SHARED
     src/Program.cpp
     src/Context.cpp
     src/Buffer.cpp
+    src/TextureSampler.cpp
     src/RayType.cpp
     src/Material.cpp
     src/Geometry.cpp
