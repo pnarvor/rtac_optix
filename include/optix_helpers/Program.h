@@ -5,6 +5,7 @@
 
 #include <optixu/optixpp.h>
 
+#include <optix_helpers/NamedObject.h>
 #include <optix_helpers/Handle.h>
 #include <optix_helpers/Source.h>
 #include <optix_helpers/Buffer.h>
@@ -25,6 +26,8 @@ class ProgramObj
                const optix::Program& program);
 
     void set_buffer(const Buffer& buffer);
+    template <class NamedType>
+    void set_object(const NamedType& object);
 
     optix::Handle<optix::VariableObj> operator[](const std::string& varname);
     optix::Handle<optix::VariableObj> operator[](const char* varname);
@@ -36,6 +39,12 @@ class ProgramObj
     optix::Program operator->() const; //? should be const ?
 };
 using Program = Handle<ProgramObj>;
+
+template <class NamedType>
+void ProgramObj::set_object(const NamedType& object)
+{
+    program_[object->name()]->set(*object);
+}
 
 }; //namespace optix_helpers
 
