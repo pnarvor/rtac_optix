@@ -16,6 +16,7 @@ class Handle
     public:
 
     Handle(T* obj = NULL) : obj_(obj) {}
+    Handle(const std::shared_ptr<T>& obj) : obj_(obj) {}
 
     std::shared_ptr<T> operator->() { return obj_; }
     T& operator*() { return *obj_; }
