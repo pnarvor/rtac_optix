@@ -31,10 +31,11 @@ using namespace optix;
 #include <rays/RGB.h>
 #include <view/pinhole.h>
 
-rtBuffer<float, 2> renderBuffer;
 rtDeclareVariable(uint2, launchIndex, rtLaunchIndex,);
-
 rtDeclareVariable(rtObject, topObject,,);
+
+//rtBuffer<float, 2> renderBuffer;
+rtBuffer<float3, 2> renderBuffer;
 
 RT_PROGRAM void pinhole_test()
 {
@@ -44,16 +45,8 @@ RT_PROGRAM void pinhole_test()
     Ray ray = pinhole_ray(launchIndex);
 
     rtTrace(topObject, ray, payload);
-    renderBuffer[launchIndex] = payload.color.x;
-
-    //renderBuffer[launchIndex] = ray.origin.x;
-    //renderBuffer[launchIndex] = ray.origin.y;
-    //renderBuffer[launchIndex] = ray.origin.z;
-    
-    //renderBuffer[launchIndex] = ray.direction.x;
-    //renderBuffer[launchIndex] = ray.direction.y;
-    //renderBuffer[launchIndex] = ray.direction.z;
-
+    //renderBuffer[launchIndex] = payload.color.x;
+    renderBuffer[launchIndex] = payload.color;
 }
 
 )";
@@ -87,10 +80,11 @@ int main()
     Program raygenProgram = context->create_program(Source(raygenSource,"pinhole_test"),
                                                            {rayType0->definition(), PinHoleView::rayGeometryDefinition});
     
-    PinHoleView pinhole(context->create_buffer(RT_BUFFER_OUTPUT, RT_FORMAT_FLOAT, "renderBuffer"),
-                      raygenProgram);
+    //PinHoleView pinhole(context->create_buffer(RT_BUFFER_OUTPUT, RT_FORMAT_FLOAT, "renderBuffer"),
+    PinHoleView pinhole(context->create_buffer(RT_BUFFER_OUTPUT, RT_FORMAT_FLOAT3, "renderBuffer"),
+                        raygenProgram);
     pinhole->set_size(W,H);
-    pinhole->look_at({0.0,0.0,0.0},{5.0,4.0,2.0});
+    pinhole->look_at({0.0,0.0,0.0},{5.0,0.0,2.0});
     //pinhole->look_at({0.0,1.0,0.0});
 
     (*context)->setRayGenerationProgram(0, *raygenProgram);
@@ -102,15 +96,18 @@ int main()
     const float* data = static_cast<const float*>((*pinhole->render_buffer())->map());
     //for(int h = 0; h < H; h++) {
     //    for(int w = 0; w < W; w++) {
-    //        //cout << data[h*W + w] << " ";
-    //        cout << (int)(100*data[h*W + w]) << " ";
-    //        //cout << (int)(data[h*W + w]) << " ";
+    //        int index = 3*(W*h + w);
+    //        //cout << data[index] << " ";
+    //        cout << (int)(100*data[index]) << " ";
+    //        //cout << (int)(data[index]) << " ";
     //    }
     //    cout << "\n";
     //}
     //cout << endl;
-    write_pgm("out.pgm", W, H, data);
-    system("eog out.pgm");
+    //write_pgm("out.pgm", W, H, data);
+    //system("eog out.pgm");
+    write_ppm("out.ppm", W, H, data);
+    system("eog out.ppm");
     (*pinhole->render_buffer())->unmap();
 
     return 0;
