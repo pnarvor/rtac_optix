@@ -31,7 +31,7 @@ const std::string raygenSource = R"(
 using namespace optix;
 
 rtDeclareVariable(uint2, launchIndex, rtLaunchIndex,);
-rtTextureSampler<uchar4, 2, cudaReadModeNormalizedFloat> checkerboardTexture;
+rtTextureSampler<uchar4, 2, cudaReadModeNormalizedFloat> checkerboard_texture;
 
 rtBuffer<float3, 2> renderBuffer;
 
@@ -40,7 +40,7 @@ RT_PROGRAM void texture_test()
     size_t2 s = renderBuffer.size();
     float2 uv = make_float2(((float)launchIndex.x) / s.x,
                             ((float)launchIndex.y) / s.y);
-    float4 c = tex2D(checkerboardTexture, 2.0f*uv.x, 2.0f*uv.y);
+    float4 c = tex2D(checkerboard_texture, 2.0f*uv.x, 2.0f*uv.y);
     renderBuffer[launchIndex] = make_float3(c.x,c.y,c.z);
 }
 
@@ -52,7 +52,8 @@ int main()
 
     Context context;
     
-    TextureSampler checkerboard = textures::checkerboard(context, {0,255,0}, {0,50,255},
+    TextureSampler checkerboard = textures::checkerboard(context, "checkerboard_texture",
+                                                         {0,255,0}, {0,50,255},
                                                          4, 4);
 
     Buffer renderBuffer = context->create_buffer(RT_BUFFER_OUTPUT, RT_FORMAT_FLOAT3, "renderBuffer");

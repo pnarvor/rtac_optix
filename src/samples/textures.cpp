@@ -3,6 +3,7 @@
 namespace optix_helpers { namespace samples { namespace textures {
 
 TextureSampler checkerboard(const Context& context,
+                            const std::string& textureName,
                             const std::array<uint8_t,3>& color1,
                             const std::array<uint8_t,3>& color2,
                             size_t width, size_t height)
@@ -31,7 +32,7 @@ TextureSampler checkerboard(const Context& context,
     (*buffer)->unmap();
 
     TextureSampler texture(new TextureSamplerObj((*context)->createTextureSampler(),
-                                                 "checkerboardTexture"));
+                                                 textureName));
     (*texture)->setBuffer(*buffer);
     
     // Behavior for texture coordinates outside border
