@@ -64,7 +64,9 @@ int main()
     raytypes::RGB rayType0(context);
     cout << rayType0 << endl;
 
-    TexturedMaterial checkerboard = materials::checkerboard(context, rayType0);
+    TexturedMaterial checkerboard = materials::checkerboard(context, rayType0,
+                                                            {0,255,0}, {0,0,255},
+                                                            4,4);
 
     //Model cubeModel = models::cube(context);
     Model cubeModel = models::cube_with_attributes(context);

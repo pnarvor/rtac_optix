@@ -117,7 +117,7 @@ TexturedMaterial checkerboard(const Context& context, const raytypes::RGB& rayTy
     rtDeclareVariable(raytypes::RGB, rayPayload, rtPayload, );
 
     rtTextureSampler<uchar4, 2, cudaReadModeNormalizedFloat> inTexture;
-    rtDeclareVariable(float2, uv,,);
+    rtDeclareVariable(float2, uv, attribute texture_coordinates,);
     
     RT_PROGRAM void closest_hit_texture()
     {
@@ -128,7 +128,7 @@ TexturedMaterial checkerboard(const Context& context, const raytypes::RGB& rayTy
     )", "closest_hit_texture");
     TexturedMaterial material(
         (*context)->createMaterial(),
-        textures::checkerboard(context, color1, color2, width, height));
+        textures::checkerboard(context, "inTexture", color1, color2, width, height));
     material->add_closest_hit_program(rayType,
         context->create_program(closestHit, {rayType->definition()}));
     return material;
