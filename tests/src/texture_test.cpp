@@ -66,15 +66,13 @@ int main()
 
     TexturedMaterial checkerboard = materials::checkerboard(context, rayType0);
 
-    SceneItem cube0 = items::cube(context, rayType0, 0.5, {0.2,0.0,0.0});
-    cube0->set_pose(Pose({0.0,0.0,0.9}));
-
-    SceneItem sphere0 = items::sphere(context, rayType0, 0.5);
+    Model cubeModel = models::cube(context);
+    cubeModel->add_material(materials::barycentrics(context, rayType0));
+    SceneItem cube0 = context->create_scene_item(cubeModel);
 
     optix::Group topObject = (*context)->createGroup();
     topObject->setAcceleration((*context)->createAcceleration("Trbvh"));
     topObject->addChild(cube0->node());
-    topObject->addChild(sphere0->node());
 
     Program raygenProgram = context->create_program(Source(raygenSource,"pinhole_test"),
                                                            {rayType0->definition(), PinHoleView::rayGeometryDefinition});
@@ -83,7 +81,8 @@ int main()
     PinHoleView pinhole(context->create_buffer(RT_BUFFER_OUTPUT, RT_FORMAT_FLOAT3, "renderBuffer"),
                         raygenProgram);
     pinhole->set_size(W,H);
-    pinhole->look_at({0.0,0.0,0.0},{5.0,0.0,2.0});
+    pinhole->look_at({0.0,0.0,0.0},{ 5.0, 4.0, 3.0});
+    pinhole->look_at({0.0,0.0,0.0},{-5.0,-4.0,-3.0});
     //pinhole->look_at({0.0,1.0,0.0});
 
     (*context)->setRayGenerationProgram(0, *raygenProgram);
@@ -92,8 +91,8 @@ int main()
     (*raygenProgram)["topObject"]->set(topObject);
     (*context)->launch(0,W,H);
     
-    utils::display_ascii(pinhole->render_buffer(), 9);
-    //utils::display(pinhole->render_buffer());
+    //utils::display_ascii(pinhole->render_buffer(), 9);
+    utils::display(pinhole->render_buffer());
 
     return 0;
 }

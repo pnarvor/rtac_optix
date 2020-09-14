@@ -74,6 +74,34 @@ Material blue(const Context& context, const raytypes::RGB& rayType)
     return rgb(context, rayType, {0.0,0.0,1.0});
 }
 
+Material barycentrics(const Context& context, const raytypes::RGB& rayType)
+{
+    Source closestHit(R"(
+    #include <optix.h>
+    using namespace optix;
+    
+    #include <rays/RGB.h>
+    
+    rtDeclareVariable(optix::Ray, ray, rtCurrentRay, );
+    rtDeclareVariable(raytypes::RGB, rayPayload, rtPayload, );
+
+    rtDeclareVariable(float2, weights, attribute rtTriangleBarycentrics,);
+    
+    RT_PROGRAM void closest_hit_white()
+    {
+        rayPayload.color.x = 1.0f - weights.x - weights.y;
+        rayPayload.color.y = weights.x;
+        rayPayload.color.z = weights.y;
+    }
+    
+    )", "closest_hit_white");
+    
+    Material material(context->create_material());
+    material->add_closest_hit_program(rayType,
+        context->create_program(closestHit, {rayType->definition()}));
+    return material;
+}
+
 TexturedMaterial checkerboard(const Context& context, const raytypes::RGB& rayType,
                               const std::array<uint8_t,3>& color1,
                               const std::array<uint8_t,3>& color2,
