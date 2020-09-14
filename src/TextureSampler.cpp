@@ -2,9 +2,24 @@
 
 namespace optix_helpers {
 
-TextureSamplerObj::TextureSamplerObj(const optix::TextureSampler& texture, const std::string& name) :
+TextureSamplerObj::TextureSamplerObj(const optix::TextureSampler& texture, const std::string& name,
+                                     bool defaultSetup) :
     NamedObject<optix::TextureSampler>(texture, name)
-{}
+{
+    if(defaultSetup) {
+        this->load_default_texture_setup();
+    }
+}
+
+void TextureSamplerObj::load_default_texture_setup()
+{
+    object_->setWrapMode(0, RT_WRAP_CLAMP_TO_EDGE);
+    object_->setWrapMode(1, RT_WRAP_CLAMP_TO_EDGE);
+    object_->setFilteringModes(RT_FILTER_LINEAR, RT_FILTER_LINEAR, RT_FILTER_NONE);
+    object_->setIndexingMode(RT_TEXTURE_INDEX_NORMALIZED_COORDINATES);
+    object_->setReadMode(RT_TEXTURE_READ_NORMALIZED_FLOAT);
+    object_->setMaxAnisotropy(1.f);
+}
 
 optix::TextureSampler TextureSamplerObj::texture()
 {
