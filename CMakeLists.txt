@@ -63,6 +63,7 @@ list(APPEND optix_helpers_PUBLIC_HEADERS
     include/optix_helpers/TextureSampler.h
     include/optix_helpers/RayType.h
     include/optix_helpers/Material.h
+    include/optix_helpers/TexturedMaterial.h
     include/optix_helpers/Geometry.h
     include/optix_helpers/GeometryTriangles.h
     include/optix_helpers/Model.h
@@ -87,6 +88,7 @@ add_library(optix_helpers SHARED
     src/TextureSampler.cpp
     src/RayType.cpp
     src/Material.cpp
+    src/TexturedMaterial.cpp
     src/Geometry.cpp
     src/GeometryTriangles.cpp
     src/Model.cpp

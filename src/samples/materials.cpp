@@ -74,7 +74,37 @@ Material blue(const Context& context, const raytypes::RGB& rayType)
     return rgb(context, rayType, {0.0,0.0,1.0});
 }
 
+TexturedMaterial checkerboard(const Context& context, const raytypes::RGB& rayType,
+                              const std::array<uint8_t,3>& color1,
+                              const std::array<uint8_t,3>& color2,
+                              size_t width, size_t height)
+{
+    Source closestHit(R"(
+    #include <optix.h>
+    using namespace optix;
+    
+    #include <rays/RGB.h>
+    
+    rtDeclareVariable(optix::Ray, ray, rtCurrentRay, );
+    rtDeclareVariable(raytypes::RGB, rayPayload, rtPayload, );
 
+    rtTextureSampler<uchar4, 2, cudaReadModeNormalizedFloat> inTexture;
+    rtDeclareVariable(float2, uv,,);
+    
+    RT_PROGRAM void closest_hit_texture()
+    {
+        float4 c = tex2D(inTexture, uv.x, uv.y);
+        rayPayload.color = make_float3(c.x,c.y,c.z);
+    }
+    
+    )", "closest_hit_texture");
+    TexturedMaterial material(
+        (*context)->createMaterial(),
+        textures::checkerboard(context, color1, color2, width, height));
+    material->add_closest_hit_program(rayType,
+        context->create_program(closestHit, {rayType->definition()}));
+    return material;
+}
 
 }; //namespace materials
 }; //namespace samples
