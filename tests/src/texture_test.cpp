@@ -60,14 +60,16 @@ int main()
     int W = 800, H = 600;
 
     Context context;
-    
+
     raytypes::RGB rayType0(context);
     cout << rayType0 << endl;
 
     TexturedMaterial checkerboard = materials::checkerboard(context, rayType0);
 
-    Model cubeModel = models::cube(context);
-    cubeModel->add_material(materials::barycentrics(context, rayType0));
+    //Model cubeModel = models::cube(context);
+    Model cubeModel = models::cube_with_attributes(context);
+    //cubeModel->add_material(materials::barycentrics(context, rayType0));
+    cubeModel->add_material(checkerboard);
     SceneItem cube0 = context->create_scene_item(cubeModel);
 
     optix::Group topObject = (*context)->createGroup();
@@ -82,7 +84,7 @@ int main()
                         raygenProgram);
     pinhole->set_size(W,H);
     pinhole->look_at({0.0,0.0,0.0},{ 5.0, 4.0, 3.0});
-    pinhole->look_at({0.0,0.0,0.0},{-5.0,-4.0,-3.0});
+    //pinhole->look_at({0.0,0.0,0.0},{-5.0,-4.0,-3.0});
     //pinhole->look_at({0.0,1.0,0.0});
 
     (*context)->setRayGenerationProgram(0, *raygenProgram);

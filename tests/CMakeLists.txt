@@ -12,8 +12,8 @@ list(APPEND test_names
     # model_test
     # ortho_test
     # pinhole_test
-    texture_base_test
-    # texture_test
+    # texture_base_test
+    texture_test
 )
 list(APPEND test_deps
     optix_helpers

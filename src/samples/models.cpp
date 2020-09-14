@@ -4,10 +4,10 @@
 
 namespace optix_helpers { namespace samples { namespace models {
 
-Model cube(const Context& context, float halfSize)
+Model cube(const Context& context, float scale)
 {
     Model model = context->create_model();
-    model->set_geometry(geometries::cube(context, halfSize));
+    model->set_geometry(geometries::cube(context, scale));
     return model;
 }
 
@@ -15,6 +15,13 @@ Model sphere(const Context& context, float radius)
 {
     Model model = context->create_model();
     model->set_geometry(geometries::sphere(context, radius));
+    return model;
+}
+
+Model cube_with_attributes(const Context& context, float scale)
+{
+    Model model = context->create_model();
+    model->set_geometry(geometries::cube_with_attributes(context, scale));
     return model;
 }
 

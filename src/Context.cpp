@@ -49,12 +49,27 @@ Geometry ContextObj::create_geometry(const Program& intersection,
                                     primitiveCount));
 }
 
-GeometryTriangles ContextObj::create_geometry_triangles() const
+GeometryTriangles ContextObj::create_geometry_triangles(
+    bool withTriangleIndexes, bool withNormals, bool withTextureCoordinates) const
 {
+    optix::Buffer vertexBuffer;
+    optix::Buffer indexBuffer;
+    optix::Buffer normalBuffer;
+    optix::Buffer uvBuffer;
+
+    vertexBuffer = context_->createBuffer(RT_BUFFER_INPUT, RT_FORMAT_FLOAT3);
+    if(withTriangleIndexes) {
+        indexBuffer = context_->createBuffer(RT_BUFFER_INPUT, RT_FORMAT_UNSIGNED_INT3);
+    }
+    if(withNormals) {
+        normalBuffer = context_->createBuffer(RT_BUFFER_INPUT, RT_FORMAT_FLOAT3);
+    }
+    if(withTextureCoordinates) {
+        uvBuffer = context_->createBuffer(RT_BUFFER_INPUT, RT_FORMAT_FLOAT2);
+    }
     return GeometryTriangles(new GeometryTrianglesObj(
         context_->createGeometryTriangles(),
-        context_->createBuffer(RT_BUFFER_INPUT, RT_FORMAT_FLOAT3),
-        context_->createBuffer(RT_BUFFER_INPUT, RT_FORMAT_UNSIGNED_INT3)));
+        vertexBuffer, indexBuffer, normalBuffer, uvBuffer));
 }
 
 Model ContextObj::create_model() const

@@ -45,7 +45,9 @@ class ContextObj
     Geometry create_geometry(const Program& intersection,
                              const Program& boundingbox,
                              size_t primitiveCount) const;
-    GeometryTriangles create_geometry_triangles() const;
+    GeometryTriangles create_geometry_triangles(bool withTriangleIndexes    = true,
+                                                bool withNormals            = false,
+                                                bool withTextureCoordinates = false) const;
     template <typename Tp, typename Tf>
     GeometryTriangles create_geometry_triangles(const rtac::types::Mesh<Tp,Tf,3>& mesh) const;
     Model create_model() const;

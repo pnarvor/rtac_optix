@@ -20,8 +20,19 @@ void ModelObj::set_geometry(const GeometryTriangles& geometry)
     geometry_          = Geometry();
     geometryTriangles_ = geometry;
     geomInstance_->setGeometryTriangles(*geometryTriangles_);
-    geomInstance_["vertex_buffer"]->set(geometryTriangles_->points());
-    geomInstance_["index_buffer"]->set(geometryTriangles_->faces());
+    
+    if(geometryTriangles_->points()) {
+        geomInstance_["vertex_buffer"]->set(geometryTriangles_->points());
+    }
+    if(geometryTriangles_->faces()) {
+        geomInstance_["index_buffer"]->set(geometryTriangles_->faces());
+    }
+    if(geometryTriangles_->normals()) {
+        geomInstance_["normal_buffer"]->set(geometryTriangles_->normals());
+    }
+    if(geometryTriangles_->texture_coordinates()) {
+        geomInstance_["texcoord_buffer"]->set(geometryTriangles_->texture_coordinates());
+    }
 }
 
 void ModelObj::add_material(const Material& material)
