@@ -7,19 +7,29 @@ RayTypeObj::RayTypeObj(Index rayTypeIndex, const Source& definition) :
     definition_(definition)
 {}
 
-RayTypeObj::Index RayTypeObj::index() const
-{
-    return rayTypeIndex_;
-}
-
 Source RayTypeObj::definition() const
 {
     return definition_;
 }
 
+RayTypeObj::Index RayTypeObj::index() const
+{
+    return rayTypeIndex_;
+}
+
+RayTypeObj::operator Index() const
+{
+    return this->index();
+}
+
 RayType::RayType() :
     Handle<RayTypeObj>()
 {}
+
+RayType::operator Index() const
+{
+    return (*this)->index();
+}
 
 RayType::RayType(Index rayTypeIndex, const Source& definition) :
     Handle<RayTypeObj>(new RayTypeObj(rayTypeIndex, definition))

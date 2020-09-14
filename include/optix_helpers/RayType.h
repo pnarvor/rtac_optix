@@ -28,8 +28,9 @@ class RayTypeObj
 
     public:
 
-    Index  index()      const;
     Source definition() const;
+    Index    index()    const;
+    operator Index()    const;
 
     friend class ContextObj; // Make Context only creator of RayTypes
     friend class RayType;
@@ -42,6 +43,8 @@ class RayType : public Handle<RayTypeObj>
     using Index = RayTypeObj::Index;
 
     RayType();
+
+    operator Index() const;
 
     protected:
 
