@@ -18,11 +18,11 @@ rtDeclareVariable(float3, pinholeStepY,,);
 rtDeclareVariable(float2, pinholeRange,,);
 
 __device__
-optix::Ray pinhole_ray(const uint2& launchIndex)
+optix::Ray pinhole_ray(const uint2& launchIndex, unsigned int rayType)
 {
     return optix::Ray(pinholeOrigin,
         normalize(pinholeTopLeftDir + launchIndex.x*pinholeStepX + launchIndex.y*pinholeStepY),
-        pinholeRange.x, pinholeRange.y);
+        rayType, pinholeRange.x, pinholeRange.y);
 }
 
 )", "view/pinhole.h");
@@ -36,8 +36,8 @@ PinHoleViewObj::PinHoleViewObj(const Buffer& renderBuffer,
     RayGeneratorObj(renderBuffer, raygenProgram, pose),
     fovy_(fovy)
 {
-    //this->set_range(0.0, RT_DEFAULT_MAX);
-    this->set_range(0.0, 2.f);
+    this->set_range(0.0, RT_DEFAULT_MAX);
+    //this->set_range(0.0, 2.f);
 }
 
 void PinHoleViewObj::update_device_geometry()
