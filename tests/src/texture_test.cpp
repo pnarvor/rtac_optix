@@ -68,7 +68,7 @@ int main()
                                                             {0,255,0}, {0,0,255},
                                                             4,4);
 
-    Model cubeModel = models::cube_with_attributes(context);
+    Model cubeModel = models::cube(context);
     cubeModel->add_material(checkerboard);
     SceneItem cube0 = context->create_scene_item(cubeModel);
 

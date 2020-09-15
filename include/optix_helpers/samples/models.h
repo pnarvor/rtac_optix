@@ -9,7 +9,7 @@ namespace optix_helpers { namespace samples { namespace models {
 Model cube(const Context& context, float scale = 1.0);
 Model sphere(const Context& context, float radius = 1.0);
 
-Model cube_with_attributes(const Context& context, float scale = 1.0);
+Model indexed_cube(const Context& context, float scale = 1.0);
 
 }; //namespace geometries
 }; //namespace samples
