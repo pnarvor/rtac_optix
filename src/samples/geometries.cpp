@@ -165,6 +165,65 @@ GeometryTriangles cube(const Context& context, float scale)
     return cube;
 }
 
+GeometryTriangles square(const Context& context, float scale)
+{
+    GeometryTriangles square = context->create_geometry_triangles(false, true, true);
+    float points[18] = {//x+ faces
+                        -scale, -scale, 0.0,
+                         scale, -scale, 0.0,
+                         scale,  scale, 0.0,
+                        -scale, -scale, 0.0,
+                         scale,  scale, 0.0,
+                        -scale,  scale, 0.0};
+    float normals[18] = {0,0,1,
+                         0,0,1,
+                         0,0,1,
+                         0,0,1,
+                         0,0,1,
+                         0,0,1};
+    float texCoords[12] = {//x+ faces
+                           0,0,
+                           1,0,
+                           1,1,
+                           0,0,
+                           1,1,
+                           0,1};
+    square->set_points(6, points);
+    square->set_normals(6, normals);
+    square->set_texture_coordinates(6, texCoords);
+    square->geometry()->setPrimitiveCount(2);
+
+    square->geometry()->setAttributeProgram(*context->create_program(Source(R"(
+    #include <optix.h>
+    #include <optixu/optixu_math_namespace.h>
+    using namespace optix;
+
+    rtBuffer<float3> vertex_buffer;
+    rtBuffer<float3> normal_buffer;
+    rtBuffer<float2> texcoord_buffer;
+    
+    rtDeclareVariable(float3, n, attribute normal,);
+    rtDeclareVariable(float2, uv, attribute texture_coordinates,);
+    
+    RT_PROGRAM void square_attributes()
+    {
+        const unsigned int primitiveIndex = rtGetPrimitiveIndex();
+        const float2 barycentrics = rtGetTriangleBarycentrics();
+        float3 w = make_float3(1.0 - barycentrics.x - barycentrics.y,
+                               barycentrics.x,
+                               barycentrics.y);
+
+        n = w.x*normal_buffer[3*primitiveIndex]
+          + w.y*normal_buffer[3*primitiveIndex + 1]
+          + w.z*normal_buffer[3*primitiveIndex + 2];
+        uv = w.x*texcoord_buffer[3*primitiveIndex]
+           + w.y*texcoord_buffer[3*primitiveIndex + 1]
+           + w.z*texcoord_buffer[3*primitiveIndex + 2];
+    }
+    )", "square_attributes")));
+    return square;
+}
+
 Geometry sphere(const Context& context, float radius)
 {
     Program intersection(context->create_program(Source(R"(

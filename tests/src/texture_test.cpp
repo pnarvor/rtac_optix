@@ -68,14 +68,9 @@ int main()
                                                             {0,255,0}, {0,0,255},
                                                             4,4);
 
-    Model cubeModel = models::cube(context);
-    cubeModel->add_material(checkerboard);
-    SceneItem cube0 = context->create_scene_item(cubeModel);
+    SceneItem cube0 = items::cube(context, {checkerboard});
 
-    Model sphereModel = models::sphere(context);
-    //sphereModel->add_material(materials::white(context, rayType0));
-    sphereModel->add_material(checkerboard);
-    SceneItem sphere0 = context->create_scene_item(sphereModel);
+    SceneItem sphere0 = items::sphere(context, {checkerboard}, 0.8);
     sphere0->set_pose(Pose({0,0,1}));
 
     optix::Group topObject = (*context)->createGroup();

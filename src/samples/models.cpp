@@ -18,6 +18,13 @@ Model sphere(const Context& context, float radius)
     return model;
 }
 
+Model square(const Context& context, float scale)
+{
+    Model model = context->create_model();
+    model->set_geometry(geometries::square(context, scale));
+    return model;
+}
+
 Model indexed_cube(const Context& context, float scale)
 {
     Model model = context->create_model();

@@ -12,10 +12,12 @@
 
 namespace optix_helpers { namespace samples { namespace items {
 
-SceneItem cube(const Context& context, const raytypes::RGB& rayType,
-               float halfSize = 1.0, const std::array<float,3> color = {1.0,1.0,1.0});
-SceneItem sphere(const Context& context, const raytypes::RGB& rayType,
-                 float radius = 1.0, const std::array<float,3> color = {1.0,1.0,1.0});
+SceneItem cube(const Context& context, const Materials& materials = Materials(),
+               float scale = 1.0);
+SceneItem sphere(const Context& context, const Materials& materials = Materials(),
+                 float radius = 1.0);
+SceneItem square(const Context& context, const Materials& materials = Materials(),
+                 float scale = 1.0);
 
 }; //namespace items
 }; //namespace samples
