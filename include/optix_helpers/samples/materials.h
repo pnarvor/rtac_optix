@@ -28,6 +28,8 @@ TexturedMaterial checkerboard(const Context& context, const raytypes::RGB& rayTy
                               const std::array<uint8_t,3>& color2 = {0,0,0},
                               size_t width = 64, size_t height = 64);
 
+Material perfect_mirror(const Context& context, const raytypes::RGB& rayType);
+
 
 }; //namespace materials
 }; //namespace samples

@@ -134,6 +134,43 @@ TexturedMaterial checkerboard(const Context& context, const raytypes::RGB& rayTy
     return material;
 }
 
+Material perfect_mirror(const Context& context, const raytypes::RGB& rayType)
+{
+    Source closestHit(R"(
+    #include <optix.h>
+    #include <optix_math.h>
+    using namespace optix;
+    
+    #include <rays/RGB.h>
+    
+    rtDeclareVariable(optix::Ray, ray, rtCurrentRay, );
+    rtDeclareVariable(float, tHit, rtIntersectionDistance,);
+    rtDeclareVariable(raytypes::RGB, rayPayload, rtPayload, );
+    
+    rtDeclareVariable(rtObject, topObject,,);
+
+    rtDeclareVariable(float3, n, attribute normal,);
+    
+    RT_PROGRAM void closest_hit_perfect_mirror()
+    {
+        float3 hitPoint = ray.origin + tHit*ray.direction;
+        Ray reflectedRay(hitPoint,
+                         reflect(ray.direction, n),
+                         ray.ray_type, 
+                         ray.tmin, ray.tmax);
+
+        raytypes::RGB reflectedPayload;
+        rtTrace(topObject, reflectedRay, reflectedPayload);
+        rayPayload = reflectedPayload;
+    }
+    
+    )", "closest_hit_perfect_mirror");
+    Material material = context->create_material();
+    material->add_closest_hit_program(rayType,
+        context->create_program(closestHit, {rayType->definition()}));
+    return material;
+}
+
 }; //namespace materials
 }; //namespace samples
 }; //namespace optix_helpers

@@ -36,8 +36,7 @@ PinHoleViewObj::PinHoleViewObj(const Buffer& renderBuffer,
     RayGeneratorObj(renderBuffer, raygenProgram, pose),
     fovy_(fovy)
 {
-    this->set_range(0.0, RT_DEFAULT_MAX);
-    //this->set_range(0.0, 2.f);
+    this->set_range(1.0e-4f, RT_DEFAULT_MAX);
 }
 
 void PinHoleViewObj::update_device_geometry()
