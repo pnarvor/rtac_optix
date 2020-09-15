@@ -8,6 +8,7 @@ using namespace rtac::files;
 #include <rtac_base/types/Pose.h>
 using Mesh = rtac::types::Mesh<float,uint32_t,3>;
 using Pose = rtac::types::Pose<float>;
+using Quaternion = rtac::types::Quaternion<float>;
 
 #include <optix_helpers/Context.h>
 #include <optix_helpers/RayType.h>
@@ -73,10 +74,14 @@ int main()
     SceneItem sphere0 = items::sphere(context, {checkerboard}, 0.8);
     sphere0->set_pose(Pose({0,0,1}));
 
+    SceneItem square0 = items::square(context, {checkerboard}, 4);
+    square0->set_pose(Pose({0,-1,0}, Quaternion({0.707, -0.707, 0,0})));
+
     optix::Group topObject = (*context)->createGroup();
     topObject->setAcceleration((*context)->createAcceleration("Trbvh"));
     topObject->addChild(cube0->node());
     topObject->addChild(sphere0->node());
+    topObject->addChild(square0->node());
 
     Program raygenProgram = context->create_program(Source(raygenSource,"pinhole_test"),
                                                            {rayType0->definition(), PinHoleView::rayGeometryDefinition});
@@ -85,7 +90,7 @@ int main()
     PinHoleView pinhole(context->create_buffer(RT_BUFFER_OUTPUT, RT_FORMAT_FLOAT3, "renderBuffer"),
                         raygenProgram);
     pinhole->set_size(W,H);
-    pinhole->look_at({0.0,0.0,0.0},{ 5.0, 4.0, 3.0});
+    pinhole->look_at({0.0,0.0,0.0},{ 5.0, 8.0, 3.0});
     //pinhole->look_at({0.0,0.0,0.0},{-5.0,-4.0,-3.0});
     //pinhole->look_at({0.0,0.0,0.0},{ 5.0, 0.0, 3.0});
     //pinhole->look_at({0.0,1.0,0.0});
