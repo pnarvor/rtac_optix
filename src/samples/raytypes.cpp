@@ -1,5 +1,7 @@
 #include <optix_helpers/samples/raytypes.h>
 
+#include <optix_helpers/utils.h>
+
 namespace optix_helpers { namespace samples { namespace raytypes {
 
 const Source RGB::ray_definition(R"(
@@ -21,6 +23,30 @@ struct RGB
 RGB::RGB(const Context& context) :
     RayType(context->create_raytype(RGB::ray_definition))
 {}
+
+Program RGB::rgb_miss_program(const Context& context, const std::array<float,3>& color)
+{
+    Program program = context->create_program(Source(R"(
+    #include <optix.h>
+    using namespace optix;
+    
+    #include <rays/RGB.h>
+    
+    rtDeclareVariable(raytypes::RGB, rayPayload, rtPayload, );
+    rtDeclareVariable(float3, missColor,,);
+    
+    RT_PROGRAM void rgb_miss()
+    {
+        rayPayload.color.x = missColor.x;
+        rayPayload.color.y = missColor.y;
+        rayPayload.color.z = missColor.z;
+    }
+    )", "rgb_miss"),
+    {RGB::ray_definition});
+    (*program)["missColor"]->setFloat(make_float3(color));
+
+    return program;
+}
 
 Program RGB::black_miss_program(const Context& context)
 {

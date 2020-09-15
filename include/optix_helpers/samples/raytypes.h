@@ -15,6 +15,8 @@ class RGB : public RayType
 
     RGB(const Context& context);
 
+    static Program rgb_miss_program(const Context& context,
+                                    const std::array<float,3>& color = {0,0,0});
     static Program black_miss_program(const Context& context);
 };
 
