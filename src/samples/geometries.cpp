@@ -16,33 +16,40 @@ Geometry sphere(const Context& context, float radius)
     Program intersection(context->create_program(Source(R"(
     #include <optix.h>
     #include <optix_math.h>
-    
+
     rtDeclareVariable(optix::Ray, ray, rtCurrentRay,);
     
     rtDeclareVariable(float, radius,,);
+
+    rtDeclareVariable(float3, n, attribute normal,);
+    rtDeclareVariable(float2, uv, attribute texture_coordinates,);
     
     RT_PROGRAM void intersection(int)
     {
         // Intersection of sphere and ray
         // assuming a = 1.0
-        float a = 1.0; // = dot(ray.direction, ray.direction);
-        float b = dot(ray.origin, ray.direction);
+        //float a = 1.0; // = dot(ray.direction, ray.direction);
+        float b = 2*dot(ray.origin, ray.direction);
         float c = dot(ray.origin, ray.origin) - radius*radius;
-        float delta = 4*(b*b - c);
+        float delta = b*b - 4*c;
     
         if(delta < 0.0f) return;
     
         float tmin = 0.5*(-b - sqrt(delta));
         float tmax = 0.5*(-b + sqrt(delta));
-        if(tmin > 0.0f) {
-            if(rtPotentialIntersection(tmin)) {
-                rtReportIntersection(0);
+        //checking for intersection
+        if(tmin < 0.0f) {
+            if(tmax < 0.0f) {
+                return;
             }
+            //tmin did not intersect but tmax did. 
+            tmin = tmax;
         }
-        else if(tmax > 0.0f) {
-            if(rtPotentialIntersection(tmax)) {
-                rtReportIntersection(0);
-            }
+        if(rtPotentialIntersection(tmin)) {
+            n = normalize(ray.origin + tmin*ray.direction);
+            uv.x = 0.5 * (atan2f(n.y,n.x) / M_PIf + 1.0f);
+            uv.y = atan2f(n.z, sqrtf(n.x*n.x+n.y*n.y)) / M_PIf;
+            rtReportIntersection(0);
         }
     }
     )", "intersection")));
@@ -205,14 +212,8 @@ GeometryTriangles cube_with_attributes(const Context& context, float scale)
     rtBuffer<float3> normal_buffer;
     rtBuffer<float2> texcoord_buffer;
     
-    struct Attributes {
-        float3 normal;
-        float2 uv;
-    };
-    
     rtDeclareVariable(float3, n, attribute normal,);
     rtDeclareVariable(float2, uv, attribute texture_coordinates,);
-    
     
     RT_PROGRAM void cube_attributes()
     {

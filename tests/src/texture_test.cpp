@@ -68,15 +68,20 @@ int main()
                                                             {0,255,0}, {0,0,255},
                                                             4,4);
 
-    //Model cubeModel = models::cube(context);
     Model cubeModel = models::cube_with_attributes(context);
-    //cubeModel->add_material(materials::barycentrics(context, rayType0));
     cubeModel->add_material(checkerboard);
     SceneItem cube0 = context->create_scene_item(cubeModel);
+
+    Model sphereModel = models::sphere(context);
+    //sphereModel->add_material(materials::white(context, rayType0));
+    sphereModel->add_material(checkerboard);
+    SceneItem sphere0 = context->create_scene_item(sphereModel);
+    sphere0->set_pose(Pose({0,0,1}));
 
     optix::Group topObject = (*context)->createGroup();
     topObject->setAcceleration((*context)->createAcceleration("Trbvh"));
     topObject->addChild(cube0->node());
+    topObject->addChild(sphere0->node());
 
     Program raygenProgram = context->create_program(Source(raygenSource,"pinhole_test"),
                                                            {rayType0->definition(), PinHoleView::rayGeometryDefinition});
@@ -87,6 +92,7 @@ int main()
     pinhole->set_size(W,H);
     pinhole->look_at({0.0,0.0,0.0},{ 5.0, 4.0, 3.0});
     //pinhole->look_at({0.0,0.0,0.0},{-5.0,-4.0,-3.0});
+    //pinhole->look_at({0.0,0.0,0.0},{ 5.0, 0.0, 3.0});
     //pinhole->look_at({0.0,1.0,0.0});
 
     (*context)->setRayGenerationProgram(0, *raygenProgram);
