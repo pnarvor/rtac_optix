@@ -21,6 +21,10 @@ Material red(const Context& context, const raytypes::RGB& rayType);
 Material green(const Context& context, const raytypes::RGB& rayType);
 Material blue(const Context& context, const raytypes::RGB& rayType);
 
+Material lambert(const Context& context, const raytypes::RGB& raytype,
+                 const std::array<float,3>& light = {0.0,0.0,0.0},
+                 const std::array<float,3>& color = {1.0,1.0,1.0});
+
 Material barycentrics(const Context& context, const raytypes::RGB& rayType);
 
 TexturedMaterial checkerboard(const Context& context, const raytypes::RGB& rayType,

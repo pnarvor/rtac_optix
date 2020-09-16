@@ -74,6 +74,46 @@ Material blue(const Context& context, const raytypes::RGB& rayType)
     return rgb(context, rayType, {0.0,0.0,1.0});
 }
 
+Material lambert(const Context& context, const raytypes::RGB& rayType,
+                 const std::array<float,3>& light, const std::array<float,3>& color)
+{
+    Source closestHit(R"(
+    #include <optix.h>
+    #include <optix_math.h>
+    using namespace optix;
+    
+    #include <rays/RGB.h>
+    
+    rtDeclareVariable(optix::Ray, ray, rtCurrentRay, );
+    rtDeclareVariable(float, tHit, rtIntersectionDistance,);
+    rtDeclareVariable(raytypes::RGB, rayPayload, rtPayload, );
+    
+    rtDeclareVariable(float3, n_object, attribute normal,);
+
+    rtDeclareVariable(float3, light,,);
+    rtDeclareVariable(float3, color,,);
+    
+    RT_PROGRAM void closest_hit_perfect_mirror()
+    {
+        float3 n = rtTransformNormal(RT_OBJECT_TO_WORLD, n_object);
+        float3 hitPoint = ray.origin + tHit*ray.direction;
+        float3 v = normalize(light - hitPoint);
+
+        rayPayload.color = color*max(dot(n,v), 0.0f);
+        //rayPayload.color = color*abs(dot(n,v));
+    }
+    
+    )", "closest_hit_perfect_mirror");
+    Material material = context->create_material();
+    Program program = context->create_program(closestHit, {rayType->definition()});
+    
+    (*program)["light"]->setFloat(make_float3(light));
+    (*program)["color"]->setFloat(make_float3(color));
+
+    material->add_closest_hit_program(rayType, program);
+    return material;
+}
+
 Material barycentrics(const Context& context, const raytypes::RGB& rayType)
 {
     Source closestHit(R"(
