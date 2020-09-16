@@ -149,10 +149,11 @@ Material perfect_mirror(const Context& context, const raytypes::RGB& rayType)
     
     rtDeclareVariable(rtObject, topObject,,);
 
-    rtDeclareVariable(float3, n, attribute normal,);
+    rtDeclareVariable(float3, n_object, attribute normal,);
     
     RT_PROGRAM void closest_hit_perfect_mirror()
     {
+        float3 n = rtTransformNormal(RT_OBJECT_TO_WORLD, n_object);
         float3 hitPoint = ray.origin + tHit*ray.direction;
         Ray reflectedRay(hitPoint,
                          reflect(ray.direction, n),
