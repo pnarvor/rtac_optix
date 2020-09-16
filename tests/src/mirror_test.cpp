@@ -109,6 +109,20 @@ int main()
     sphere0->set_pose(Pose({0,0,1}));
     //sphere0->set_pose(Pose({0,0.5,1.5}));
     //sphere0->set_pose(Pose({0,0,0}, Quaternion({0.707,-0.707,0,0})));
+    
+    Model lense = context->create_model();
+    //lense->set_geometry(geometries::parabola(context, 0.1, -0.1, 0.1));
+    lense->set_geometry(geometries::parabola(context, 0.1, -0.2, 0.2));
+    //lense->add_material(mirror);
+    //lense->add_material(glass);
+    //auto lenseGlass = materials::perfect_refraction(context, rayType0, 2.4);
+    auto lenseGlass = materials::perfect_refraction(context, rayType0, 1.7);
+    lense->add_material(lenseGlass);
+
+    SceneItem lense0 = context->create_scene_item(lense);
+    lense0->set_pose(Pose({0,0,2}));
+    SceneItem lense1 = context->create_scene_item(lense);
+    lense1->set_pose(Pose({0,0,2}, Quaternion({0.0,1.0,0.0,0.0})));
 
     Quaternion q({1.0,1.0,0.0,0.0});
     q.normalize();
@@ -122,12 +136,15 @@ int main()
     topObject->addChild(square0->node());
     topObject->addChild(cube0->node());
     topObject->addChild(cube1->node());
-    topObject->addChild(sphere0->node());
+    //topObject->addChild(sphere0->node());
     //topObject->addChild(mirror0->node());
     //topObject->addChild(mirror1->node());
+    topObject->addChild(lense0->node());
+    topObject->addChild(lense1->node());
 
     (*mirror->get_closest_hit_program(rayType0))["topObject"]->set(topObject);
     (*glass->get_closest_hit_program(rayType0))["topObject"]->set(topObject);
+    (*lenseGlass->get_closest_hit_program(rayType0))["topObject"]->set(topObject);
 
     Program raygenProgram = context->create_program(Source(raygenSource,"pinhole_test"),
                                                            {rayType0->definition(), PinHoleView::rayGeometryDefinition});
@@ -144,7 +161,7 @@ int main()
     //pinhole->look_at({0.0,0.0,0.0},{ 5.0, 0.0, 3.0});
     //pinhole->look_at({0.0,1.0,0.0});
     //pinhole->look_at({0.0,0.0,0.0},{ 2.0, 5.0, -4.0});
-    //pinhole->look_at({0.0,0.0,0.0},{ 1.0, 1.0, 4.0});
+    pinhole->look_at({0.0,0.0,0.0},{ -1.0, -1.0, 3.5});
 
     (*context)->setRayGenerationProgram(0, *raygenProgram);
     (*context)->setMissProgram(0, *raytypes::RGB::rgb_miss_program(context, {0.8,0.8,0.8}));
