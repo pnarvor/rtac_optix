@@ -243,12 +243,8 @@ Geometry sphere(const Context& context, float radius)
     {
         //// Intersection of sphere and ray
         float tmin, tmax;
-        if(!quadratic_solve(1.0f,
-                            2.0f*dot(ray.origin, ray.direction),
-                            dot(ray.origin, ray.origin) - radius*radius,
-                            tmin, tmax)) {
+        if(!sphere_intersection(ray, radius, tmin, tmax))
             return;
-        }
         if(rtPotentialIntersection(tmin)) {
             n = normalize(ray.origin + tmin*ray.direction);
             uv.x = 0.5 * (atan2f(n.y,n.x) / M_PIf + 1.0f);

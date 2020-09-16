@@ -23,6 +23,15 @@ bool quadratic_solve(float a, float b, float c, float& res1, float& res2)
     return true;
 }
 
+__device__
+bool sphere_intersection(const optix::Ray& ray, float radius, float& tmin, float& tmax)
+{
+    return quadratic_solve(1.0f,
+                        2.0f*dot(ray.origin, ray.direction),
+                        dot(ray.origin, ray.origin) - radius*radius,
+                        tmin, tmax);
+}
+
 )", "optix_helpers/maths.h");
 
 }; //namespace maths
