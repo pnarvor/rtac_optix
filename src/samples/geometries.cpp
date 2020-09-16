@@ -249,18 +249,14 @@ Geometry sphere(const Context& context, float radius)
                             tmin, tmax)) {
             return;
         }
-
-        //checking for intersection
-        //using quadratic_solve, tmin <= tmax, always
-        if(tmin < 0.0f) {
-            if(tmax < 0.0f) {
-                return;
-            }
-            //tmin did not intersect but tmax did. 
-            tmin = tmax;
-        }
         if(rtPotentialIntersection(tmin)) {
             n = normalize(ray.origin + tmin*ray.direction);
+            uv.x = 0.5 * (atan2f(n.y,n.x) / M_PIf + 1.0f);
+            uv.y = atan2f(n.z, sqrtf(n.x*n.x+n.y*n.y)) / M_PIf;
+            rtReportIntersection(0);
+        }
+        if(rtPotentialIntersection(tmax)) {
+            n = normalize(ray.origin + tmax*ray.direction);
             uv.x = 0.5 * (atan2f(n.y,n.x) / M_PIf + 1.0f);
             uv.y = atan2f(n.z, sqrtf(n.x*n.x+n.y*n.y)) / M_PIf;
             rtReportIntersection(0);
