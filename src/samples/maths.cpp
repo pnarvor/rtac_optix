@@ -78,6 +78,17 @@ bool tube_intersection(const optix::Ray& ray, float radius,
         tmin, tmax);
 }
 
+__device__
+bool parabola_intersection(const optix::Ray& ray, float a, float b,
+                           float& tmin, float& tmax)
+{
+    float2 oxy = make_float2(ray.origin.x, ray.origin.y);
+    float2 dxy = make_float2(ray.direction.x, ray.direction.y);
+    return quadratic_solve(a*dot(dxy,dxy),
+                           2.0f*a*dot(oxy,dxy) - ray.direction.z,
+                           a*dot(oxy,oxy) + b - ray.origin.z,
+                           tmin, tmax);
+}
 
 )", "optix_helpers/maths.h");
 

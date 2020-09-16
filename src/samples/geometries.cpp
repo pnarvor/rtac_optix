@@ -346,6 +346,122 @@ Geometry tube(const Context& context, float radius, float height)
     return context->create_geometry(intersection, boundingbox, 1);
 }
 
+Geometry parabola(const Context& context, float a, float b, float height)
+{
+    Program intersection(context->create_program(Source(R"(
+    #include <optix.h>
+    #include <optix_math.h>
+
+    #include <optix_helpers/maths.h>
+
+    rtDeclareVariable(optix::Ray, ray, rtCurrentRay,);
+    
+    rtDeclareVariable(float, a,,);
+    rtDeclareVariable(float, b,,);
+    rtDeclareVariable(float, bottom,,);
+    rtDeclareVariable(float, top,,);
+
+    rtDeclareVariable(float3, n, attribute normal,);
+    rtDeclareVariable(float2, uv, attribute texture_coordinates,);
+    
+    RT_PROGRAM void intersection(int)
+    {
+        float t1, t2;
+        if(!parabola_intersection(ray, a, b, t1, t2))
+            return;
+        
+        float3 p;
+        p = ray.origin + t1 * ray.direction;
+        if(p.z >= bottom && p.z <= top && rtPotentialIntersection(t1)) {
+            if(p.x*p.x + p.y*p.y < 1.0e-6f) {
+                if(a < 0.0f) {
+                    n = make_float3(0.0f,0.0f,1.0f);
+                }
+                else {
+                    n = make_float3(0.0f,0.0f,-1.0f);
+                }
+            }
+            else {
+                float pnormXY = sqrt(p.x*p.x + p.y*p.y);
+                n.x = p.x / pnormXY;
+                n.y = p.y / pnormXY;
+                if(a >= 0.0f)
+                    n.z = -0.5f / (a*pnormXY);
+                else
+                    n.z = 0.5f / (a*pnormXY);
+                n = normalize(n);
+            }
+            uv.x = 0.5f * (atan2f(p.y,p.x) / M_PIf + 1.0f);
+            uv.y = (p.z - bottom) / (top - bottom);
+            rtReportIntersection(0);
+        }
+        p = ray.origin + t2 * ray.direction;
+        if(p.z >= bottom && p.z <= top && rtPotentialIntersection(t2)) {
+            if(p.x*p.x + p.y*p.y < 1.0e-6f) {
+                if(a < 0.0f) {
+                    n = make_float3(0.0f,0.0f,1.0f);
+                }
+                else {
+                    n = make_float3(0.0f,0.0f,-1.0f);
+                }
+            }
+            else {
+                float pnormXY = sqrt(p.x*p.x + p.y*p.y);
+                n.x = p.x / pnormXY;
+                n.y = p.y / pnormXY;
+                if(a >= 0.0f)
+                    n.z = -0.5f / (a*pnormXY);
+                else
+                    n.z = 0.5f / (a*pnormXY);
+                n = normalize(n);
+            }
+            uv.x = 0.5f * (atan2f(p.y,p.x) / M_PIf + 1.0f);
+            uv.y = (p.z - bottom) / (top - bottom);
+            rtReportIntersection(0);
+        }
+    }
+    )", "intersection"), {maths::maths}));
+
+    Program boundingbox(context->create_program(Source(R"(
+    #include <optix.h>
+    
+    rtDeclareVariable(float, radius,,);
+    rtDeclareVariable(float, bottom,,);
+    rtDeclareVariable(float, top,,);
+    
+    RT_PROGRAM void bounds(int, float bbox[6])
+    {
+        bbox[0] = -radius;
+        bbox[1] = -radius;
+        bbox[2] =  bottom;
+        bbox[3] =  radius;
+        bbox[4] =  radius;
+        bbox[5] =     top;
+    }
+    )", "bounds")));
+    
+    if(fabs(a) < 1.0e-6) {
+        throw std::runtime_error("a parameter too low for hyperbola");
+    }
+    if(a >= 0.0f) {
+        (*boundingbox)["bottom"]->setFloat(b);
+        (*boundingbox)["top"]->setFloat(b + height);
+        (*intersection)["bottom"]->setFloat(b);
+        (*intersection)["top"]->setFloat(b + height);
+    }
+    else {
+        (*boundingbox)["bottom"]->setFloat(b - height);
+        (*boundingbox)["top"]->setFloat(b);
+        (*intersection)["bottom"]->setFloat(b - height);
+        (*intersection)["top"]->setFloat(b);
+    }
+    (*boundingbox)["radius"]->setFloat(sqrt(fabs(height / a)));
+    
+    (*intersection)["a"]->setFloat(a);
+    (*intersection)["b"]->setFloat(b);
+    return context->create_geometry(intersection, boundingbox, 1);
+}
+
 
 GeometryTriangles indexed_cube(const Context& context, float scale)
 {

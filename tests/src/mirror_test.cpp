@@ -98,12 +98,14 @@ int main()
     //SceneItem sphere0 = items::sphere(context, {lambert});
     //SceneItem sphere0 = items::cube(context, {mirror});
     //SceneItem sphere0 = items::tube(context, {mirror});
-    SceneItem sphere0 = items::tube(context, {glass});
+    //SceneItem sphere0 = items::tube(context, {glass});
     //SceneItem sphere0 = items::tube(context, {lambert});
     //SceneItem sphere0 = items::tube(context, {checkerboard});
     //SceneItem sphere0 = items::tube(context, {white});
     //SceneItem sphere0 = items::square(context, {lambert});
     //SceneItem sphere0 = items::square(context, {mirror});
+    //SceneItem sphere0 = items::parabola(context, {lambert}, .5, 0.0, 2.0);
+    SceneItem sphere0 = items::parabola(context, {mirror}, .5, 0.0, 2.0);
     sphere0->set_pose(Pose({0,0,1}));
     //sphere0->set_pose(Pose({0,0.5,1.5}));
     //sphere0->set_pose(Pose({0,0,0}, Quaternion({0.707,0.707,0,0})));
