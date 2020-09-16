@@ -17,6 +17,9 @@ Program ContextObj::create_program(const Source& source, const Sources& addition
     }
     catch(const std::runtime_error& e) {
         std::ostringstream os;
+        for(auto header : additionalHeaders) {
+            os << header << "\n";
+        }
         os << source <<  "\n" << e.what();
         throw std::runtime_error(os.str());
     }
