@@ -280,63 +280,72 @@ Geometry sphere(const Context& context, float radius)
     (*boundingbox)["radius"]->setFloat(radius);
     return context->create_geometry(intersection, boundingbox, 1);
 }
+
+
+Geometry tube(const Context& context, float radius, float height)
+{
+    Program intersection(context->create_program(Source(R"(
+    #include <optix.h>
+    #include <optix_math.h>
+
+    #include <optix_helpers/maths.h>
+
     rtDeclareVariable(optix::Ray, ray, rtCurrentRay,);
     
     rtDeclareVariable(float, radius,,);
+    rtDeclareVariable(float, height,,);
 
     rtDeclareVariable(float3, n, attribute normal,);
     rtDeclareVariable(float2, uv, attribute texture_coordinates,);
     
     RT_PROGRAM void intersection(int)
     {
-        // Intersection of sphere and ray
-        // assuming a = 1.0
-        //float a = 1.0; // = dot(ray.direction, ray.direction);
-        float b = 2*dot(ray.origin, ray.direction);
-        float c = dot(ray.origin, ray.origin) - radius*radius;
-        float delta = b*b - 4*c;
-    
-        if(delta < 0.0f) return;
-    
-        float tmin = 0.5*(-b - sqrt(delta));
-        float tmax = 0.5*(-b + sqrt(delta));
-        //checking for intersection
-        if(tmin < 0.0f) {
-            if(tmax < 0.0f) {
-                return;
-            }
-            //tmin did not intersect but tmax did. 
-            tmin = tmax;
+        float t1, t2;
+        if(!tube_intersection(ray, radius, t1, t2))
+            return;
+        
+        float3 p;
+        p = ray.origin + t1 * ray.direction;
+        if(abs(p.z) < height && rtPotentialIntersection(t1)) {
+            n = normalize(make_float3(p.x, p.y, 0.0f));
+            uv.x = 0.5f * (atan2f(n.y,n.x) / M_PIf + 1.0f);
+            uv.y = 0.5f * (p.z / height + 1.0f);
+            rtReportIntersection(0);
         }
-        if(rtPotentialIntersection(tmin)) {
-            n = normalize(ray.origin + tmin*ray.direction);
-            uv.x = 0.5 * (atan2f(n.y,n.x) / M_PIf + 1.0f);
-            uv.y = atan2f(n.z, sqrtf(n.x*n.x+n.y*n.y)) / M_PIf;
+        p = ray.origin + t2 * ray.direction;
+        if(abs(p.z) < height && rtPotentialIntersection(t2)) {
+            n = normalize(make_float3(p.x, p.y, 0.0f));
+            uv.x = 0.5f * (atan2f(n.y,n.x) / M_PIf + 1.0f);
+            uv.y = 0.5f * (p.z / height + 1.0f);
             rtReportIntersection(0);
         }
     }
-    )", "intersection")));
+    )", "intersection"), {maths::maths}));
 
     Program boundingbox(context->create_program(Source(R"(
     #include <optix.h>
     
     rtDeclareVariable(float, radius,,);
+    rtDeclareVariable(float, height,,);
     
     RT_PROGRAM void bounds(int, float bbox[6])
     {
         bbox[0] = -radius;
         bbox[1] = -radius;
-        bbox[2] = -radius;
+        bbox[2] = -height;
         bbox[3] =  radius;
         bbox[4] =  radius;
-        bbox[5] =  radius;
+        bbox[5] =  height;
     }
     )", "bounds")));
     
     (*intersection)["radius"]->setFloat(radius);
+    (*intersection)["height"]->setFloat(height);
     (*boundingbox)["radius"]->setFloat(radius);
+    (*boundingbox)["height"]->setFloat(height);
     return context->create_geometry(intersection, boundingbox, 1);
 }
+
 
 GeometryTriangles indexed_cube(const Context& context, float scale)
 {

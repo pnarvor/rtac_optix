@@ -8,6 +8,7 @@
 #include <optix_helpers/Material.h>
 #include <optix_helpers/TextureSampler.h>
 #include <optix_helpers/TexturedMaterial.h>
+#include <optix_helpers/samples/maths.h>
 #include <optix_helpers/samples/raytypes.h>
 #include <optix_helpers/samples/textures.h>
 

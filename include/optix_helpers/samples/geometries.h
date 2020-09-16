@@ -13,6 +13,8 @@ namespace optix_helpers { namespace samples { namespace geometries {
 GeometryTriangles cube(const Context& context, float scale = 1.0);
 Geometry          sphere(const Context& context, float radius = 1.0);
 GeometryTriangles square(const Context& context, float scale = 1.0);
+Geometry          tube(const Context& context, float radius = 1.0, 
+                       float height = 1.0);
 
 GeometryTriangles indexed_cube(const Context& context, float scale = 1.0);
 

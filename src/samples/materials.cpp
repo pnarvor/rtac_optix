@@ -99,8 +99,8 @@ Material lambert(const Context& context, const raytypes::RGB& rayType,
         float3 hitPoint = ray.origin + tHit*ray.direction;
         float3 v = normalize(light - hitPoint);
 
-        rayPayload.color = color*max(dot(n,v), 0.0f);
-        //rayPayload.color = color*abs(dot(n,v));
+        //rayPayload.color = color*max(dot(n,v), 0.0f);
+        rayPayload.color = color*abs(dot(n,v));
     }
     
     )", "closest_hit_perfect_mirror");
@@ -180,9 +180,11 @@ Material perfect_mirror(const Context& context, const raytypes::RGB& rayType)
     #include <optix.h>
     #include <optix_math.h>
     using namespace optix;
+
+    #include <optix_helpers/maths.h>
     
     #include <rays/RGB.h>
-    
+
     rtDeclareVariable(optix::Ray, ray, rtCurrentRay, );
     rtDeclareVariable(float, tHit, rtIntersectionDistance,);
     rtDeclareVariable(raytypes::RGB, rayPayload, rtPayload, );
@@ -196,19 +198,25 @@ Material perfect_mirror(const Context& context, const raytypes::RGB& rayType)
         float3 n = rtTransformNormal(RT_OBJECT_TO_WORLD, n_object);
         float3 hitPoint = ray.origin + tHit*ray.direction;
         Ray reflectedRay(hitPoint,
-                         reflect(ray.direction, n),
+                         optix::reflect(ray.direction, n),
+                         //reflection(ray.direction, n),
                          ray.ray_type, 
-                         ray.tmin, ray.tmax);
+                         1.0e-4);
+                         //ray.tmin, ray.tmax);
 
         raytypes::RGB reflectedPayload;
         rtTrace(topObject, reflectedRay, reflectedPayload);
-        rayPayload = reflectedPayload;
+        //rayPayload = reflectedPayload;
+        rayPayload.color = 0.9f*reflectedPayload.color;
     }
     
     )", "closest_hit_perfect_mirror");
     Material material = context->create_material();
     material->add_closest_hit_program(rayType,
-        context->create_program(closestHit, {rayType->definition()}));
+        context->create_program(closestHit, {rayType->definition(), maths::maths}));
+    return material;
+}
+
     return material;
 }
 
