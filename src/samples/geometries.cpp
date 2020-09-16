@@ -245,14 +245,17 @@ Geometry sphere(const Context& context, float radius)
         float tmin, tmax;
         if(!sphere_intersection(ray, radius, tmin, tmax))
             return;
+        float3 p;
+        p = ray.origin + tmin*ray.direction;
         if(rtPotentialIntersection(tmin)) {
-            n = normalize(ray.origin + tmin*ray.direction);
+            n = sphere_normal(p);
             uv.x = 0.5 * (atan2f(n.y,n.x) / M_PIf + 1.0f);
             uv.y = atan2f(n.z, sqrtf(n.x*n.x+n.y*n.y)) / M_PIf;
             rtReportIntersection(0);
         }
+        p = ray.origin + tmax*ray.direction;
         if(rtPotentialIntersection(tmax)) {
-            n = normalize(ray.origin + tmax*ray.direction);
+            n = sphere_normal(p);
             uv.x = 0.5 * (atan2f(n.y,n.x) / M_PIf + 1.0f);
             uv.y = atan2f(n.z, sqrtf(n.x*n.x+n.y*n.y)) / M_PIf;
             rtReportIntersection(0);
@@ -307,14 +310,14 @@ Geometry tube(const Context& context, float radius, float height)
         float3 p;
         p = ray.origin + t1 * ray.direction;
         if(abs(p.z) < height && rtPotentialIntersection(t1)) {
-            n = normalize(make_float3(p.x, p.y, 0.0f));
+            n = tube_normal(p);
             uv.x = 0.5f * (atan2f(n.y,n.x) / M_PIf + 1.0f);
             uv.y = 0.5f * (p.z / height + 1.0f);
             rtReportIntersection(0);
         }
         p = ray.origin + t2 * ray.direction;
         if(abs(p.z) < height && rtPotentialIntersection(t2)) {
-            n = normalize(make_float3(p.x, p.y, 0.0f));
+            n = tube_normal(p);
             uv.x = 0.5f * (atan2f(n.y,n.x) / M_PIf + 1.0f);
             uv.y = 0.5f * (p.z / height + 1.0f);
             rtReportIntersection(0);
@@ -373,48 +376,14 @@ Geometry parabola(const Context& context, float a, float b, float height)
         float3 p;
         p = ray.origin + t1 * ray.direction;
         if(p.z >= bottom && p.z <= top && rtPotentialIntersection(t1)) {
-            if(p.x*p.x + p.y*p.y < 1.0e-6f) {
-                if(a < 0.0f) {
-                    n = make_float3(0.0f,0.0f,1.0f);
-                }
-                else {
-                    n = make_float3(0.0f,0.0f,-1.0f);
-                }
-            }
-            else {
-                float pnormXY = sqrt(p.x*p.x + p.y*p.y);
-                n.x = p.x / pnormXY;
-                n.y = p.y / pnormXY;
-                if(a >= 0.0f)
-                    n.z = -0.5f / (a*pnormXY);
-                else
-                    n.z = 0.5f / (a*pnormXY);
-                n = normalize(n);
-            }
+            n = parabola_normal(p,a,b);
             uv.x = 0.5f * (atan2f(p.y,p.x) / M_PIf + 1.0f);
             uv.y = (p.z - bottom) / (top - bottom);
             rtReportIntersection(0);
         }
         p = ray.origin + t2 * ray.direction;
         if(p.z >= bottom && p.z <= top && rtPotentialIntersection(t2)) {
-            if(p.x*p.x + p.y*p.y < 1.0e-6f) {
-                if(a < 0.0f) {
-                    n = make_float3(0.0f,0.0f,1.0f);
-                }
-                else {
-                    n = make_float3(0.0f,0.0f,-1.0f);
-                }
-            }
-            else {
-                float pnormXY = sqrt(p.x*p.x + p.y*p.y);
-                n.x = p.x / pnormXY;
-                n.y = p.y / pnormXY;
-                if(a >= 0.0f)
-                    n.z = -0.5f / (a*pnormXY);
-                else
-                    n.z = 0.5f / (a*pnormXY);
-                n = normalize(n);
-            }
+            n = parabola_normal(p,a,b);
             uv.x = 0.5f * (atan2f(p.y,p.x) / M_PIf + 1.0f);
             uv.y = (p.z - bottom) / (top - bottom);
             rtReportIntersection(0);

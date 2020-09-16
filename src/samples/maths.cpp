@@ -65,6 +65,12 @@ bool sphere_intersection(const optix::Ray& ray, float radius, float& tmin, float
 }
 
 __device__
+float3 sphere_normal(const float3& p)
+{
+    return normalize(p);
+}
+
+__device__
 bool tube_intersection(const optix::Ray& ray, float radius,
                        float& tmin, float& tmax)
 {
@@ -79,6 +85,12 @@ bool tube_intersection(const optix::Ray& ray, float radius,
 }
 
 __device__
+float3 tube_normal(const float3& p)
+{
+    return normalize(make_float3(p.x, p.y, 0.0f));
+}
+
+__device__
 bool parabola_intersection(const optix::Ray& ray, float a, float b,
                            float& tmin, float& tmax)
 {
@@ -90,6 +102,30 @@ bool parabola_intersection(const optix::Ray& ray, float a, float b,
                            tmin, tmax);
 }
 
+__device__
+float3 parabola_normal(const float3 p, float a, float b)
+{
+    float3 n;
+    float pnormXY = sqrt(p.x*p.x + p.y*p.y);
+    if(pnormXY < 1.0e-6f) {
+        if(a < 0.0f) {
+            n = make_float3(0.0f,0.0f,1.0f);
+        }
+        else {
+            n = make_float3(0.0f,0.0f,-1.0f);
+        }
+    }
+    else {
+        n.x = p.x / pnormXY;
+        n.y = p.y / pnormXY;
+        if(a >= 0.0f)
+            n.z = -0.5f / (a*pnormXY);
+        else
+            n.z = 0.5f / (a*pnormXY);
+        n = normalize(n);
+    }
+    return n;
+}
 )", "optix_helpers/maths.h");
 
 }; //namespace maths

@@ -108,7 +108,7 @@ int main()
     SceneItem sphere0 = items::parabola(context, {mirror}, .5, 0.0, 2.0);
     sphere0->set_pose(Pose({0,0,1}));
     //sphere0->set_pose(Pose({0,0.5,1.5}));
-    //sphere0->set_pose(Pose({0,0,0}, Quaternion({0.707,0.707,0,0})));
+    //sphere0->set_pose(Pose({0,0,0}, Quaternion({0.707,-0.707,0,0})));
 
     Quaternion q({1.0,1.0,0.0,0.0});
     q.normalize();
