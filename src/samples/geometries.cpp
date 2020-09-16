@@ -230,6 +230,64 @@ Geometry sphere(const Context& context, float radius)
     #include <optix.h>
     #include <optix_math.h>
 
+    #include <optix_helpers/maths.h>
+
+    rtDeclareVariable(optix::Ray, ray, rtCurrentRay,);
+    
+    rtDeclareVariable(float, radius,,);
+
+    rtDeclareVariable(float3, n, attribute normal,);
+    rtDeclareVariable(float2, uv, attribute texture_coordinates,);
+    
+    RT_PROGRAM void intersection(int)
+    {
+        //// Intersection of sphere and ray
+        float tmin, tmax;
+        if(!quadratic_solve(1.0f,
+                            2.0f*dot(ray.origin, ray.direction),
+                            dot(ray.origin, ray.origin) - radius*radius,
+                            tmin, tmax)) {
+            return;
+        }
+
+        //checking for intersection
+        //using quadratic_solve, tmin <= tmax, always
+        if(tmin < 0.0f) {
+            if(tmax < 0.0f) {
+                return;
+            }
+            //tmin did not intersect but tmax did. 
+            tmin = tmax;
+        }
+        if(rtPotentialIntersection(tmin)) {
+            n = normalize(ray.origin + tmin*ray.direction);
+            uv.x = 0.5 * (atan2f(n.y,n.x) / M_PIf + 1.0f);
+            uv.y = atan2f(n.z, sqrtf(n.x*n.x+n.y*n.y)) / M_PIf;
+            rtReportIntersection(0);
+        }
+    }
+    )", "intersection"), {maths::maths}));
+
+    Program boundingbox(context->create_program(Source(R"(
+    #include <optix.h>
+    
+    rtDeclareVariable(float, radius,,);
+    
+    RT_PROGRAM void bounds(int, float bbox[6])
+    {
+        bbox[0] = -radius;
+        bbox[1] = -radius;
+        bbox[2] = -radius;
+        bbox[3] =  radius;
+        bbox[4] =  radius;
+        bbox[5] =  radius;
+    }
+    )", "bounds")));
+    
+    (*intersection)["radius"]->setFloat(radius);
+    (*boundingbox)["radius"]->setFloat(radius);
+    return context->create_geometry(intersection, boundingbox, 1);
+}
     rtDeclareVariable(optix::Ray, ray, rtCurrentRay,);
     
     rtDeclareVariable(float, radius,,);

@@ -6,6 +6,8 @@
 #include <optix_helpers/Geometry.h>
 #include <optix_helpers/GeometryTriangles.h>
 
+#include <optix_helpers/samples/maths.h>
+
 namespace optix_helpers { namespace samples { namespace geometries {
 
 GeometryTriangles cube(const Context& context, float scale = 1.0);
