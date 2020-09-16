@@ -17,7 +17,7 @@ float3 reflection(const float3& v, const float3& n)
     if(dot(p,p) < 1.0e-6f) {
         return -v;
     }
-    p = cross(n,p);
+    p = normalize(cross(n,p));
     return -dot(v,n)*n + dot(v,p)*p;
 }
 
