@@ -217,6 +217,50 @@ Material perfect_mirror(const Context& context, const raytypes::RGB& rayType)
     return material;
 }
 
+Material perfect_refraction(const Context& context, const raytypes::RGB& rayType,
+                            float refractiveIndex)
+{
+    Source closestHit(R"(
+    #include <optix.h>
+    #include <optix_math.h>
+    using namespace optix;
+    
+    #include <optix_helpers/maths.h>
+    
+    #include <rays/RGB.h>
+    
+    rtDeclareVariable(optix::Ray, ray, rtCurrentRay, );
+    rtDeclareVariable(float, tHit, rtIntersectionDistance,);
+    rtDeclareVariable(raytypes::RGB, rayPayload, rtPayload, );
+    rtDeclareVariable(float3, n_object, attribute normal,);
+    
+    rtDeclareVariable(rtObject, topObject,,);
+
+    rtDeclareVariable(float, refractiveIndex,,);
+
+    RT_PROGRAM void closest_hit_perfect_refraction()
+    {
+        float3 n = rtTransformNormal(RT_OBJECT_TO_WORLD, n_object);
+        float3 hitPoint = ray.origin + tHit*ray.direction;
+        float3 refractedDir;
+        optix::refract(refractedDir, ray.direction, n, refractiveIndex);
+        //refractedDir = refraction(ray.direction, n, refractiveIndex);
+        Ray refractedRay(hitPoint,
+                         refractedDir,
+                         ray.ray_type, 
+                         1.0e-4f);
+
+        raytypes::RGB refractedPayload;
+        rtTrace(topObject, refractedRay, refractedPayload);
+        rayPayload.color = 0.9*refractedPayload.color;
+    }
+    
+    )", "closest_hit_perfect_refraction");
+    Material material = context->create_material();
+    Program program = context->create_program(closestHit, 
+                                              {rayType->definition(), maths::maths});
+    (*program)["refractiveIndex"]->setFloat(refractiveIndex);
+    material->add_closest_hit_program(rayType, program);
     return material;
 }
 

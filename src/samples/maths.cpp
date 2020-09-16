@@ -22,6 +22,27 @@ float3 reflection(const float3& v, const float3& n)
 }
 
 __device__
+float3 refraction(const float3& i, const float3& n, float refractionIndex)
+{
+    float3 p = cross(i,n);
+    if(dot(p,p) < 1.0e-6f) {
+        return i;
+    }
+    p = normalize(cross(n,p));
+    
+    if(dot(i,n) <= 0.0f) {
+        // entering material
+        float sint2 = dot(i,p) / refractionIndex;
+        return -sqrt(1.0f - sint2*sint2)*n + sint2*p;
+    }
+    else {
+        // extiing material
+        float sint2 = dot(i,p) * refractionIndex;
+        return sqrt(1.0f - sint2*sint2)*n + sint2*p;
+    }
+}
+
+__device__
 bool quadratic_solve(float a, float b, float c, float& res1, float& res2)
 {
     float delta = b*b - 4.0f*a*c;

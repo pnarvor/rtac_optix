@@ -34,6 +34,8 @@ TexturedMaterial checkerboard(const Context& context, const raytypes::RGB& rayTy
                               size_t width = 64, size_t height = 64);
 
 Material perfect_mirror(const Context& context, const raytypes::RGB& rayType);
+Material perfect_refraction(const Context& context, const raytypes::RGB& rayType,
+                            float refractiveIndex = 2.417);
 
 
 }; //namespace materials
