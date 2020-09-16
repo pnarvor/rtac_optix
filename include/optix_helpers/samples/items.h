@@ -8,7 +8,6 @@
 
 #include <optix_helpers/samples/raytypes.h>
 #include <optix_helpers/samples/geometries.h>
-#include <optix_helpers/samples/models.h>
 #include <optix_helpers/samples/materials.h>
 
 namespace optix_helpers { namespace samples { namespace items {

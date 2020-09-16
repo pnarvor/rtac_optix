@@ -18,7 +18,6 @@ using namespace optix_helpers;
 #include <optix_helpers/samples/raytypes.h>
 #include <optix_helpers/samples/materials.h>
 #include <optix_helpers/samples/geometries.h>
-#include <optix_helpers/samples/models.h>
 #include <optix_helpers/samples/items.h>
 #include <optix_helpers/samples/utils.h>
 using namespace optix_helpers::samples;
@@ -95,11 +94,11 @@ int main()
     //SceneItem sphere0 = items::sphere(context, {checkerboard});
     //SceneItem sphere0 = items::sphere(context, {white});
     //SceneItem sphere0 = items::sphere(context, {mirror});
-    SceneItem sphere0 = items::sphere(context, {glass});
+    //SceneItem sphere0 = items::sphere(context, {glass});
     //SceneItem sphere0 = items::sphere(context, {lambert});
     //SceneItem sphere0 = items::cube(context, {mirror});
     //SceneItem sphere0 = items::tube(context, {mirror});
-    //SceneItem sphere0 = items::tube(context, {glass});
+    SceneItem sphere0 = items::tube(context, {glass});
     //SceneItem sphere0 = items::tube(context, {lambert});
     //SceneItem sphere0 = items::tube(context, {checkerboard});
     //SceneItem sphere0 = items::tube(context, {white});
