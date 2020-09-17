@@ -29,7 +29,8 @@ RT_PROGRAM void pinhole_scene0()
 }
 )", "pinhole_scene0");
 
-Scene0::Scene0(size_t width, size_t height)
+Scene0::Scene0(size_t width, size_t height,
+               unsigned int glboId)
 {
     using namespace std;
     size_t W = width;
@@ -56,11 +57,11 @@ Scene0::Scene0(size_t width, size_t height)
         {materials::checkerboard(context_, rayType0, {0,255,0}, {0,0,255}, 10, 10)},
         10);
 
-    SceneItem cube0 = items::cube(context_,
-        {materials::checkerboard(context_, rayType0, {255,255,255}, {0,0,0}, 4, 4)});
-    //SceneItem cube0 = items::cube(context_, {mirror});
+    //SceneItem cube0 = items::cube(context_,
+    //    {materials::checkerboard(context_, rayType0, {255,255,255}, {0,0,0}, 4, 4)});
+    SceneItem cube0 = items::cube(context_, {mirror});
     //SceneItem cube0 = items::cube(context_, {lambert});
-    cube0->set_pose(Pose({2.5,0,1}));
+    cube0->set_pose(Pose({4,0,1}));
 
     SceneItem cube1 = items::cube(context_,
         {materials::checkerboard(context_, rayType0, {255,255,255}, {0,0,0}, 4, 4)});
@@ -69,8 +70,8 @@ Scene0::Scene0(size_t width, size_t height)
 
     //SceneItem sphere0 = items::sphere(context_, {checkerboard});
     //SceneItem sphere0 = items::sphere(context_, {white});
-    SceneItem sphere0 = items::sphere(context_, {mirror});
-    //SceneItem sphere0 = items::sphere(context_, {glass});
+    //SceneItem sphere0 = items::sphere(context_, {mirror});
+    SceneItem sphere0 = items::sphere(context_, {glass}, 3.0);
     //SceneItem sphere0 = items::sphere(context_, {lambert});
     //SceneItem sphere0 = items::cube(context_, {mirror});
     //SceneItem sphere0 = items::tube(context_, {mirror});
@@ -86,6 +87,9 @@ Scene0::Scene0(size_t width, size_t height)
     //sphere0->set_pose(Pose({0,0.5,1.5}));
     //sphere0->set_pose(Pose({0,0,0}, Quaternion({0.707,-0.707,0,0})));
     
+    SceneItem sphere1 = items::sphere(context_, {mirror});
+    sphere1->set_pose(Pose({0,0,1}));
+
     Model lense = context_->create_model();
     //lense->set_geometry(geometries::parabola(context_, 0.1, -0.1, 0.1));
     lense->set_geometry(geometries::parabola(context_, 0.1, -0.2, 0.2));
@@ -113,6 +117,7 @@ Scene0::Scene0(size_t width, size_t height)
     topObject->addChild(cube0->node());
     topObject->addChild(cube1->node());
     topObject->addChild(sphere0->node());
+    topObject->addChild(sphere1->node());
     //topObject->addChild(mirror0->node());
     //topObject->addChild(mirror1->node());
     //topObject->addChild(lense0->node());
@@ -126,10 +131,19 @@ Scene0::Scene0(size_t width, size_t height)
                                                      {rayType0->definition(),
                                                       PinHoleView::rayGeometryDefinition});
     
-    PinHoleView pinhole(
-        context_->create_buffer(RT_BUFFER_OUTPUT, RT_FORMAT_FLOAT3, "renderBuffer"),
-        raygenProgram);
-
+    Buffer renderBuffer;
+    if(glboId > 0) {
+        renderBuffer = context_->create_gl_buffer(RT_BUFFER_OUTPUT,
+                                                  RT_FORMAT_FLOAT3,
+                                                  glboId,
+                                                  "renderBuffer");
+    }
+    else {
+        renderBuffer = context_->create_buffer(RT_BUFFER_OUTPUT,
+                                               RT_FORMAT_FLOAT3,
+                                               "renderBuffer");
+    }
+    PinHoleView pinhole(renderBuffer, raygenProgram);
     pinhole->set_size(W,H);
     pinhole->set_range(1.0e-2f, RT_DEFAULT_MAX);
     pinhole->look_at({0.0,0.0,0.0},{ 2.0, 5.0, 4.0});

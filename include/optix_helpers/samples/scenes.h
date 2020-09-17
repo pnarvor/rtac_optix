@@ -31,7 +31,8 @@ class Scene0
 
     public:
 
-    Scene0(size_t width, size_t height);
+    Scene0(size_t width, size_t height,
+           unsigned int glboId = 0);
 
     PinHoleView view();
     void launch();

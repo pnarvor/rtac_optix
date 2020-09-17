@@ -39,6 +39,8 @@ class ContextObj
                            const Sources& additionalHeaders = Sources()) const; 
     Buffer create_buffer(RTbuffertype bufferType, RTformat format, 
                          const std::string& name = "buffer") const;
+    Buffer create_gl_buffer(RTbuffertype bufferType, RTformat format,
+                            unsigned int glboId, const std::string& name = "buffer") const;
 
     RayType  create_raytype(const Source& rayDefinition) const;
     Material create_material() const;
