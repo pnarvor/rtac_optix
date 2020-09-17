@@ -139,6 +139,7 @@ target_compile_definitions(optix_helpers PUBLIC
 
 # Tests
 add_subdirectory(tests)
+add_subdirectory(display)
 
 
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/installation.cmake)

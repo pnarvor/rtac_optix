@@ -93,7 +93,7 @@ int main()
 
     //SceneItem sphere0 = items::sphere(context, {checkerboard});
     //SceneItem sphere0 = items::sphere(context, {white});
-    //SceneItem sphere0 = items::sphere(context, {mirror});
+    SceneItem sphere0 = items::sphere(context, {mirror});
     //SceneItem sphere0 = items::sphere(context, {glass});
     //SceneItem sphere0 = items::sphere(context, {lambert});
     //SceneItem sphere0 = items::cube(context, {mirror});
@@ -105,7 +105,7 @@ int main()
     //SceneItem sphere0 = items::square(context, {lambert});
     //SceneItem sphere0 = items::square(context, {mirror});
     //SceneItem sphere0 = items::parabola(context, {lambert}, .5, 0.0, 2.0);
-    SceneItem sphere0 = items::parabola(context, {mirror}, .5, 0.0, 2.0);
+    //SceneItem sphere0 = items::parabola(context, {mirror}, .5, 0.0, 2.0);
     sphere0->set_pose(Pose({0,0,1}));
     //sphere0->set_pose(Pose({0,0.5,1.5}));
     //sphere0->set_pose(Pose({0,0,0}, Quaternion({0.707,-0.707,0,0})));
@@ -136,7 +136,7 @@ int main()
     topObject->addChild(square0->node());
     topObject->addChild(cube0->node());
     topObject->addChild(cube1->node());
-    //topObject->addChild(sphere0->node());
+    topObject->addChild(sphere0->node());
     //topObject->addChild(mirror0->node());
     //topObject->addChild(mirror1->node());
     topObject->addChild(lense0->node());
@@ -161,7 +161,7 @@ int main()
     //pinhole->look_at({0.0,0.0,0.0},{ 5.0, 0.0, 3.0});
     //pinhole->look_at({0.0,1.0,0.0});
     //pinhole->look_at({0.0,0.0,0.0},{ 2.0, 5.0, -4.0});
-    pinhole->look_at({0.0,0.0,0.0},{ -1.0, -1.0, 3.5});
+    //pinhole->look_at({0.0,0.0,0.0},{ -1.0, -1.0, 3.5});
 
     (*context)->setRayGenerationProgram(0, *raygenProgram);
     (*context)->setMissProgram(0, *raytypes::RGB::rgb_miss_program(context, {0.8,0.8,0.8}));
