@@ -14,7 +14,8 @@ list(APPEND test_names
     # pinhole_test
     # texture_base_test
     # texture_test
-    mirror_test
+    # mirror_test
+    scene_test
 )
 list(APPEND test_deps
     optix_helpers
