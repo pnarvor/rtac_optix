@@ -2,6 +2,7 @@
 #define _DEF_OPTIX_HELPERS_RAY_GENERATOR_H_
 
 #include <iostream>
+#include <cstring>
 
 #include <optixu/optixpp.h>
 
@@ -46,6 +47,7 @@ class RayGeneratorObj
     Buffer  render_buffer()  const;
     Program raygen_program() const;
     Pose    pose()           const;
+    void    write_data(uint8_t* dest) const;
 };
 
 class RayGenerator : public Handle<RayGeneratorObj>

@@ -80,6 +80,15 @@ RayGeneratorObj::Pose RayGeneratorObj::pose() const
     return pose_;
 }
 
+void RayGeneratorObj::write_data(uint8_t* dest) const
+{
+    size_t W,H;
+    (*renderBuffer_)->getSize(W,H);
+    std::memcpy(dest, static_cast<uint8_t*>((*renderBuffer_)->map()),
+                W*H*(*renderBuffer_)->getElementSize());
+    (*renderBuffer_)->unmap();
+}
+
 RayGenerator::RayGenerator() :
     Handle<RayGeneratorObj>()
 {}
