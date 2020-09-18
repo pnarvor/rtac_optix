@@ -83,10 +83,6 @@ Scene0::Scene0(size_t width, size_t height,
     topObject->addChild(lense0->node());
     topObject->addChild(lense1->node());
 
-    (*mirror->get_closest_hit_program(rayType0))["topObject"]->set(topObject);
-    (*glass->get_closest_hit_program(rayType0))["topObject"]->set(topObject);
-    (*lenseGlass->get_closest_hit_program(rayType0))["topObject"]->set(topObject);
-
     Program raygenProgram = context_->create_program(raygenSource,
                                                      {rayType0->definition(),
                                                       PinHoleView::rayGeometryDefinition});
@@ -111,7 +107,14 @@ Scene0::Scene0(size_t width, size_t height,
     (*context_)->setRayGenerationProgram(0, *raygenProgram);
     (*context_)->setMissProgram(0, *raytypes::RGB::rgb_miss_program(context_, {0.8,0.8,0.8}));
 
-    (*raygenProgram)["topObject"]->set(topObject);
+    ///// THIS
+    //(*mirror->get_closest_hit_program(rayType0))["topObject"]->set(topObject);
+    //(*glass->get_closest_hit_program(rayType0))["topObject"]->set(topObject);
+    //(*lenseGlass->get_closest_hit_program(rayType0))["topObject"]->set(topObject);
+    //(*raygenProgram)["topObject"]->set(topObject);
+
+    // CAN BE REPLACED WITH THIS (thanks to optix variable scope system)
+    (*context_)["topObject"]->set(topObject);
 }
 
 RayGenerator Scene0::view()
