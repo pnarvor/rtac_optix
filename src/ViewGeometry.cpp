@@ -21,7 +21,7 @@ void ViewGeometryObj::set_pose(const Pose& pose)
  
 void ViewGeometryObj::set_size(size_t width, size_t height)
 {
-    (*renderBuffer_)->setSize(width, height);
+    //(*renderBuffer_)->setSize(width, height);
 }
 
 void ViewGeometryObj::set_range(float zNear, float zFar)

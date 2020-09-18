@@ -99,6 +99,7 @@ Scene0::Scene0(size_t width, size_t height,
                                                RT_FORMAT_FLOAT3,
                                                "renderBuffer");
     }
+    (*renderBuffer)->setSize(W,H);
     view_ = PinHoleView(renderBuffer, raygenProgram);
     view_->set_size(W,H);
     view_->set_range(1.0e-2f, RT_DEFAULT_MAX);
