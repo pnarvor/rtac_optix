@@ -62,4 +62,11 @@ optix::Transform SceneItemObj::node() const
     return this->transform();
 }
 
+SceneItemObj::Pose SceneItemObj::pose() const
+{
+    Matrix4 h;
+    transform_->getMatrix(true, h.data(), NULL);
+    return Pose::from_homogeneous_matrix(h);
+}
+
 }; //namespace optix_helpers

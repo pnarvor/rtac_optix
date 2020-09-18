@@ -16,7 +16,8 @@ class SceneItemObj
 {
     public:
 
-    using Pose = rtac::types::Pose<float>;
+    using Pose    = rtac::types::Pose<float>;
+    using Matrix4 = rtac::types::Matrix4<float>;
 
     protected:
 
@@ -41,6 +42,7 @@ class SceneItemObj
     optix::GeometryGroup geometry_group() const;
     optix::Transform     transform() const;
     optix::Transform     node() const;
+    Pose                 pose() const;
 };
 using SceneItem = Handle<SceneItemObj>;
 
