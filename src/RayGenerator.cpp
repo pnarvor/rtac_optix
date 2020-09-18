@@ -62,7 +62,7 @@ void RayGeneratorObj::look_at(const Vector3& target,
     rtac::types::Matrix3<float> r;
     r(all,0) = x; r(all,1) = y; r(all,2) = z;
 
-    this->set_pose(Pose(position, r));
+    this->set_pose(Pose::from_rotation_matrix(r, position));
 }
  
 Buffer RayGeneratorObj::render_buffer() const
@@ -97,6 +97,10 @@ RayGenerator::RayGenerator(const Buffer& renderBuffer,
                            const Program& raygenProgram,
                            const Pose& pose) :
     Handle<RayGeneratorObj>(new RayGeneratorObj(renderBuffer, raygenProgram, pose))
+{}
+
+RayGenerator::RayGenerator(const std::shared_ptr<RayGeneratorObj>& p) :
+    Handle<RayGeneratorObj>(p)
 {}
 
 };

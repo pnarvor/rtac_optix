@@ -62,6 +62,7 @@ class RayGenerator : public Handle<RayGeneratorObj>
     RayGenerator(const Buffer& renderBuffer,
                  const Program& raygenProgram,
                  const Pose& pose = Pose());
+    RayGenerator(const std::shared_ptr<RayGeneratorObj>& p);
 };
 
 

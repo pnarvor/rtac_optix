@@ -56,6 +56,8 @@ class PinHoleView : public Handle<PinHoleViewObj>
                 const Program& raygenProgram,
                 float fovy = 90.0,
                 const Pose& pose = Pose());
+
+    operator RayGenerator();
 };
 
 };

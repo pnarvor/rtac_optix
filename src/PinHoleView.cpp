@@ -97,4 +97,9 @@ PinHoleView::PinHoleView(const Buffer& renderBuffer,
     Handle<PinHoleViewObj>(new PinHoleViewObj(renderBuffer, raygenProgram, fovy, pose))
 {}
 
+PinHoleView::operator RayGenerator()
+{
+    return RayGenerator(std::dynamic_pointer_cast<RayGeneratorObj>(this->obj_));
+}
+
 }; //namespace optix_helpers
