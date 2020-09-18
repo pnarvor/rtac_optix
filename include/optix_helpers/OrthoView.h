@@ -8,11 +8,11 @@
 
 #include <optix_helpers/Handle.h>
 #include <optix_helpers/Source.h>
-#include <optix_helpers/RayGenerator.h>
+#include <optix_helpers/ViewGeometry.h>
 
 namespace optix_helpers {
 
-class OrthoViewObj : public RayGeneratorObj
+class OrthoViewObj : public ViewGeometryObj
 {
     public:
 
@@ -25,9 +25,9 @@ class OrthoViewObj : public RayGeneratorObj
         float bottom;
         float top;
     };
-    using Pose = RayGenerator::Pose;
-    using Vector3 = RayGenerator::Vector3;
-    using Matrix3 = RayGenerator::Matrix3;
+    using Pose = ViewGeometry::Pose;
+    using Vector3 = ViewGeometry::Vector3;
+    using Matrix3 = ViewGeometry::Matrix3;
 
     protected:
 

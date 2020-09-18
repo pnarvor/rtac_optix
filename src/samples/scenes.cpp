@@ -117,7 +117,7 @@ Scene0::Scene0(size_t width, size_t height,
     (*context_)["topObject"]->set(topObject);
 }
 
-RayGenerator Scene0::view()
+ViewGeometry Scene0::view()
 {
     return view_;
 }

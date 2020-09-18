@@ -68,7 +68,7 @@ list(APPEND optix_helpers_PUBLIC_HEADERS
     include/optix_helpers/GeometryTriangles.h
     include/optix_helpers/Model.h
     include/optix_helpers/SceneItem.h
-    include/optix_helpers/RayGenerator.h
+    include/optix_helpers/ViewGeometry.h
     include/optix_helpers/OrthoView.h
     include/optix_helpers/PinHoleView.h
     include/optix_helpers/samples/maths.h
@@ -94,7 +94,7 @@ add_library(optix_helpers SHARED
     src/GeometryTriangles.cpp
     src/Model.cpp
     src/SceneItem.cpp
-    src/RayGenerator.cpp
+    src/ViewGeometry.cpp
     src/OrthoView.cpp
     src/PinHoleView.cpp
     src/samples/maths.cpp

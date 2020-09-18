@@ -2,40 +2,71 @@
 #define _DEF_OPTIX_HELPERS_VIEW_GEOMETRY_H_
 
 #include <iostream>
+#include <cstring>
+
+#include <optixu/optixpp.h>
+
+#include <rtac_base/types/Pose.h>
 
 #include <optix_helpers/Handle.h>
-#include <optix_helpers/Source.h>
+#include <optix_helpers/Buffer.h>
 #include <optix_helpers/Program.h>
 
 namespace optix_helpers {
 
-// Defines geometrical ray parameters (origin, direction, ...)
 class ViewGeometryObj
 {
-    protected:
+    public:
 
-    Source definition_; // header to be used in a RayGeneration program.
-    RayGenerationProgram program_; // program to be updated with 
+    using Pose = rtac::types::Pose<float>;
+    using Vector3 = rtac::types::Vector3<float>;
+    using Matrix3 = rtac::types::Matrix3<float>;
+
+    protected:
+    
+    Buffer  renderBuffer_;  // buffer where the image will be renderered.
+    Program raygenProgram_; // compiled ray generation program.
+    Pose    pose_;
 
     public:
 
-    ViewGeometryObj(const Source& definition);
+    ViewGeometryObj(const Buffer& renderBuffer,
+                    const Program& raygenProgram,
+                    const Pose& pose = Pose());
     
-    void set_callback_program(const RayGenerationProgram& program);
+    // virtual member function to be reimplemented by subclassing.
+    virtual void set_pose(const Pose& pose);
+    virtual void set_size(size_t width, size_t height);
+    virtual void set_range(float zNear, float zFar);
 
-    Source definition() const;
+    void look_at(const Vector3& target);
+    void look_at(const Vector3& target,
+                 const Vector3& position,
+                 const Vector3& up = {0.0,0.0,1.0});
+
+    Buffer  render_buffer()  const;
+    Program raygen_program() const;
+    Pose    pose()           const;
+    void    write_data(uint8_t* dest) const;
 };
 
 class ViewGeometry : public Handle<ViewGeometryObj>
 {
     public:
 
+    using Pose = ViewGeometryObj::Pose;
+    using Vector3 = ViewGeometryObj::Vector3;
+    using Matrix3 = ViewGeometryObj::Matrix3;
+
     ViewGeometry();
-    ViewGeometry(const Source& definition);
+    ViewGeometry(const Buffer& renderBuffer,
+                 const Program& raygenProgram,
+                 const Pose& pose = Pose());
+    ViewGeometry(const std::shared_ptr<ViewGeometryObj>& p);
 };
 
-}; //namespace optix_helpers
+
+}; //namespace optix helpers
+
 
 #endif //_DEF_OPTIX_HELPERS_VIEW_GEOMETRY_H_
-
-

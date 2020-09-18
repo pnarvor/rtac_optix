@@ -33,7 +33,7 @@ PinHoleViewObj::PinHoleViewObj(const Buffer& renderBuffer,
                                const Program& raygenProgram,
                                float fovy,
                                const Pose& pose) :
-    RayGeneratorObj(renderBuffer, raygenProgram, pose),
+    ViewGeometryObj(renderBuffer, raygenProgram, pose),
     fovy_(fovy)
 {
     this->set_range(1.0e-4f, RT_DEFAULT_MAX);
@@ -63,13 +63,13 @@ void PinHoleViewObj::update_device_geometry()
 
 void PinHoleViewObj::set_pose(const Pose& pose)
 {
-    this->RayGeneratorObj::set_pose(pose);
+    this->ViewGeometryObj::set_pose(pose);
     this->update_device_geometry();
 }
 
 void PinHoleViewObj::set_size(size_t width, size_t height)
 {
-    this->RayGeneratorObj::set_size(width, height);
+    this->ViewGeometryObj::set_size(width, height);
     this->update_device_geometry();
 }
 
@@ -97,9 +97,9 @@ PinHoleView::PinHoleView(const Buffer& renderBuffer,
     Handle<PinHoleViewObj>(new PinHoleViewObj(renderBuffer, raygenProgram, fovy, pose))
 {}
 
-PinHoleView::operator RayGenerator()
+PinHoleView::operator ViewGeometry()
 {
-    return RayGenerator(std::dynamic_pointer_cast<RayGeneratorObj>(this->obj_));
+    return ViewGeometry(std::dynamic_pointer_cast<ViewGeometryObj>(this->obj_));
 }
 
 }; //namespace optix_helpers

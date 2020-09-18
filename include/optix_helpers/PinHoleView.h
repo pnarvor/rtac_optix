@@ -8,19 +8,19 @@
 
 #include <optix_helpers/Handle.h>
 #include <optix_helpers/Source.h>
-#include <optix_helpers/RayGenerator.h>
+#include <optix_helpers/ViewGeometry.h>
 
 namespace optix_helpers {
 
-class PinHoleViewObj : public RayGeneratorObj
+class PinHoleViewObj : public ViewGeometryObj
 {
     public:
 
     static const Source rayGeometryDefinition;
 
-    using Pose = RayGenerator::Pose;
-    using Vector3 = RayGenerator::Vector3;
-    using Matrix3 = RayGenerator::Matrix3;
+    using Pose = ViewGeometry::Pose;
+    using Vector3 = ViewGeometry::Vector3;
+    using Matrix3 = ViewGeometry::Matrix3;
 
     protected:
 
@@ -57,7 +57,7 @@ class PinHoleView : public Handle<PinHoleViewObj>
                 float fovy = 90.0,
                 const Pose& pose = Pose());
 
-    operator RayGenerator();
+    operator ViewGeometry();
 };
 
 };

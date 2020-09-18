@@ -31,7 +31,7 @@ OrthoViewObj::OrthoViewObj(const Buffer& renderBuffer,
              const Program& raygenProgram,
              const Bounds& bounds,
              const Pose& pose) :
-    RayGeneratorObj(renderBuffer, raygenProgram, pose),
+    ViewGeometryObj(renderBuffer, raygenProgram, pose),
     bounds_(bounds)
 {
     this->set_range(0.0, RT_DEFAULT_MAX);
@@ -65,13 +65,13 @@ void OrthoViewObj::update_device_geometry()
 
 void OrthoViewObj::set_pose(const Pose& pose)
 {
-    this->RayGeneratorObj::set_pose(pose);
+    this->ViewGeometryObj::set_pose(pose);
     this->update_device_geometry();
 }
 
 void OrthoViewObj::set_size(size_t width, size_t height)
 {
-    this->RayGeneratorObj::set_size(width, height);
+    this->ViewGeometryObj::set_size(width, height);
     this->update_device_geometry();
 }
 
