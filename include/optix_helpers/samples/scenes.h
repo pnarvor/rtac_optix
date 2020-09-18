@@ -34,7 +34,7 @@ class Scene0
     Scene0(size_t width, size_t height,
            unsigned int glboId = 0);
 
-    PinHoleView view();
+    RayGenerator view();
     void launch();
 };
 
