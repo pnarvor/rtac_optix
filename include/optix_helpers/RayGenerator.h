@@ -18,7 +18,7 @@ class RayGeneratorObj
         size_t height;
     };
     
-    Buffer           renderBuffer_;
+    RenderBuffer     renderBuffer_;
     Program          raygenProgram_;
     ViewGeometryType view_;
 
@@ -42,7 +42,7 @@ template <typename ViewGeometryType, RTformat BufferFormat>
 RayGeneratorObj<ViewGeometryType, BufferFormat>::
 RayGeneratorObj(const Context& context, const RayType& rayType,
                 const Source& raygenSource, const std::string& renderBufferName) :
-    renderBuffer_(context, RT_BUFFER_OUTPUT, BufferFormat, renderBufferName),
+    renderBuffer_(context, BufferFormat, renderBufferName),
     raygenProgram_(context->create_program(raygenSource,
         {rayType->definition(), ViewGeometryType::rayGeometryDefinition})),
     view_(renderBuffer_, raygenProgram_)

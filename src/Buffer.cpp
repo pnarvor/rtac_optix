@@ -24,5 +24,21 @@ optix::Buffer BufferObj::buffer()
     return object_;
 }
 
+RenderBufferObj::RenderBufferObj(const Context& context, RTformat format,
+                                 const std::string& name) :
+    BufferObj(context, RT_BUFFER_OUTPUT, format, name)
+{}
+
+RenderBuffer::RenderBuffer(const Context& context, RTformat format,
+                           const std::string& name) :
+    Handle<RenderBufferObj>(context, format, name)
+{
+}
+
+RenderBuffer::operator Buffer()
+{
+    return Buffer(std::dynamic_pointer_cast<BufferObj>(this->obj_));
+}
+
 }; //namespace optix_helpers
 

@@ -27,6 +27,24 @@ class BufferObj : public NamedObject<optix::Buffer>
 };
 using Buffer = Handle<BufferObj>;
 
+class RenderBufferObj : public BufferObj
+{
+    public:
+
+    RenderBufferObj(const Context& context, RTformat format,
+                    const std::string& name);
+};
+
+class RenderBuffer : public Handle<RenderBufferObj>
+{
+    public:
+    
+    RenderBuffer(const Context& context, RTformat format,
+                 const std::string& name);
+
+    operator Buffer();    
+};
+
 }; //namespace optix_helpers
 
 #endif //_DEF_OPTIX_HELPERS_BUFFER_H_
