@@ -18,6 +18,9 @@ class Handle
     Handle(T* obj = NULL) : obj_(obj) {}
     Handle(const std::shared_ptr<T>& obj) : obj_(obj) {}
 
+    template<class ...P>
+    Handle(P... args) : obj_(new T(args...)) {}
+
     std::shared_ptr<T> operator->() { return obj_; }
     T& operator*() { return *obj_; }
     T* get() { return obj_->get(); }
