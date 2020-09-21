@@ -83,29 +83,13 @@ Scene0::Scene0(size_t width, size_t height,
     topObject->addChild(lense0->node());
     topObject->addChild(lense1->node());
 
-    Program raygenProgram = context_->create_program(raygenSource,
-                                                     {rayType0->definition(),
-                                                      PinHoleView::rayGeometryDefinition});
-    
-    Buffer renderBuffer;
-    if(glboId > 0) {
-        renderBuffer = context_->create_gl_buffer(RT_BUFFER_OUTPUT,
-                                                  RT_FORMAT_FLOAT3,
-                                                  glboId,
-                                                  "renderBuffer");
-    }
-    else {
-        renderBuffer = context_->create_buffer(RT_BUFFER_OUTPUT,
-                                               RT_FORMAT_FLOAT3,
-                                               "renderBuffer");
-    }
-    (*renderBuffer)->setSize(W,H);
-    view_ = PinHoleView(renderBuffer, raygenProgram);
-    view_->set_size(W,H);
-    view_->set_range(1.0e-2f, RT_DEFAULT_MAX);
-    view_->look_at({0.0,0.0,0.0},{ 2.0, 5.0, 4.0});
+    raygen_ = RayGeneratorType(new RayGeneratorObj<PinHoleView, RT_FORMAT_FLOAT3>(
+        context_, rayType0, raygenSource));
+    raygen_->set_size(W,H);
+    raygen_->view_->set_range(1.0e-2f, RT_DEFAULT_MAX);
+    raygen_->view_->look_at({0.0,0.0,0.0},{ 2.0, 5.0, 4.0});
 
-    (*context_)->setRayGenerationProgram(0, *raygenProgram);
+    (*context_)->setRayGenerationProgram(0, *raygen_->raygenProgram_);
     (*context_)->setMissProgram(0, *raytypes::RGB::rgb_miss_program(context_, {0.8,0.8,0.8}));
 
     ///// THIS
@@ -120,13 +104,13 @@ Scene0::Scene0(size_t width, size_t height,
 
 ViewGeometry Scene0::view()
 {
-    return view_;
+    return raygen_->view();
 }
 
 void Scene0::launch()
 {
     size_t W, H;
-    (*view_->render_buffer())->getSize(W,H);
+    (*raygen_->view_->render_buffer())->getSize(W,H);
     (*context_)->launch(0,W,H);
 }
 

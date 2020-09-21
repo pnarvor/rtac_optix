@@ -7,6 +7,7 @@
 
 #include <optix_helpers/Context.h>
 #include <optix_helpers/RayType.h>
+#include <optix_helpers/RayGenerator.h>
 #include <optix_helpers/PinHoleView.h>
 
 #include <optix_helpers/samples/raytypes.h>
@@ -23,11 +24,13 @@ class Scene0
 
     using Pose = rtac::types::Pose<float>;
     using Quaternion = rtac::types::Quaternion<float>;
+    using RayGeneratorType = RayGenerator<PinHoleView, RT_FORMAT_FLOAT3>;
 
     static const Source raygenSource;
 
     Context context_;
-    PinHoleView view_;
+    RayGeneratorType raygen_;
+    //PinHoleView view_;
 
     public:
 

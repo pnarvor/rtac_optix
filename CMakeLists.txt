@@ -71,6 +71,7 @@ list(APPEND optix_helpers_PUBLIC_HEADERS
     include/optix_helpers/ViewGeometry.h
     include/optix_helpers/OrthoView.h
     include/optix_helpers/PinHoleView.h
+    include/optix_helpers/RayGenerator.h
     include/optix_helpers/samples/maths.h
     include/optix_helpers/samples/raytypes.h
     include/optix_helpers/samples/textures.h
