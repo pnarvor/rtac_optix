@@ -2,8 +2,8 @@
 
 namespace optix_helpers {
 
-MaterialObj::MaterialObj(const optix::Material& material) :
-    material_(material)
+MaterialObj::MaterialObj(const Context& context) :
+    material_((*context)->createMaterial())
 {}
 
 Program MaterialObj::add_closest_hit_program(const RayType& rayType, const Program& program)

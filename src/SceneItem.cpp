@@ -2,18 +2,15 @@
 
 namespace optix_helpers {
 
-SceneItemObj::SceneItemObj(const optix::GeometryGroup& geomGroup,
-                           const optix::Transform& transform,
-                           const optix::Acceleration& acceleration,
-                           const Model& model):
+SceneItemObj::SceneItemObj(const Context& context,
+                           const Model& model,
+                           const std::string& acceleration) :
     model_(model),
-    geomGroup_(geomGroup),
-    transform_(transform)
+    geomGroup_((*context)->createGeometryGroup()),
+    transform_((*context)->createTransform())
 {
-    if(transform_) {
-        transform_->setChild(geomGroup_);
-    }
-    this->set_acceleration(acceleration);
+    transform_->setChild(geomGroup_);
+    geomGroup_->setAcceleration((*context)->createAcceleration(acceleration.c_str()));
     if(model_)
         geomGroup_->addChild(*model_);
 }
@@ -26,12 +23,6 @@ void SceneItemObj::set_pose(const float* mat, const float* inv, bool transpose)
 void SceneItemObj::set_pose(const Pose& pose)
 {
     this->set_pose(pose.homogeneous_matrix().data(), NULL, true);
-}
-
-void SceneItemObj::set_acceleration(const optix::Acceleration& acceleration)
-{
-    if(geomGroup_)
-        geomGroup_->setAcceleration(acceleration);
 }
 
 void SceneItemObj::set_model(const Model& model)

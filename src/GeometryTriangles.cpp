@@ -2,17 +2,22 @@
 
 namespace optix_helpers {
 
-GeometryTrianglesObj::GeometryTrianglesObj(const optix::GeometryTriangles& geometry,
-                                           const optix::Buffer& points,
-                                           const optix::Buffer& faces,
-                                           const optix::Buffer& normals,
-                                           const optix::Buffer& textureCoordinates) :
-    geometry_(geometry),
-    points_(points),
-    faces_(faces),
-    normals_(normals),
-    textureCoordinates_(textureCoordinates)
+GeometryTrianglesObj::GeometryTrianglesObj(const Context& context,
+                                           bool withFaces,
+                                           bool withNormals,
+                                           bool withTextureCoordinates) :
+    geometry_((*context)->createGeometryTriangles()),
+    points_((*context)->createBuffer(RT_BUFFER_INPUT, RT_FORMAT_FLOAT3))
 {
+    if(withFaces) {
+        faces_ = (*context)->createBuffer(RT_BUFFER_INPUT, RT_FORMAT_UNSIGNED_INT3);
+    }
+    if(withNormals) {
+        normals_ = (*context)->createBuffer(RT_BUFFER_INPUT, RT_FORMAT_FLOAT3);
+    }
+    if(withTextureCoordinates) {
+        textureCoordinates_ = (*context)->createBuffer(RT_BUFFER_INPUT, RT_FORMAT_FLOAT2);
+    }
 }
 
 optix::Buffer GeometryTrianglesObj::points() const

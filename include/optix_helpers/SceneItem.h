@@ -8,6 +8,7 @@
 #include <rtac_base/types/Pose.h>
 
 #include <optix_helpers/Handle.h>
+#include <optix_helpers/Context.h>
 #include <optix_helpers/Model.h>
 
 namespace optix_helpers {
@@ -27,15 +28,13 @@ class SceneItemObj
 
     public:
 
-    SceneItemObj(const optix::GeometryGroup& geomGroup,
-                 const optix::Transform& transform,
-                 const optix::Acceleration& acceleration,
-                 const Model& model);
+    SceneItemObj(const Context& context,
+                 const Model& model,
+                 const std::string& acceleration = "Trvbh");
     
     void set_pose(const float* mat, const float* inv = NULL, 
                   bool transpose = false);
     void set_pose(const Pose& pose);
-    void set_acceleration(const optix::Acceleration& acceleration);
     void set_model(const Model& model);
 
     Model model() const;

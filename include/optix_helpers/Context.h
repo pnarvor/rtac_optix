@@ -14,11 +14,6 @@
 #include <optix_helpers/Program.h>
 #include <optix_helpers/Buffer.h>
 #include <optix_helpers/RayType.h>
-#include <optix_helpers/Material.h>
-#include <optix_helpers/Geometry.h>
-#include <optix_helpers/GeometryTriangles.h>
-#include <optix_helpers/Model.h>
-#include <optix_helpers/SceneItem.h>
 //#include <optix_helpers/RayGenerator.h>
 
 namespace optix_helpers {
@@ -41,21 +36,7 @@ class ContextObj
                          const std::string& name = "buffer") const;
     Buffer create_gl_buffer(RTbuffertype bufferType, RTformat format,
                             unsigned int glboId, const std::string& name = "buffer") const;
-
     RayType  create_raytype(const Source& rayDefinition) const;
-    Material create_material() const;
-    Geometry create_geometry(const Program& intersection,
-                             const Program& boundingbox,
-                             size_t primitiveCount) const;
-    GeometryTriangles create_geometry_triangles(bool withTriangleIndexes    = true,
-                                                bool withNormals            = false,
-                                                bool withTextureCoordinates = false) const;
-    template <typename Tp, typename Tf>
-    GeometryTriangles create_geometry_triangles(const rtac::types::Mesh<Tp,Tf,3>& mesh) const;
-    Model create_model() const;
-    SceneItem create_scene_item(const Model& model, const char* acceleration = "Trbvh") const;
-    //RayGenerator create_raygenerator(size_t width, size_t height, size_t depth=1) const;
-
 
     optix::Handle<optix::VariableObj> operator[](const std::string& varname);
     operator optix::Context()   const;
@@ -63,21 +44,7 @@ class ContextObj
     optix::Context operator->() const;
     optix::Context context()    const; //? should be const ?
 };
-
-class Context : public Handle<ContextObj>
-{
-    public:
-
-    Context(int entryPointCount = 1);
-};
-
-template <typename Tp, typename Tf>
-GeometryTriangles ContextObj::create_geometry_triangles(const rtac::types::Mesh<Tp,Tf,3>& mesh) const
-{
-    GeometryTriangles geom(this->create_geometry_triangles());
-    geom->set_mesh(mesh);
-    return geom;
-}
+using Context = Handle<ContextObj>;
 
 }; // namespace optix_helpers
 

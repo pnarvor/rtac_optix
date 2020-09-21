@@ -31,8 +31,7 @@ TextureSampler checkerboard(const Context& context,
     }
     (*buffer)->unmap();
 
-    TextureSampler texture(new TextureSamplerObj((*context)->createTextureSampler(),
-                                                 textureName));
+    TextureSampler texture(context, textureName);
     (*texture)->setBuffer(*buffer);
     
     // Behavior for texture coordinates outside border

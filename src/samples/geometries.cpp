@@ -8,7 +8,7 @@ using Mesh = rtac::types::Mesh<float,uint32_t,3>;
 
 GeometryTriangles cube(const Context& context, float scale)
 {
-    GeometryTriangles cube = context->create_geometry_triangles(false, true, true);
+    GeometryTriangles cube(context, false, true, true);
     float points[108] = {//x+ faces
                           scale, -scale, -scale,
                           scale,  scale, -scale,
@@ -167,7 +167,7 @@ GeometryTriangles cube(const Context& context, float scale)
 
 GeometryTriangles square(const Context& context, float scale)
 {
-    GeometryTriangles square = context->create_geometry_triangles(false, true, true);
+    GeometryTriangles square(context, false, true, true);
     float points[18] = {//x+ faces
                         -scale, -scale, 0.0,
                          scale, -scale, 0.0,
@@ -281,7 +281,7 @@ Geometry sphere(const Context& context, float radius)
     
     (*intersection)["radius"]->setFloat(radius);
     (*boundingbox)["radius"]->setFloat(radius);
-    return context->create_geometry(intersection, boundingbox, 1);
+    return Geometry(context, intersection, boundingbox, 1);
 }
 
 
@@ -346,7 +346,7 @@ Geometry tube(const Context& context, float radius, float height)
     (*intersection)["height"]->setFloat(height);
     (*boundingbox)["radius"]->setFloat(radius);
     (*boundingbox)["height"]->setFloat(height);
-    return context->create_geometry(intersection, boundingbox, 1);
+    return Geometry(context, intersection, boundingbox, 1);
 }
 
 Geometry parabola(const Context& context, float a, float b, float height)
@@ -428,14 +428,14 @@ Geometry parabola(const Context& context, float a, float b, float height)
     
     (*intersection)["a"]->setFloat(a);
     (*intersection)["b"]->setFloat(b);
-    return context->create_geometry(intersection, boundingbox, 1);
+    return Geometry(context, intersection, boundingbox, 1);
 }
 
 
-GeometryTriangles indexed_cube(const Context& context, float scale)
-{
-    return context->create_geometry_triangles(Mesh::cube(scale));
-}
+//GeometryTriangles indexed_cube(const Context& context, float scale)
+//{
+//    return context->create_geometry_triangles(Mesh::cube(scale));
+//}
 
 
 }; //namespace geometries

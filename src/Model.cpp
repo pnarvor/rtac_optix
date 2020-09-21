@@ -3,8 +3,8 @@
 namespace optix_helpers
 {
 
-ModelObj::ModelObj(const optix::GeometryInstance& geomInstance) :
-    geomInstance_(geomInstance)
+ModelObj::ModelObj(const Context& context) :
+    geomInstance_((*context)->createGeometryInstance())
 {
 }
 

@@ -8,6 +8,7 @@
 #include <optixu/optixpp.h>
 
 #include <optix_helpers/Handle.h>
+#include <optix_helpers/Context.h>
 #include <optix_helpers/Program.h>
 #include <optix_helpers/RayType.h>
 
@@ -30,7 +31,7 @@ class MaterialObj
 
     public:
 
-    MaterialObj(const optix::Material& material);
+    MaterialObj(const Context& context);
 
     virtual Program add_closest_hit_program(const RayType& rayType, const Program& program);
     virtual Program add_any_hit_program(const RayType& rayType, const Program& program);

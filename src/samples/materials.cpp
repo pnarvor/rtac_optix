@@ -23,7 +23,7 @@ Material rgb(const Context& context, const raytypes::RGB& rayType,
     )", "closest_hit_rgb"), {rayType->definition()});
     (*closestHit)["rgbColor"]->setFloat(make_float3(color));
     
-    Material material(context->create_material());
+    Material material(context);
     material->add_closest_hit_program(rayType, closestHit);
     return material;
 }
@@ -48,7 +48,7 @@ Material white(const Context& context, const raytypes::RGB& rayType)
     
     )", "closest_hit_white");
     
-    Material white(context->create_material());
+    Material white(context);
     white->add_closest_hit_program(rayType,
         context->create_program(closestHit, {rayType->definition()}));
     return white;
@@ -104,7 +104,7 @@ Material lambert(const Context& context, const raytypes::RGB& rayType,
     }
     
     )", "closest_hit_perfect_mirror");
-    Material material = context->create_material();
+    Material material(context);
     Program program = context->create_program(closestHit, {rayType->definition()});
     
     (*program)["light"]->setFloat(make_float3(light));
@@ -136,7 +136,7 @@ Material barycentrics(const Context& context, const raytypes::RGB& rayType)
     
     )", "closest_hit_white");
     
-    Material material(context->create_material());
+    Material material(context);
     material->add_closest_hit_program(rayType,
         context->create_program(closestHit, {rayType->definition()}));
     return material;
@@ -166,8 +166,7 @@ TexturedMaterial checkerboard(const Context& context, const raytypes::RGB& rayTy
     }
     
     )", "closest_hit_texture");
-    TexturedMaterial material(
-        (*context)->createMaterial(),
+    TexturedMaterial material(context,
         textures::checkerboard(context, "inTexture", color1, color2, width, height));
     material->add_closest_hit_program(rayType,
         context->create_program(closestHit, {rayType->definition()}));
@@ -211,7 +210,7 @@ Material perfect_mirror(const Context& context, const raytypes::RGB& rayType)
     }
     
     )", "closest_hit_perfect_mirror");
-    Material material = context->create_material();
+    Material material(context);
     material->add_closest_hit_program(rayType,
         context->create_program(closestHit, {rayType->definition(), maths::maths}));
     return material;
@@ -256,7 +255,7 @@ Material perfect_refraction(const Context& context, const raytypes::RGB& rayType
     }
     
     )", "closest_hit_perfect_refraction");
-    Material material = context->create_material();
+    Material material(context);
     Program program = context->create_program(closestHit, 
                                               {rayType->definition(), maths::maths});
     (*program)["refractiveIndex"]->setFloat(refractiveIndex);

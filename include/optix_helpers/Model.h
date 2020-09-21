@@ -6,6 +6,7 @@
 #include <optixu/optixpp.h>
 
 #include <optix_helpers/Handle.h>
+#include <optix_helpers/Context.h>
 #include <optix_helpers/Geometry.h>
 #include <optix_helpers/GeometryTriangles.h>
 #include <optix_helpers/Material.h>
@@ -24,7 +25,7 @@ class ModelObj
 
     public:
 
-    ModelObj(const optix::GeometryInstance& geomInstance);
+    ModelObj(const Context& context);
 
     void set_geometry(const Geometry& geometry);
     void set_geometry(const GeometryTriangles& geometry);

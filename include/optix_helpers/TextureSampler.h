@@ -7,6 +7,7 @@
 
 #include <optix_helpers/NamedObject.h>
 #include <optix_helpers/Handle.h>
+#include <optix_helpers/Context.h>
 
 namespace optix_helpers {
 
@@ -18,7 +19,7 @@ class TextureSamplerObj : public NamedObject<optix::TextureSampler>
 
     public:
     
-    TextureSamplerObj(const optix::TextureSampler& texture, const std::string& name,
+    TextureSamplerObj(const Context& context, const std::string& name,
                       bool defaultSetup = true);
 
     optix::TextureSampler       texture();

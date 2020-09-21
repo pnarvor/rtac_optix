@@ -2,11 +2,11 @@
 
 namespace optix_helpers {
 
-GeometryObj::GeometryObj(const optix::Geometry& geometry,
-                   const Program& intersectionProgram,
-                   const Program& boundingboxProgram,
-                   size_t primitiveCount) :
-    geometry_(geometry),
+GeometryObj::GeometryObj(const Context& context,
+                         const Program& intersectionProgram,
+                         const Program& boundingboxProgram,
+                         size_t primitiveCount) :
+    geometry_((*context)->createGeometry()),
     intersectionProgram_(intersectionProgram),
     boundingboxProgram_(boundingboxProgram)
 {

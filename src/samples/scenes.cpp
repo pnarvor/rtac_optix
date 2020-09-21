@@ -41,7 +41,7 @@ Scene0::Scene0(size_t width, size_t height,
     cout << "Stack size : " << (*context_)->getStackSize() << endl;
 
     raytypes::RGB rayType0(context_);
-
+    
     Material mirror   = materials::perfect_mirror(context_, rayType0);
     Material glass    = materials::perfect_refraction(context_, rayType0, 1.1);
     TexturedMaterial checkerboard = materials::checkerboard(context_, rayType0, 
@@ -63,15 +63,15 @@ Scene0::Scene0(size_t width, size_t height,
     SceneItem sphere0 = items::sphere(context_, {mirror}, 2.0);
     sphere0->set_pose(Pose({0,-0.5,1}));
 
-    Model lense = context_->create_model();
+    Model lense(context_);
     lense->set_geometry(geometries::parabola(context_, 0.1, -0.2, 0.2));
     auto lenseGlass = materials::perfect_refraction(context_, rayType0, 1.7);
     lense->add_material(lenseGlass);
     
-    SceneItem lense0 = context_->create_scene_item(lense);
+    SceneItem lense0(context_, lense);
     lense0->set_pose(Pose({3,-2,2},
                           Quaternion({cos(0.5), 0.707*sin(0.5), 0.707*sin(0.5), 0.0})));
-    SceneItem lense1 = context_->create_scene_item(lense);
+    SceneItem lense1(context_, lense);
     lense1->set_pose(lense0->pose()*Quaternion({0.0,1.0,0.0,0.0}));
 
     optix::Group topObject = (*context_)->createGroup();

@@ -2,9 +2,10 @@
 
 namespace optix_helpers {
 
-TextureSamplerObj::TextureSamplerObj(const optix::TextureSampler& texture, const std::string& name,
+TextureSamplerObj::TextureSamplerObj(const Context& context, 
+                                     const std::string& name,
                                      bool defaultSetup) :
-    NamedObject<optix::TextureSampler>(texture, name)
+    NamedObject<optix::TextureSampler>((*context)->createTextureSampler(), name)
 {
     if(defaultSetup) {
         this->load_default_texture_setup();

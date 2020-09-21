@@ -8,6 +8,7 @@
 #include <rtac_base/types/Mesh.h>
 
 #include <optix_helpers/Handle.h>
+#include <optix_helpers/Context.h>
 #include <optix_helpers/Program.h>
 
 namespace optix_helpers {
@@ -24,11 +25,10 @@ class GeometryTrianglesObj
 
     public:
 
-    GeometryTrianglesObj(const optix::GeometryTriangles& geometry,
-                         const optix::Buffer& points,
-                         const optix::Buffer& faces = optix::Buffer(),
-                         const optix::Buffer& normals = optix::Buffer(),
-                         const optix::Buffer& textureCoordinates = optix::Buffer());
+    GeometryTrianglesObj(const Context& context,
+                         bool withFaces = true,
+                         bool withNormals = false,
+                         bool withTextureCoordinates = false);
     
     template <typename T>
     void set_points(size_t count, const T* points);

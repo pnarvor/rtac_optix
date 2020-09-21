@@ -6,6 +6,7 @@
 #include <optixu/optixpp.h>
 
 #include <optix_helpers/Handle.h>
+#include <optix_helpers/Context.h>
 #include <optix_helpers/TextureSampler.h>
 #include <optix_helpers/Material.h>
 
@@ -19,7 +20,7 @@ class TexturedMaterialObj : public MaterialObj
 
     public:
 
-    TexturedMaterialObj(const optix::Material& material,
+    TexturedMaterialObj(const Context& context,
                         const TextureSampler& texture);
 
     virtual Program add_closest_hit_program(const RayType& rayType, const Program& program);
@@ -34,7 +35,7 @@ class TexturedMaterial : public Handle<TexturedMaterialObj>
     public:
 
     TexturedMaterial();
-    TexturedMaterial(const optix::Material& material,
+    TexturedMaterial(const Context& context,
                      const TextureSampler& texture);
 
     operator Material();

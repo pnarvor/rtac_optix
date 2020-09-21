@@ -2,8 +2,8 @@
 
 namespace optix_helpers {
 
-TexturedMaterialObj::TexturedMaterialObj(const optix::Material& material, const TextureSampler& texture) :
-    MaterialObj(material),
+TexturedMaterialObj::TexturedMaterialObj(const Context& context, const TextureSampler& texture) :
+    MaterialObj(context),
     texture_(texture)
 {
 }
@@ -36,9 +36,9 @@ TexturedMaterial::TexturedMaterial() :
     Handle<TexturedMaterialObj>()
 {}
 
-TexturedMaterial::TexturedMaterial(const optix::Material& material,
+TexturedMaterial::TexturedMaterial(const Context& context,
                                    const TextureSampler& texture) :
-    Handle<TexturedMaterialObj>(new TexturedMaterialObj(material, texture))
+    Handle<TexturedMaterialObj>(context, texture)
 {}
 
 TexturedMaterial::operator Material()

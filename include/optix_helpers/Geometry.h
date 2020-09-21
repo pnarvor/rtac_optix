@@ -6,6 +6,7 @@
 #include <optixu/optixpp.h>
 
 #include <optix_helpers/Handle.h>
+#include <optix_helpers/Context.h>
 #include <optix_helpers/Program.h>
 
 namespace optix_helpers {
@@ -20,7 +21,7 @@ class GeometryObj
 
     public:
 
-    GeometryObj(const optix::Geometry& geometry,
+    GeometryObj(const Context& context,
                 const Program& intersectionProgram,
                 const Program& boundingboxProgram,
                 size_t primitiveCount);
