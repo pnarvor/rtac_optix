@@ -27,8 +27,7 @@ RT_PROGRAM void pinhole_scene0()
 }
 )", "pinhole_scene0");
 
-Scene0::Scene0(size_t width, size_t height,
-               unsigned int glboId)
+Scene0::Scene0(size_t width, size_t height)
 {
     using namespace std;
     size_t W = width;
@@ -41,6 +40,12 @@ Scene0::Scene0(size_t width, size_t height,
     cout << "Stack size : " << (*context_)->getStackSize() << endl;
 
     raytypes::RGB rayType0(context_);
+
+    raygenerator_ = raygenerators::RgbCamera(context_, rayType0, W, H);
+    raygenerator_->view_->set_range(1.0e-2f, RT_DEFAULT_MAX);
+    raygenerator_->view_->look_at({0.0,0.0,0.0},{ 2.0, 5.0, 4.0});
+    (*context_)->setRayGenerationProgram(0, *raygenerator_->raygenProgram_);
+    (*context_)->setMissProgram(0, *raytypes::RGB::rgb_miss_program(context_, {0.8,0.8,0.8}));
     
     Material mirror   = materials::perfect_mirror(context_, rayType0);
     Material glass    = materials::perfect_refraction(context_, rayType0, 1.1);
@@ -83,13 +88,6 @@ Scene0::Scene0(size_t width, size_t height,
     topObject->addChild(lense0->node());
     topObject->addChild(lense1->node());
 
-    raygen_ = raygenerators::RgbCamera(context_, rayType0, W, H);
-    raygen_->view_->set_range(1.0e-2f, RT_DEFAULT_MAX);
-    raygen_->view_->look_at({0.0,0.0,0.0},{ 2.0, 5.0, 4.0});
-
-    (*context_)->setRayGenerationProgram(0, *raygen_->raygenProgram_);
-    (*context_)->setMissProgram(0, *raytypes::RGB::rgb_miss_program(context_, {0.8,0.8,0.8}));
-
     ///// THIS
     //(*mirror->get_closest_hit_program(rayType0))["topObject"]->set(topObject);
     //(*glass->get_closest_hit_program(rayType0))["topObject"]->set(topObject);
@@ -98,18 +96,6 @@ Scene0::Scene0(size_t width, size_t height,
 
     // CAN BE REPLACED WITH THIS (thanks to optix variable scope system)
     (*context_)["topObject"]->set(topObject);
-}
-
-ViewGeometry Scene0::view()
-{
-    return raygen_->view();
-}
-
-void Scene0::launch()
-{
-    size_t W, H;
-    (*raygen_->view_->render_buffer())->getSize(W,H);
-    (*context_)->launch(0,W,H);
 }
 
 }; //namespace scenes

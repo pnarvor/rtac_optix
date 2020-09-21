@@ -10,6 +10,12 @@ template <typename ViewGeometryType, RTformat BufferFormat>
 class RayGeneratorObj
 {
     public:
+
+    struct BufferShape
+    {
+        size_t width;
+        size_t height;
+    };
     
     Buffer           renderBuffer_;
     Program          raygenProgram_;
@@ -24,6 +30,7 @@ class RayGeneratorObj
     void set_size(size_t width, size_t height);
 
     ViewGeometryType view() const;
+    BufferShape render_shape() const;
 };
 
 template <typename ViewGeometryType, RTformat BufferFormat>
@@ -55,6 +62,15 @@ ViewGeometryType RayGeneratorObj<ViewGeometryType, BufferFormat>::view() const
 {
     return view_;
 }
+
+template <typename ViewGeometryType, RTformat BufferFormat>
+typename RayGeneratorObj<ViewGeometryType, BufferFormat>::BufferShape RayGeneratorObj<ViewGeometryType, BufferFormat>::render_shape() const
+{
+    BufferShape res;
+    (*renderBuffer_)->getSize(res.width, res.height);
+    return res;
+}
+
 
 }; //namespace optix_helpers
 

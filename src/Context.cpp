@@ -72,5 +72,9 @@ optix::Context ContextObj::context() const
     return context_;
 }
 
+Context::Context(int entryPointCount) :
+    Handle<ContextObj>(new ContextObj(entryPointCount))
+{}
+
 } //namespace optix_helpers
 

@@ -19,7 +19,26 @@
 
 namespace optix_helpers { namespace samples { namespace scenes {
 
-class Scene0
+template <typename RayGeneratorType>
+class SceneBase
+{
+    protected:
+
+    Context          context_;
+    RayGeneratorType raygenerator_;
+
+    public:
+
+    SceneBase() {};
+    ViewGeometry view() { return raygenerator_->view(); }
+    void launch()
+    {
+        auto shape = raygenerator_->render_shape();
+        (*context_)->launch(0, shape.width, shape.height);
+    }
+};
+
+class Scene0 : public SceneBase<raygenerators::RgbCamera>
 {
     public:
 
@@ -28,16 +47,10 @@ class Scene0
 
     static const Source raygenSource;
 
-    Context context_;
-    raygenerators::RgbCamera raygen_;
-
     public:
 
-    Scene0(size_t width, size_t height,
-           unsigned int glboId = 0);
+    Scene0(size_t width, size_t height);
 
-    ViewGeometry view();
-    void launch();
 };
 
 

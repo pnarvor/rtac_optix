@@ -44,7 +44,13 @@ class ContextObj
     optix::Context operator->() const;
     optix::Context context()    const; //? should be const ?
 };
-using Context = Handle<ContextObj>;
+
+class Context : public Handle<ContextObj>
+{
+    public:
+    
+    Context(int entryPointCount = 1);
+};
 
 }; // namespace optix_helpers
 
