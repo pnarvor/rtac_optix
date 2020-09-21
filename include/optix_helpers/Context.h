@@ -12,7 +12,6 @@
 #include <optix_helpers/Nvrtc.h>
 #include <optix_helpers/Source.h>
 #include <optix_helpers/Program.h>
-#include <optix_helpers/Buffer.h>
 #include <optix_helpers/RayType.h>
 //#include <optix_helpers/RayGenerator.h>
 
@@ -32,10 +31,8 @@ class ContextObj
 
     Program create_program(const Source& source,
                            const Sources& additionalHeaders = Sources()) const; 
-    Buffer create_buffer(RTbuffertype bufferType, RTformat format, 
-                         const std::string& name = "buffer") const;
-    Buffer create_gl_buffer(RTbuffertype bufferType, RTformat format,
-                            unsigned int glboId, const std::string& name = "buffer") const;
+    //Buffer create_gl_buffer(RTbuffertype bufferType, RTformat format,
+    //                        unsigned int glboId, const std::string& name = "buffer") const;
     RayType  create_raytype(const Source& rayDefinition) const;
 
     optix::Handle<optix::VariableObj> operator[](const std::string& varname);

@@ -3,6 +3,7 @@
 
 #include <optix_helpers/Handle.h>
 #include <optix_helpers/Context.h>
+#include <optix_helpers/Buffer.h>
 
 namespace optix_helpers {
 
@@ -41,19 +42,19 @@ template <typename ViewGeometryType, RTformat BufferFormat>
 RayGeneratorObj<ViewGeometryType, BufferFormat>::
 RayGeneratorObj(const Context& context, const RayType& rayType,
                 const Source& raygenSource, const std::string& renderBufferName) :
-    renderBuffer_(context->create_buffer(RT_BUFFER_OUTPUT, BufferFormat, renderBufferName)),
+    renderBuffer_(context, RT_BUFFER_OUTPUT, BufferFormat, renderBufferName),
     raygenProgram_(context->create_program(raygenSource,
         {rayType->definition(), ViewGeometryType::rayGeometryDefinition})),
     view_(renderBuffer_, raygenProgram_)
 {
-    raygenProgram_->set_buffer(renderBuffer_);
+    raygenProgram_->set_object(renderBuffer_);
 }
 
 template <typename ViewGeometryType, RTformat BufferFormat>
 void RayGeneratorObj<ViewGeometryType, BufferFormat>::
 set_size(size_t width, size_t height)
 {
-    (*renderBuffer_)->setSize(width, height);
+    renderBuffer_->set_size(width, height);
     view_->set_size(width, height);
 }
 

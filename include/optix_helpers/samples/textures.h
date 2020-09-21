@@ -4,6 +4,7 @@
 #include <array>
 
 #include <optix_helpers/Context.h>
+#include <optix_helpers/Buffer.h>
 #include <optix_helpers/TextureSampler.h>
 
 namespace optix_helpers { namespace samples { namespace textures {

@@ -11,7 +11,7 @@ ViewGeometryObj::ViewGeometryObj(const Buffer& renderBuffer,
     raygenProgram_(raygenProgram),
     pose_(pose)
 {
-    raygenProgram_->set_buffer(renderBuffer);
+    raygenProgram_->set_object(renderBuffer);
 }
 
 void ViewGeometryObj::set_pose(const Pose& pose)

@@ -8,8 +8,8 @@ TextureSampler checkerboard(const Context& context,
                             const std::array<uint8_t,3>& color2,
                             size_t width, size_t height)
 {
-    Buffer buffer = context->create_buffer(RT_BUFFER_INPUT, RT_FORMAT_UNSIGNED_BYTE4,
-                                           "checkerboard_data");
+    Buffer buffer(context, RT_BUFFER_INPUT, RT_FORMAT_UNSIGNED_BYTE4,
+                  "checkerboard_data");
     (*buffer)->setSize(width, height);
     uint8_t* data = static_cast<uint8_t*>((*buffer)->map());
     for(int h = 0; h < height; h++) {

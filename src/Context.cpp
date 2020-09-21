@@ -25,20 +25,14 @@ Program ContextObj::create_program(const Source& source, const Sources& addition
     }
 }
 
-Buffer ContextObj::create_buffer(RTbuffertype bufferType, RTformat format, 
-                                 const std::string& name) const
-{
-    return Buffer(new BufferObj(context_->createBuffer(bufferType, format), name));
-}
-
-Buffer ContextObj::create_gl_buffer(RTbuffertype bufferType, RTformat format,
-                                    unsigned int glboId, const std::string& name) const
-{
-    //return Buffer(new BufferObj(context_->createBufferFromGLBO(bufferType, format), name));
-    auto res = Buffer(new BufferObj(context_->createBufferFromGLBO(bufferType, glboId), name));
-    (*res)->setFormat(format);
-    return res;
-}
+//Buffer ContextObj::create_gl_buffer(RTbuffertype bufferType, RTformat format,
+//                                    unsigned int glboId, const std::string& name) const
+//{
+//    //return Buffer(new BufferObj(context_->createBufferFromGLBO(bufferType, format), name));
+//    auto res = Buffer(new BufferObj(context_->createBufferFromGLBO(bufferType, glboId), name));
+//    (*res)->setFormat(format);
+//    return res;
+//}
 
 RayType ContextObj::create_raytype(const Source& rayDefinition) const
 {

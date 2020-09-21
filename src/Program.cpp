@@ -9,10 +9,10 @@ ProgramObj::ProgramObj(const Source& source, const Sources& headers,
     program_(program)
 {}
 
-void ProgramObj::set_buffer(const Buffer& buffer)
-{
-    program_[buffer->name()]->set(*buffer);
-}
+//void ProgramObj::set_buffer(const Buffer& buffer)
+//{
+//    program_[buffer->name()]->set(*buffer);
+//}
 
 const Source ProgramObj::source() const
 {

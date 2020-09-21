@@ -8,7 +8,7 @@
 #include <optix_helpers/NamedObject.h>
 #include <optix_helpers/Handle.h>
 #include <optix_helpers/Source.h>
-#include <optix_helpers/Buffer.h>
+//#include <optix_helpers/Buffer.h>
 
 namespace optix_helpers {
 
@@ -25,7 +25,7 @@ class ProgramObj
     ProgramObj(const Source& source, const Sources& headers,
                const optix::Program& program);
 
-    void set_buffer(const Buffer& buffer);
+    //void set_buffer(const Buffer& buffer);
     template <class NamedType>
     void set_object(const NamedType& object);
 
