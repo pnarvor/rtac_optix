@@ -83,9 +83,7 @@ Scene0::Scene0(size_t width, size_t height,
     topObject->addChild(lense0->node());
     topObject->addChild(lense1->node());
 
-    raygen_ = RayGeneratorType(new RayGeneratorObj<PinHoleView, RT_FORMAT_FLOAT3>(
-        context_, rayType0, raygenSource));
-    raygen_->set_size(W,H);
+    raygen_ = raygenerators::RgbCamera(context_, rayType0, W, H);
     raygen_->view_->set_range(1.0e-2f, RT_DEFAULT_MAX);
     raygen_->view_->look_at({0.0,0.0,0.0},{ 2.0, 5.0, 4.0});
 

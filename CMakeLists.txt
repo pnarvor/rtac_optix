@@ -79,6 +79,7 @@ list(APPEND optix_helpers_PUBLIC_HEADERS
     include/optix_helpers/samples/geometries.h
     include/optix_helpers/samples/items.h
     include/optix_helpers/samples/utils.h
+    include/optix_helpers/samples/raygenerators.h
     include/optix_helpers/samples/scenes.h
 )
 add_library(optix_helpers SHARED
@@ -105,6 +106,7 @@ add_library(optix_helpers SHARED
     src/samples/geometries.cpp
     src/samples/items.cpp
     src/samples/utils.cpp
+    src/samples/raygenerators.cpp
     src/samples/scenes.cpp
 )
 set_target_properties(optix_helpers PROPERTIES 

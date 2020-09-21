@@ -15,6 +15,7 @@
 #include <optix_helpers/samples/geometries.h>
 #include <optix_helpers/samples/items.h>
 #include <optix_helpers/samples/utils.h>
+#include <optix_helpers/samples/raygenerators.h>
 
 namespace optix_helpers { namespace samples { namespace scenes {
 
@@ -24,13 +25,11 @@ class Scene0
 
     using Pose = rtac::types::Pose<float>;
     using Quaternion = rtac::types::Quaternion<float>;
-    using RayGeneratorType = RayGenerator<PinHoleView, RT_FORMAT_FLOAT3>;
 
     static const Source raygenSource;
 
     Context context_;
-    RayGeneratorType raygen_;
-    //PinHoleView view_;
+    raygenerators::RgbCamera raygen_;
 
     public:
 
