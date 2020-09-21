@@ -32,8 +32,7 @@ RgbCamera::RgbCamera()
 
 RgbCamera::RgbCamera(const Context& context, const RayType& rayType,
                      size_t width, size_t height) :
-    RayGeneratorType(new RayGeneratorObj<PinHoleView, RT_FORMAT_FLOAT3>(
-                 context, rayType, RgbCamera::raygenSource, "renderBuffer"))
+    RayGeneratorType(context, rayType, RgbCamera::raygenSource, "renderBuffer")
 {
     (*this)->set_size(width, height);
 }

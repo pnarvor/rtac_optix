@@ -1,6 +1,7 @@
 #ifndef _DEF_OPTIX_HELPERS_RAY_GENERATOR_H_
 #define _DEF_OPTIX_HELPERS_RAY_GENERATOR_H_
 
+#include <optix_helpers/Handle.h>
 #include <optix_helpers/Context.h>
 
 namespace optix_helpers {
@@ -26,7 +27,7 @@ class RayGeneratorObj
 };
 
 template <typename ViewGeometryType, RTformat BufferFormat>
-using RayGenerator = std::shared_ptr<RayGeneratorObj<ViewGeometryType, BufferFormat>>;
+using RayGenerator = Handle<RayGeneratorObj<ViewGeometryType, BufferFormat>>;
 
 // implementation
 template <typename ViewGeometryType, RTformat BufferFormat>
