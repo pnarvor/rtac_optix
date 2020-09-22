@@ -1,11 +1,11 @@
-#include <optix_helpers/PinHoleView.h>
+#include <optix_helpers/samples/PinHoleView.h>
 
 #include <cmath>
 #include <algorithm>
 
 #include <optix_helpers/utils.h>
 
-namespace optix_helpers {
+namespace optix_helpers { namespace samples { namespace viewgeometries {
 
 const Source PinHoleViewObj::rayGeometryDefinition = Source(R"(
 #include <optix.h>
@@ -102,4 +102,6 @@ PinHoleView::operator ViewGeometry()
     return ViewGeometry(std::dynamic_pointer_cast<ViewGeometryObj>(this->obj_));
 }
 
+}; //namespace viewgeometries
+}; //namespace samples
 }; //namespace optix_helpers

@@ -10,7 +10,7 @@
 #include <optix_helpers/Source.h>
 #include <optix_helpers/ViewGeometry.h>
 
-namespace optix_helpers {
+namespace optix_helpers { namespace samples { namespace viewgeometries {
 
 class OrthoViewObj : public ViewGeometryObj
 {
@@ -66,6 +66,8 @@ class OrthoView : public Handle<OrthoViewObj>
               const Pose& pose = Pose());
 };
 
-};
+}; //namespace viewgeometries
+}; //namespace samples
+}; //namespace optix_helpers
 
 #endif //_DEF_OPTIX_HELPERS_ORTHO_VIEW_H_

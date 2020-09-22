@@ -1,8 +1,8 @@
-#include <optix_helpers/OrthoView.h>
+#include <optix_helpers/samples/OrthoView.h>
 
 #include <optix_helpers/utils.h>
 
-namespace optix_helpers {
+namespace optix_helpers { namespace samples { namespace viewgeometries {
 
 const Source OrthoViewObj::rayGeometryDefinition = Source(R"(
 #include <optix.h>
@@ -99,4 +99,6 @@ OrthoView::OrthoView(const Buffer& renderBuffer,
     Handle<OrthoViewObj>(new OrthoViewObj(renderBuffer, raygenProgram, bounds, pose))
 {}
 
+}; //namespace viewgeometries
+}; //namespace samples
 }; //namespace optix_helpers

@@ -1,5 +1,5 @@
-#ifndef _DEF_OPTIX_HELPERS_ORTHO_VIEW_H_
-#define _DEF_OPTIX_HELPERS_ORTHO_VIEW_H_
+#ifndef _DEF_OPTIX_HELPERS_PINHOLE_VIEW_H_
+#define _DEF_OPTIX_HELPERS_PINHOLE_VIEW_H_
 
 #include <iostream>
 #include <initializer_list>
@@ -10,7 +10,7 @@
 #include <optix_helpers/Source.h>
 #include <optix_helpers/ViewGeometry.h>
 
-namespace optix_helpers {
+namespace optix_helpers { namespace samples { namespace viewgeometries {
 
 class PinHoleViewObj : public ViewGeometryObj
 {
@@ -60,6 +60,8 @@ class PinHoleView : public Handle<PinHoleViewObj>
     operator ViewGeometry();
 };
 
-};
+}; //namespace viewgeometries
+}; //namespace samples
+}; //namespace optix_helpers
 
 #endif //_DEF_OPTIX_HELPERS_ORTHO_VIEW_H_

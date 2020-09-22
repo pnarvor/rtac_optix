@@ -6,9 +6,6 @@
 #include <rtac_base/types/Pose.h>
 
 #include <optix_helpers/Context.h>
-#include <optix_helpers/RayType.h>
-#include <optix_helpers/RayGenerator.h>
-#include <optix_helpers/PinHoleView.h>
 
 #include <optix_helpers/samples/raytypes.h>
 #include <optix_helpers/samples/materials.h>

@@ -61,8 +61,6 @@ list(APPEND optix_helpers_PUBLIC_HEADERS
     include/optix_helpers/Model.h
     include/optix_helpers/SceneItem.h
     include/optix_helpers/ViewGeometry.h
-    include/optix_helpers/OrthoView.h
-    include/optix_helpers/PinHoleView.h
     include/optix_helpers/RayGenerator.h
 )
 list(APPEND optix_helpers_SOURCES
@@ -80,8 +78,6 @@ list(APPEND optix_helpers_SOURCES
     src/Model.cpp
     src/SceneItem.cpp
     src/ViewGeometry.cpp
-    src/OrthoView.cpp
-    src/PinHoleView.cpp
 )
 
 if(BUILD_SAMPLES)
@@ -93,6 +89,8 @@ if(BUILD_SAMPLES)
         include/optix_helpers/samples/geometries.h
         include/optix_helpers/samples/items.h
         include/optix_helpers/samples/utils.h
+        include/optix_helpers/samples/OrthoView.h
+        include/optix_helpers/samples/PinHoleView.h
         include/optix_helpers/samples/raygenerators.h
         include/optix_helpers/samples/scenes.h
     )
@@ -104,6 +102,8 @@ if(BUILD_SAMPLES)
         src/samples/geometries.cpp
         src/samples/items.cpp
         src/samples/utils.cpp
+        src/samples/OrthoView.cpp
+        src/samples/PinHoleView.cpp
     )
 endif()
 

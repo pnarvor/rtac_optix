@@ -2,18 +2,18 @@
 #define _DEF_OPTIX_HELPERS_SAMPLES_RAY_GENERATORS_H_
 
 #include <optix_helpers/Context.h>
-#include <optix_helpers/PinHoleView.h>
 #include <optix_helpers/RayGenerator.h>
+#include <optix_helpers/samples/PinHoleView.h>
 #include <optix_helpers/samples/raytypes.h>
 
 namespace optix_helpers { namespace samples { namespace raygenerators {
 
 template <typename RenderBufferType>
-class RgbCamera : public RayGenerator<PinHoleView, RT_FORMAT_FLOAT3, RenderBufferType>
+class RgbCamera : public RayGenerator<viewgeometries::PinHoleView, RT_FORMAT_FLOAT3, RenderBufferType>
 {
     public:
 
-    using RayGeneratorType = RayGenerator<PinHoleView, RT_FORMAT_FLOAT3, RenderBufferType>;
+    using RayGeneratorType = RayGenerator<viewgeometries::PinHoleView, RT_FORMAT_FLOAT3, RenderBufferType>;
 
     static const Source raygenSource;
     
