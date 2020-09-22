@@ -9,6 +9,10 @@ BufferObj::BufferObj(const Context& context,
     NamedObject<optix::Buffer>((*context)->createBuffer(bufferType, format), name)
 {}
 
+BufferObj::BufferObj(const optix::Buffer& buffer, const std::string& name) :
+    NamedObject<optix::Buffer>(buffer, name)
+{}
+
 const optix::Buffer BufferObj::buffer() const
 {
     return object_;
@@ -29,11 +33,19 @@ RenderBufferObj::RenderBufferObj(const Context& context, RTformat format,
     BufferObj(context, RT_BUFFER_OUTPUT, format, name)
 {}
 
+RenderBufferObj::RenderBufferObj(const optix::Buffer& buffer, const std::string& name) :
+    BufferObj(buffer, name)
+{}
+
 RenderBuffer::RenderBuffer(const Context& context, RTformat format,
                            const std::string& name) :
     Handle<RenderBufferObj>(context, format, name)
 {
 }
+
+RenderBuffer::RenderBuffer(const std::shared_ptr<RenderBufferObj>& obj) :
+    Handle<RenderBufferObj>(obj)
+{}
 
 RenderBuffer::operator Buffer()
 {

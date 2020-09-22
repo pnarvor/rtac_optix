@@ -106,8 +106,6 @@ add_library(optix_helpers SHARED
     src/samples/geometries.cpp
     src/samples/items.cpp
     src/samples/utils.cpp
-    src/samples/raygenerators.cpp
-    src/samples/scenes.cpp
 )
 set_target_properties(optix_helpers PROPERTIES 
     PUBLIC_HEADER "${optix_helpers_PUBLIC_HEADERS}"
@@ -144,7 +142,7 @@ target_compile_definitions(optix_helpers PUBLIC
 
 # Tests
 add_subdirectory(tests)
-# add_subdirectory(display)
+add_subdirectory(display)
 
 
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/installation.cmake)

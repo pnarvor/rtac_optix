@@ -7,7 +7,7 @@
 
 namespace optix_helpers {
 
-template <typename ViewGeometryType, RTformat BufferFormat>
+template <typename ViewGeometryType, RTformat BufferFormat, class RenderBufferType>
 class RayGeneratorObj
 {
     public:
@@ -18,7 +18,7 @@ class RayGeneratorObj
         size_t height;
     };
     
-    RenderBuffer     renderBuffer_;
+    RenderBufferType renderBuffer_;
     Program          raygenProgram_;
     ViewGeometryType view_;
 
@@ -32,14 +32,15 @@ class RayGeneratorObj
 
     ViewGeometryType view() const;
     BufferShape render_shape() const;
+    RenderBufferType render_buffer() const;
 };
 
-template <typename ViewGeometryType, RTformat BufferFormat>
-using RayGenerator = Handle<RayGeneratorObj<ViewGeometryType, BufferFormat>>;
+template <typename ViewGeometryType, RTformat BufferFormat, class RenderBufferType>
+using RayGenerator = Handle<RayGeneratorObj<ViewGeometryType, BufferFormat, RenderBufferType>>;
 
 // implementation
-template <typename ViewGeometryType, RTformat BufferFormat>
-RayGeneratorObj<ViewGeometryType, BufferFormat>::
+template <typename ViewGeometryType, RTformat BufferFormat, class RenderBufferType>
+RayGeneratorObj<ViewGeometryType, BufferFormat, RenderBufferType>::
 RayGeneratorObj(const Context& context, const RayType& rayType,
                 const Source& raygenSource, const std::string& renderBufferName) :
     renderBuffer_(context, BufferFormat, renderBufferName),
@@ -50,28 +51,34 @@ RayGeneratorObj(const Context& context, const RayType& rayType,
     raygenProgram_->set_object(renderBuffer_);
 }
 
-template <typename ViewGeometryType, RTformat BufferFormat>
-void RayGeneratorObj<ViewGeometryType, BufferFormat>::
+template <typename ViewGeometryType, RTformat BufferFormat, class RenderBufferType>
+void RayGeneratorObj<ViewGeometryType, BufferFormat, RenderBufferType>::
 set_size(size_t width, size_t height)
 {
     renderBuffer_->set_size(width, height);
     view_->set_size(width, height);
 }
 
-template <typename ViewGeometryType, RTformat BufferFormat>
-ViewGeometryType RayGeneratorObj<ViewGeometryType, BufferFormat>::view() const
+template <typename ViewGeometryType, RTformat BufferFormat, class RenderBufferType>
+ViewGeometryType RayGeneratorObj<ViewGeometryType, BufferFormat, RenderBufferType>::view() const
 {
     return view_;
 }
 
-template <typename ViewGeometryType, RTformat BufferFormat>
-typename RayGeneratorObj<ViewGeometryType, BufferFormat>::BufferShape RayGeneratorObj<ViewGeometryType, BufferFormat>::render_shape() const
+template <typename ViewGeometryType, RTformat BufferFormat, class RenderBufferType>
+typename RayGeneratorObj<ViewGeometryType, BufferFormat, RenderBufferType>::BufferShape
+RayGeneratorObj<ViewGeometryType, BufferFormat, RenderBufferType>::render_shape() const
 {
     BufferShape res;
     (*renderBuffer_)->getSize(res.width, res.height);
     return res;
 }
 
+template <typename ViewGeometryType, RTformat BufferFormat, class RenderBufferType>
+RenderBufferType RayGeneratorObj<ViewGeometryType, BufferFormat, RenderBufferType>::render_buffer() const
+{
+    return renderBuffer_;
+}
 
 }; //namespace optix_helpers
 
