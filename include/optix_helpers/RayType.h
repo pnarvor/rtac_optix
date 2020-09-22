@@ -3,54 +3,45 @@
 
 #include <iostream>
 #include <memory>
+#include <climits>
 
 #include <optix_helpers/Handle.h>
 #include <optix_helpers/Source.h>
 
 namespace optix_helpers {
 
-// Forward declaration for Context as friend of RayType
-class ContextObj;
-class RayType;
-
 class RayTypeObj
 {
     public:
 
     using Index = unsigned int;
+    static const Index uninitialized = UINT_MAX;
 
     protected:
 
     Index  rayTypeIndex_; //Index of ray type as defined in optix kernels.
     Source definition_;   //Optix header defining the ray payload type.
 
-    RayTypeObj(Index rayTypeIndex, const Source& definition);
-
     public:
+
+    RayTypeObj(Index rayTypeIndex, const Source& definition);
 
     Source definition() const;
     Index    index()    const;
     operator Index()    const;
-
-    friend class ContextObj; // Make Context only creator of RayTypes
-    friend class RayType;
 };
 
 class RayType : public Handle<RayTypeObj>
 {
     public:
-
+    
     using Index = RayTypeObj::Index;
+    static const Index uninitialized = RayTypeObj::uninitialized;
 
     RayType();
-
-    operator Index() const;
-
-    protected:
-
     RayType(Index rayTypeIndex, const Source& definition);
 
-    friend class ContextObj; // Make Context only creator of RayTypes
+    operator Index() const;
 };
 
 }; //namespace optix_helpers

@@ -25,22 +25,6 @@ Program ContextObj::create_program(const Source& source, const Sources& addition
     }
 }
 
-//Buffer ContextObj::create_gl_buffer(RTbuffertype bufferType, RTformat format,
-//                                    unsigned int glboId, const std::string& name) const
-//{
-//    //return Buffer(new BufferObj(context_->createBufferFromGLBO(bufferType, format), name));
-//    auto res = Buffer(new BufferObj(context_->createBufferFromGLBO(bufferType, glboId), name));
-//    (*res)->setFormat(format);
-//    return res;
-//}
-
-RayType ContextObj::create_raytype(const Source& rayDefinition) const
-{
-    unsigned int rayTypeIndex = context_->getRayTypeCount();
-    context_->setRayTypeCount(rayTypeIndex + 1);
-    return RayType(rayTypeIndex, rayDefinition);
-}
-
 optix::Handle<optix::VariableObj> ContextObj::operator[](const std::string& varname)
 {
     return context_[varname];

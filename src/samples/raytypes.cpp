@@ -4,7 +4,9 @@
 
 namespace optix_helpers { namespace samples { namespace raytypes {
 
-const Source RGB::ray_definition(R"(
+RayType::Index RGB::index = RayType::uninitialized;
+
+const Source RGB::definition(R"(
 #ifndef _DEF_RAYPAYLOAD_RGB_H_
 #define _DEF_RAYPAYLOAD_RGB_H_
 
@@ -21,7 +23,7 @@ struct RGB
 )", "rays/RGB.h");
 
 RGB::RGB(const Context& context) :
-    RayType(context->create_raytype(RGB::ray_definition))
+    RayType(context->instanciate_raytype<RGB>())
 {}
 
 Program RGB::rgb_miss_program(const Context& context, const std::array<float,3>& color)
@@ -42,7 +44,7 @@ Program RGB::rgb_miss_program(const Context& context, const std::array<float,3>&
         rayPayload.color.z = missColor.z;
     }
     )", "rgb_miss"),
-    {RGB::ray_definition});
+    {RGB::definition});
     (*program)["missColor"]->setFloat(make_float3(color));
 
     return program;
@@ -65,7 +67,7 @@ Program RGB::black_miss_program(const Context& context)
         rayPayload.color.z = 0.0f;
     }
     )", "black_miss"),
-    {RGB::ray_definition});
+    {RGB::definition});
 }
 
 }; //namespace raytypes

@@ -11,7 +11,8 @@ class RGB : public RayType
 {
     public:
 
-    static const Source ray_definition;
+    static Index index;
+    static const Source definition;
 
     RGB(const Context& context);
 

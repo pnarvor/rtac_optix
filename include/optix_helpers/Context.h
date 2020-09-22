@@ -6,14 +6,11 @@
 
 #include <optixu/optixpp.h>
 
-#include <rtac_base/types/Mesh.h>
-
 #include <optix_helpers/Handle.h>
 #include <optix_helpers/Nvrtc.h>
 #include <optix_helpers/Source.h>
 #include <optix_helpers/Program.h>
 #include <optix_helpers/RayType.h>
-//#include <optix_helpers/RayGenerator.h>
 
 namespace optix_helpers {
 
@@ -31,9 +28,8 @@ class ContextObj
 
     Program create_program(const Source& source,
                            const Sources& additionalHeaders = Sources()) const; 
-    //Buffer create_gl_buffer(RTbuffertype bufferType, RTformat format,
-    //                        unsigned int glboId, const std::string& name = "buffer") const;
-    RayType  create_raytype(const Source& rayDefinition) const;
+    template <typename RayT>
+    RayType instanciate_raytype() const;
 
     optix::Handle<optix::VariableObj> operator[](const std::string& varname);
     operator optix::Context()   const;
@@ -48,6 +44,18 @@ class Context : public Handle<ContextObj>
     
     Context(int entryPointCount = 1);
 };
+
+// Implementation
+template <typename RayT>
+RayType ContextObj::instanciate_raytype() const
+{
+    if(RayT::index == RayType::uninitialized) {
+        // RayT never instanciated. Assigning new index.
+        RayT::index  = context_->getRayTypeCount();
+        context_->setRayTypeCount(RayT::index + 1);
+    }
+    return RayType(RayT::index, RayT::definition);
+}
 
 }; // namespace optix_helpers
 

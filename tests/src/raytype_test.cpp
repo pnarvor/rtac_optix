@@ -5,17 +5,18 @@ using namespace std;
 #include <optix_helpers/RayType.h>
 using namespace optix_helpers;
 
-#include "cusamples.h"
+#include <optix_helpers/samples/raytypes.h>
+using namespace optix_helpers::samples;
+
 
 int main()
 {
     Context context;
-
-    RayType rayType0 = context->create_raytype(Source(cusample::coloredRay, "colored_ray.h"));
-    cout << rayType0 << endl;
-
-    // Won't compile. Only Context can create RayTypes.
-    //RayType rayType1(10, Source(cusample::coloredRay, "colored_ray.h"));
+    
+    cout << "RGB raytype index : " << raytypes::RGB::index << endl;
+    raytypes::RGB raytype0(context);
+    cout << "RGB raytype index : " << raytypes::RGB::index << endl;
+    cout << "RGB raytype instance index : " << raytype0->index() << endl;
 
     return 0;
 }

@@ -7,7 +7,7 @@ list(APPEND test_names
     # nvcrt-test
     # context_test
     # buffer_test
-    # raytype_test
+    raytype_test
     # material_test
     # model_test
     # ortho_test
@@ -15,7 +15,7 @@ list(APPEND test_names
     # texture_base_test
     # texture_test
     # mirror_test
-    scene_test
+    # scene_test
 )
 list(APPEND test_deps
     optix_helpers
