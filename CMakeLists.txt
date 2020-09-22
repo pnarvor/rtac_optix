@@ -1,6 +1,12 @@
 cmake_minimum_required(VERSION 3.10)
 project(optix_helpers VERSION 0.1 LANGUAGES CUDA CXX)
 
+option(WITH_DISPLAY "Will compile display utilities. Need Working OpenGL and GLEW." ON)
+option(BUILD_SAMPLES "Will compile samples. Samples are both examples and helpers to easily create your projects." ON)
+include(CMakeDependentOption)
+cmake_dependent_option(BUILD_TESTS "Will compile development tests. Depend on samples." ON "BUILD_SAMPLES" OFF)
+
+# Looking for Optix SDK
 find_path(OPTIX_PREFIX "include/optix.h"
     HINTS ${OPTIX_PATH}
 )
@@ -28,28 +34,14 @@ message(STATUS "optix library         : ${optix_LIBRARY}")
 message(STATUS "optixu library        : ${optixu_LIBRARY}")
 message(STATUS "optix_prime library   : ${optix_prime_LIBRARY}")
 
-
-find_path(sutil_sdk_INCLUDE_DIR "sutil.h"
-    HINTS ${OPTIX_PREFIX}/SDK/sutil
-)
-find_library(sutil_sdk_LIBRARY "sutil_sdk"
-    HINTS ${OPTIX_PREFIX}/SDK-precompiled-samples
-)
-find_package(GLUT REQUIRED)
-find_package(OpenGL REQUIRED)
-message(STATUS "sutil_sdk library     : ${sutil_sdk_LIBRARY}")
-message(STATUS "sutil_sdk include dir : ${sutil_sdk_INCLUDE_DIR}")
-
-
-
-# WHY IS THIS NECESSARY ???
+# Looking for CUDA
 find_package(CUDA REQUIRED)
 find_library(CUDA_nvrtc_LIBRARY nvrtc
     PATHS ${CUDA_TOOLKIT_ROOT_DIR}
     PATH_SUFFIXES lib lib64
 )
-find_package(rtac_base REQUIRED)
 
+find_package(rtac_base REQUIRED)
 
 list(APPEND optix_helpers_PUBLIC_HEADERS
     include/optix_helpers/utils.h
@@ -72,17 +64,8 @@ list(APPEND optix_helpers_PUBLIC_HEADERS
     include/optix_helpers/OrthoView.h
     include/optix_helpers/PinHoleView.h
     include/optix_helpers/RayGenerator.h
-    include/optix_helpers/samples/maths.h
-    include/optix_helpers/samples/raytypes.h
-    include/optix_helpers/samples/textures.h
-    include/optix_helpers/samples/materials.h
-    include/optix_helpers/samples/geometries.h
-    include/optix_helpers/samples/items.h
-    include/optix_helpers/samples/utils.h
-    include/optix_helpers/samples/raygenerators.h
-    include/optix_helpers/samples/scenes.h
 )
-add_library(optix_helpers SHARED
+list(APPEND optix_helpers_SOURCES
     src/Source.cpp
     src/Nvrtc.cpp
     src/Program.cpp
@@ -99,14 +82,32 @@ add_library(optix_helpers SHARED
     src/ViewGeometry.cpp
     src/OrthoView.cpp
     src/PinHoleView.cpp
-    src/samples/maths.cpp
-    src/samples/raytypes.cpp
-    src/samples/textures.cpp
-    src/samples/materials.cpp
-    src/samples/geometries.cpp
-    src/samples/items.cpp
-    src/samples/utils.cpp
 )
+
+if(BUILD_SAMPLES)
+    list(APPEND optix_helpers_PUBLIC_HEADERS
+        include/optix_helpers/samples/maths.h
+        include/optix_helpers/samples/raytypes.h
+        include/optix_helpers/samples/textures.h
+        include/optix_helpers/samples/materials.h
+        include/optix_helpers/samples/geometries.h
+        include/optix_helpers/samples/items.h
+        include/optix_helpers/samples/utils.h
+        include/optix_helpers/samples/raygenerators.h
+        include/optix_helpers/samples/scenes.h
+    )
+    list(APPEND optix_helpers_SOURCES
+        src/samples/maths.cpp
+        src/samples/raytypes.cpp
+        src/samples/textures.cpp
+        src/samples/materials.cpp
+        src/samples/geometries.cpp
+        src/samples/items.cpp
+        src/samples/utils.cpp
+    )
+endif()
+
+add_library(optix_helpers SHARED ${optix_helpers_SOURCES})
 set_target_properties(optix_helpers PROPERTIES 
     PUBLIC_HEADER "${optix_helpers_PUBLIC_HEADERS}"
     # INSTALL_RPATH_USE_LINK_PATH True
@@ -126,8 +127,6 @@ target_link_libraries(optix_helpers PUBLIC
     ${sutil_sdk_LIBRARY}
     ${CUDA_LIBRARIES}
     ${CUDA_nvrtc_LIBRARY}
-    GLUT::GLUT
-    OpenGL::GL
     rtac_base
 )
 set(NVRTC_INCLUDE_DIRS "${OPTIX_INCLUDE_DIR}")
@@ -141,8 +140,13 @@ target_compile_definitions(optix_helpers PUBLIC
 )
 
 # Tests
-add_subdirectory(tests)
-add_subdirectory(display)
+if(BUILD_TESTS)
+    add_subdirectory(tests)
+endif()
+
+if(WITH_DISPLAY)
+    add_subdirectory(display)
+endif()
 
 
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/installation.cmake)
