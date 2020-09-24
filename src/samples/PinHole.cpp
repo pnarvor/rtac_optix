@@ -32,12 +32,11 @@ using namespace rtac::types::indexing;
 PinHoleObj::PinHoleObj(const Context& context, 
                        const Buffer& renderBuffer,
                        const RayType& rayType,
-                       float fovy,
                        const Source& raygenSource,
                        const Sources& additionalHeaders) :
     RayGeneratorObj(context, renderBuffer, rayType, raygenSource,
                     Sources({rayGeometryDefinition}) + additionalHeaders),
-    fovy_(fovy)
+    fovy_(defaultFovy)
 {
     this->set_range(1.0e-4f, RT_DEFAULT_MAX);
 }
@@ -89,11 +88,10 @@ PinHole::PinHole()
 PinHole::PinHole(const Context& context, 
                  const Buffer& renderBuffer,
                  const RayType& rayType,
-                 float fovy,
                  const Source& raygenSource,
                  const Sources& additionalHeaders) :
     Handle<PinHoleObj>(new PinHoleObj(
-        context, renderBuffer, rayType, fovy, raygenSource, additionalHeaders))
+        context, renderBuffer, rayType, raygenSource, additionalHeaders))
 {}
 
 PinHole::operator RayGenerator()

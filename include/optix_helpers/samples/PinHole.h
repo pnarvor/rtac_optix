@@ -22,6 +22,8 @@ class PinHoleObj : public RayGeneratorObj
     using Vector3 = RayGeneratorObj::Vector3;
     using Matrix3 = RayGeneratorObj::Matrix3;
 
+    constexpr static const float defaultFovy = 90.0f;
+
     protected:
 
     float fovy_;
@@ -33,7 +35,6 @@ class PinHoleObj : public RayGeneratorObj
     PinHoleObj(const Context& context, 
                const Buffer& renderBuffer,
                const RayType& rayType,
-               float fovy,
                const Source& raygenSource,
                const Sources& additionalHeaders = {});
 
@@ -56,7 +57,6 @@ class PinHole : public Handle<PinHoleObj>
     PinHole(const Context& context, 
             const Buffer& renderBuffer,
             const RayType& rayType,
-            float fovy,
             const Source& raygenSource,
             const Sources& additionalHeaders = {});
 
