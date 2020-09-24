@@ -28,20 +28,45 @@ optix::Buffer BufferObj::buffer()
     return object_;
 }
 
+BufferObj::Shape BufferObj::shape() const
+{
+    Shape res;
+    this->buffer()->getSize(res.width, res.height);
+    return res;
+}
+
+Buffer::Buffer()
+{}
+
+Buffer::Buffer(const Context& context,
+               RTbuffertype bufferType,
+               RTformat format,
+               const std::string& name) :
+    Handle<BufferObj>(context, bufferType, format, name)
+{
+}
+
+
 RenderBufferObj::RenderBufferObj(const Context& context, RTformat format,
                                  const std::string& name) :
     BufferObj(context, RT_BUFFER_OUTPUT, format, name)
+{}
+
+Buffer::Buffer(const std::shared_ptr<BufferObj>& obj) :
+    Handle<BufferObj>(obj)
 {}
 
 RenderBufferObj::RenderBufferObj(const optix::Buffer& buffer, const std::string& name) :
     BufferObj(buffer, name)
 {}
 
+RenderBuffer::RenderBuffer()
+{}
+
 RenderBuffer::RenderBuffer(const Context& context, RTformat format,
                            const std::string& name) :
     Handle<RenderBufferObj>(context, format, name)
-{
-}
+{}
 
 RenderBuffer::RenderBuffer(const std::shared_ptr<RenderBufferObj>& obj) :
     Handle<RenderBufferObj>(obj)

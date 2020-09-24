@@ -5,6 +5,8 @@
 
 #include <optixu/optixpp.h>
 
+#include <rtac_base/types/Shape.h>
+
 #include <optix_helpers/NamedObject.h>
 #include <optix_helpers/Handle.h>
 #include <optix_helpers/Context.h>
@@ -13,6 +15,10 @@ namespace optix_helpers {
 
 class BufferObj : public NamedObject<optix::Buffer>
 {
+    public:
+
+    using Shape = rtac::types::Shape<size_t>;
+
     protected:
 
     // only for subclasses
@@ -29,8 +35,25 @@ class BufferObj : public NamedObject<optix::Buffer>
 
     optix::Buffer       buffer();
     const optix::Buffer buffer() const;
+
+    Shape shape() const;
 };
-using Buffer = Handle<BufferObj>;
+
+class Buffer : public Handle<BufferObj>
+{
+    public:
+
+    using Shape = BufferObj::Shape;
+
+    Buffer();
+    Buffer(const Context& context,
+           RTbuffertype bufferType,
+           RTformat format,
+           const std::string& name);
+
+    // for downcasting
+    Buffer(const std::shared_ptr<BufferObj>& obj);
+};
 
 class RenderBufferObj : public BufferObj
 {
@@ -40,7 +63,7 @@ class RenderBufferObj : public BufferObj
     RenderBufferObj(const optix::Buffer& buffer, const std::string& name);
 
     public:
-
+    
     RenderBufferObj(const Context& context, RTformat format,
                     const std::string& name);
 };
@@ -49,6 +72,7 @@ class RenderBuffer : public Handle<RenderBufferObj>
 {
     public:
     
+    RenderBuffer();
     RenderBuffer(const Context& context, RTformat format,
                  const std::string& name);
     RenderBuffer(const std::shared_ptr<RenderBufferObj>& obj);
