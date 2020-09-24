@@ -44,6 +44,8 @@ using Sources = std::vector<Source>;
 
 }; //namespace optix_helpers
 
+optix_helpers::Sources operator+(const optix_helpers::Sources& lhs, 
+                                 const optix_helpers::Sources& rhs);
 std::ostream& operator<<(std::ostream& os, const optix_helpers::Source& source);
 
 #endif //_DEF_RTAC_OPTIX_SOURCE_H_

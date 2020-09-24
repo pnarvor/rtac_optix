@@ -43,6 +43,13 @@ Source::Source(const std::string& source, const std::string& name) :
 
 }; //namespace optix_helpers
 
+optix_helpers::Sources operator+(const optix_helpers::Sources& lhs, 
+                                 const optix_helpers::Sources& rhs)
+{
+    optix_helpers::Sources res = lhs;
+    res.insert(res.end(), rhs.begin(), rhs.end());
+    return res;
+}
 
 std::ostream& operator<<(std::ostream& os, const optix_helpers::Source& source)
 {
