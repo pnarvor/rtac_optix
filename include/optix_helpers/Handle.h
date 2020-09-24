@@ -6,6 +6,8 @@
 // This is a generic pointer mean to be subclassed for each value typed class
 // of a pointer-based api
 
+namespace optix_helpers {
+
 template <class T>
 class Handle
 {
@@ -33,5 +35,7 @@ class Handle
 
     operator bool() const { return (bool)obj_; }
 };
+
+}; //namespace optix_helpers
 
 #endif //_DEF_OPTIX_HELPERS_HANDLE_H_
