@@ -23,6 +23,7 @@ void RayGeneratorObj::update_geometry()
 void RayGeneratorObj::set_pose(const Pose& pose)
 {
     pose_ = pose;
+    this->update_geometry();
 }
  
 void RayGeneratorObj::set_size(size_t width, size_t height)

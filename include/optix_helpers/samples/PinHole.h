@@ -38,7 +38,6 @@ class PinHoleObj : public RayGeneratorObj
                const Source& raygenSource,
                const Sources& additionalHeaders = {});
 
-    virtual void set_pose(const Pose& pose);
     virtual void set_range(float zNear, float zFar);
 
     void set_fovy(float fovy);

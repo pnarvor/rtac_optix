@@ -63,12 +63,6 @@ void PinHoleObj::update_geometry()
     (*raygenProgram_)["pinholeStepY"]->setFloat(make_float3(stepY));
 }
 
-void PinHoleObj::set_pose(const Pose& pose)
-{
-    this->RayGeneratorObj::set_pose(pose);
-    this->update_geometry();
-}
-
 void PinHoleObj::set_range(float zNear, float zFar)
 {
     (*raygenProgram_)["pinholeRange"]->setFloat(optix::make_float2(zNear, zFar));
