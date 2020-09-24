@@ -1,85 +1,64 @@
 #ifndef _DEF_OPTIX_HELPERS_RAY_GENERATOR_H_
 #define _DEF_OPTIX_HELPERS_RAY_GENERATOR_H_
 
+#include <iostream>
+#include <cstring>
+
+#include <optixu/optixpp.h>
+
+#include <rtac_base/types/Pose.h>
+
 #include <optix_helpers/Handle.h>
-#include <optix_helpers/Context.h>
 #include <optix_helpers/Buffer.h>
+#include <optix_helpers/Program.h>
 
 namespace optix_helpers {
 
-template <typename ViewGeometryType, RTformat BufferFormat, class RenderBufferType>
 class RayGeneratorObj
 {
     public:
 
-    struct BufferShape
-    {
-        size_t width;
-        size_t height;
-    };
-    
-    RenderBufferType renderBuffer_;
-    Program          raygenProgram_;
-    ViewGeometryType view_;
+    using Pose    = rtac::types::Pose<float>;
+    using Vector3 = rtac::types::Vector3<float>;
+    using Matrix3 = rtac::types::Matrix3<float>;
+    using Shape   = Buffer::Shape;
 
+    protected:
+    
+    Buffer  renderBuffer_;  // buffer where the image will be renderered.
+    Program raygenProgram_; // compiled ray generation program.
+    Pose    pose_;
+    
+    virtual void update_geometry();
+    
     public:
-    
-    RayGeneratorObj(const Context& context, const RayType& rayType,
+
+    RayGeneratorObj(const Context& context,
+                    const Buffer& renderBuffer,
+                    const RayType& rayType,
                     const Source& raygenSource,
-                    const std::string& renderBufferName = "renderBuffer");
+                    const Sources& additionalHeaders);
+    
+    // virtual member function to be reimplemented by subclassing.
+    virtual void set_pose(const Pose& pose);
+    virtual void set_size(size_t width, size_t height);
+    virtual void set_range(float zNear, float zFar);
 
-    void set_size(size_t width, size_t height);
+    void look_at(const Vector3& target);
+    void look_at(const Vector3& target,
+                 const Vector3& position,
+                 const Vector3& up = {0.0,0.0,1.0});
 
-    ViewGeometryType view() const;
-    BufferShape render_shape() const;
-    RenderBufferType render_buffer() const;
+    Buffer  render_buffer()  const;
+    Program raygen_program() const;
+    Shape   render_shape() const;
+    Pose    pose()           const;
+    void    write_data(uint8_t* dest) const;
 };
+using RayGenerator = Handle<RayGeneratorObj>;
 
-template <typename ViewGeometryType, RTformat BufferFormat, class RenderBufferType>
-using RayGenerator = Handle<RayGeneratorObj<ViewGeometryType, BufferFormat, RenderBufferType>>;
 
-// implementation
-template <typename ViewGeometryType, RTformat BufferFormat, class RenderBufferType>
-RayGeneratorObj<ViewGeometryType, BufferFormat, RenderBufferType>::
-RayGeneratorObj(const Context& context, const RayType& rayType,
-                const Source& raygenSource, const std::string& renderBufferName) :
-    renderBuffer_(context, BufferFormat, renderBufferName),
-    raygenProgram_(context->create_program(raygenSource,
-        {rayType->definition(), ViewGeometryType::rayGeometryDefinition})),
-    view_(renderBuffer_, raygenProgram_)
-{
-    raygenProgram_->set_object(renderBuffer_);
-}
+}; //namespace optix helpers
 
-template <typename ViewGeometryType, RTformat BufferFormat, class RenderBufferType>
-void RayGeneratorObj<ViewGeometryType, BufferFormat, RenderBufferType>::
-set_size(size_t width, size_t height)
-{
-    renderBuffer_->set_size(width, height);
-    view_->set_size(width, height);
-}
-
-template <typename ViewGeometryType, RTformat BufferFormat, class RenderBufferType>
-ViewGeometryType RayGeneratorObj<ViewGeometryType, BufferFormat, RenderBufferType>::view() const
-{
-    return view_;
-}
-
-template <typename ViewGeometryType, RTformat BufferFormat, class RenderBufferType>
-typename RayGeneratorObj<ViewGeometryType, BufferFormat, RenderBufferType>::BufferShape
-RayGeneratorObj<ViewGeometryType, BufferFormat, RenderBufferType>::render_shape() const
-{
-    BufferShape res;
-    (*renderBuffer_)->getSize(res.width, res.height);
-    return res;
-}
-
-template <typename ViewGeometryType, RTformat BufferFormat, class RenderBufferType>
-RenderBufferType RayGeneratorObj<ViewGeometryType, BufferFormat, RenderBufferType>::render_buffer() const
-{
-    return renderBuffer_;
-}
-
-}; //namespace optix_helpers
 
 #endif //_DEF_OPTIX_HELPERS_RAY_GENERATOR_H_

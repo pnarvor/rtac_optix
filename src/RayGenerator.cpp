@@ -1,10 +1,10 @@
-#include <optix_helpers/ViewGeometry.h>
+#include <optix_helpers/RayGenerator.h>
 
 #include <rtac_base/algorithm.h>
 
 namespace optix_helpers {
 
-ViewGeometryObj::ViewGeometryObj(const Context& context,
+RayGeneratorObj::RayGeneratorObj(const Context& context,
                                  const Buffer& renderBuffer,
                                  const RayType& rayType,
                                  const Source& raygenSource,
@@ -16,32 +16,32 @@ ViewGeometryObj::ViewGeometryObj(const Context& context,
     raygenProgram_->set_object(renderBuffer);
 }
 
-void ViewGeometryObj::update_geometry()
+void RayGeneratorObj::update_geometry()
 {
 }
 
-void ViewGeometryObj::set_pose(const Pose& pose)
+void RayGeneratorObj::set_pose(const Pose& pose)
 {
     pose_ = pose;
 }
  
-void ViewGeometryObj::set_size(size_t width, size_t height)
+void RayGeneratorObj::set_size(size_t width, size_t height)
 {
     renderBuffer_->set_size(width, height);
     this->update_geometry();
 }
 
-void ViewGeometryObj::set_range(float zNear, float zFar)
+void RayGeneratorObj::set_range(float zNear, float zFar)
 {
     //range modifier
 }
 
-void ViewGeometryObj::look_at(const Vector3& target)
+void RayGeneratorObj::look_at(const Vector3& target)
 {
     this->look_at(target, pose_.translation(), {0.0,0.0,1.0});
 }
 
-void ViewGeometryObj::look_at(const Vector3& target,
+void RayGeneratorObj::look_at(const Vector3& target,
                               const Vector3& position,
                               const Vector3& up)
 {
@@ -72,27 +72,27 @@ void ViewGeometryObj::look_at(const Vector3& target,
     this->set_pose(Pose::from_rotation_matrix(r, position));
 }
  
-Buffer ViewGeometryObj::render_buffer() const
+Buffer RayGeneratorObj::render_buffer() const
 {
     return renderBuffer_;
 }
 
-Program ViewGeometryObj::raygen_program() const
+Program RayGeneratorObj::raygen_program() const
 {
     return raygenProgram_;
 }
 
-ViewGeometryObj::Shape ViewGeometryObj::render_shape() const
+RayGeneratorObj::Shape RayGeneratorObj::render_shape() const
 {
     return renderBuffer_->shape();
 }
 
-ViewGeometryObj::Pose ViewGeometryObj::pose() const
+RayGeneratorObj::Pose RayGeneratorObj::pose() const
 {
     return pose_;
 }
 
-void ViewGeometryObj::write_data(uint8_t* dest) const
+void RayGeneratorObj::write_data(uint8_t* dest) const
 {
     size_t W,H;
     (*renderBuffer_)->getSize(W,H);
@@ -100,19 +100,5 @@ void ViewGeometryObj::write_data(uint8_t* dest) const
                 W*H*(*renderBuffer_)->getElementSize());
     (*renderBuffer_)->unmap();
 }
-
-//ViewGeometry::ViewGeometry() :
-//    Handle<ViewGeometryObj>()
-//{}
-//
-//ViewGeometry::ViewGeometry(const Buffer& renderBuffer,
-//                           const Program& raygenProgram,
-//                           const Pose& pose) :
-//    Handle<ViewGeometryObj>(new ViewGeometryObj(renderBuffer, raygenProgram, pose))
-//{}
-//
-//ViewGeometry::ViewGeometry(const std::shared_ptr<ViewGeometryObj>& p) :
-//    Handle<ViewGeometryObj>(p)
-//{}
 
 };

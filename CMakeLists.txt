@@ -60,7 +60,6 @@ list(APPEND optix_helpers_PUBLIC_HEADERS
     include/optix_helpers/GeometryTriangles.h
     include/optix_helpers/Model.h
     include/optix_helpers/SceneItem.h
-    include/optix_helpers/ViewGeometry.h
     include/optix_helpers/RayGenerator.h
 )
 list(APPEND optix_helpers_SOURCES
@@ -77,7 +76,7 @@ list(APPEND optix_helpers_SOURCES
     src/GeometryTriangles.cpp
     src/Model.cpp
     src/SceneItem.cpp
-    src/ViewGeometry.cpp
+    src/RayGenerator.cpp
 )
 
 if(BUILD_SAMPLES)

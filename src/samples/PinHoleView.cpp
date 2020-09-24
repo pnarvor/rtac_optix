@@ -5,7 +5,7 @@
 
 #include <optix_helpers/utils.h>
 
-namespace optix_helpers { namespace samples { namespace viewgeometries {
+namespace optix_helpers { namespace samples { namespace raygenerators {
 
 const Source PinHoleViewObj::rayGeometryDefinition = Source(R"(
 #include <optix.h>
@@ -35,7 +35,7 @@ PinHoleViewObj::PinHoleViewObj(const Context& context,
                                float fovy,
                                const Source& raygenSource,
                                const Sources& additionalHeaders) :
-    ViewGeometryObj(context, renderBuffer, rayType, raygenSource,
+    RayGeneratorObj(context, renderBuffer, rayType, raygenSource,
                     Sources({rayGeometryDefinition}) + additionalHeaders),
     fovy_(fovy)
 {
@@ -66,7 +66,7 @@ void PinHoleViewObj::update_geometry()
 
 void PinHoleViewObj::set_pose(const Pose& pose)
 {
-    this->ViewGeometryObj::set_pose(pose);
+    this->RayGeneratorObj::set_pose(pose);
     this->update_geometry();
 }
 
@@ -97,11 +97,11 @@ PinHoleView::PinHoleView(const Context& context,
         context, renderBuffer, rayType, fovy, raygenSource, additionalHeaders))
 {}
 
-PinHoleView::operator ViewGeometry()
+PinHoleView::operator RayGenerator()
 {
-    return ViewGeometry(std::dynamic_pointer_cast<ViewGeometryObj>(this->obj_));
+    return RayGenerator(std::dynamic_pointer_cast<RayGeneratorObj>(this->obj_));
 }
 
-}; //namespace viewgeometries
+}; //namespace raygenerators
 }; //namespace samples
 }; //namespace optix_helpers

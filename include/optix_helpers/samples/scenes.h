@@ -12,7 +12,7 @@
 #include <optix_helpers/samples/geometries.h>
 #include <optix_helpers/samples/items.h>
 #include <optix_helpers/samples/utils.h>
-#include <optix_helpers/samples/viewgeometries.h>
+#include <optix_helpers/samples/raygenerators.h>
 
 namespace optix_helpers { namespace samples { namespace scenes {
 
@@ -27,7 +27,7 @@ class SceneBase
     public:
 
     SceneBase() {};
-    ViewGeometry view() { return raygenerator_; }
+    RayGeneratorType view() { return raygenerator_; }
 
     void launch()
     {
@@ -37,7 +37,7 @@ class SceneBase
 };
 
 template <typename RenderBufferType>
-class Scene0 : public SceneBase<viewgeometries::PinHoleView>
+class Scene0 : public SceneBase<raygenerators::PinHoleView>
 {
     public:
 
@@ -100,7 +100,7 @@ Scene0<RenderBufferType>::Scene0(size_t width, size_t height)
     raytypes::RGB rayType0(this->context_);
     
     renderBuffer_ = RenderBufferType(context_, RT_FORMAT_FLOAT3, "renderBuffer");
-    this->raygenerator_ = viewgeometries::PinHoleView(context_, renderBuffer_, rayType0, 90.0f, raygenSource);
+    this->raygenerator_ = raygenerators::PinHoleView(context_, renderBuffer_, rayType0, 90.0f, raygenSource);
     this->raygenerator_->set_size(W,H);
     this->raygenerator_->set_range(1.0e-2f, RT_DEFAULT_MAX);
     this->raygenerator_->look_at({0.0,0.0,0.0},{ 2.0, 5.0, 4.0});
