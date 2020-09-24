@@ -18,25 +18,26 @@ class PinHoleViewObj : public ViewGeometryObj
 
     static const Source rayGeometryDefinition;
 
-    using Pose = ViewGeometry::Pose;
-    using Vector3 = ViewGeometry::Vector3;
-    using Matrix3 = ViewGeometry::Matrix3;
+    using Pose    = ViewGeometryObj::Pose;
+    using Vector3 = ViewGeometryObj::Vector3;
+    using Matrix3 = ViewGeometryObj::Matrix3;
 
     protected:
 
     float fovy_;
 
-    void update_device_geometry();
+    virtual void update_geometry();
 
     public:
 
-    PinHoleViewObj(const Buffer& renderBuffer,
-                   const Program& raygenProgram,
-                   float fovy = 90.0f,
-                   const Pose& pose = Pose());
+    PinHoleViewObj(const Context& context, 
+                   const Buffer& renderBuffer,
+                   const RayType& rayType,
+                   float fovy,
+                   const Source& raygenSource,
+                   const Sources& additionalHeaders = {});
 
     virtual void set_pose(const Pose& pose);
-    virtual void set_size(size_t width, size_t height);
     virtual void set_range(float zNear, float zFar);
 
     void set_fovy(float fovy);
@@ -52,10 +53,12 @@ class PinHoleView : public Handle<PinHoleViewObj>
     static const Source& rayGeometryDefinition;
     
     PinHoleView();
-    PinHoleView(const Buffer& renderBuffer,
-                const Program& raygenProgram,
-                float fovy = 90.0,
-                const Pose& pose = Pose());
+    PinHoleView(const Context& context, 
+                const Buffer& renderBuffer,
+                const RayType& rayType,
+                float fovy,
+                const Source& raygenSource,
+                const Sources& additionalHeaders = {});
 
     operator ViewGeometry();
 };

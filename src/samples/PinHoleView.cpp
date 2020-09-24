@@ -29,17 +29,20 @@ optix::Ray pinhole_ray(const uint2& launchIndex, unsigned int rayType)
 
 using namespace rtac::types::indexing;
 
-PinHoleViewObj::PinHoleViewObj(const Buffer& renderBuffer,
-                               const Program& raygenProgram,
+PinHoleViewObj::PinHoleViewObj(const Context& context, 
+                               const Buffer& renderBuffer,
+                               const RayType& rayType,
                                float fovy,
-                               const Pose& pose) :
-    ViewGeometryObj(renderBuffer, raygenProgram, pose),
+                               const Source& raygenSource,
+                               const Sources& additionalHeaders) :
+    ViewGeometryObj(context, renderBuffer, rayType, raygenSource,
+                    Sources({rayGeometryDefinition}) + additionalHeaders),
     fovy_(fovy)
 {
     this->set_range(1.0e-4f, RT_DEFAULT_MAX);
 }
 
-void PinHoleViewObj::update_device_geometry()
+void PinHoleViewObj::update_geometry()
 {
     size_t w, h;
     (*renderBuffer_)->getSize(w, h);
@@ -64,13 +67,7 @@ void PinHoleViewObj::update_device_geometry()
 void PinHoleViewObj::set_pose(const Pose& pose)
 {
     this->ViewGeometryObj::set_pose(pose);
-    this->update_device_geometry();
-}
-
-void PinHoleViewObj::set_size(size_t width, size_t height)
-{
-    this->ViewGeometryObj::set_size(width, height);
-    this->update_device_geometry();
+    this->update_geometry();
 }
 
 void PinHoleViewObj::set_range(float zNear, float zFar)
@@ -81,7 +78,7 @@ void PinHoleViewObj::set_range(float zNear, float zFar)
 void PinHoleViewObj::set_fovy(float fovy)
 {
     fovy_ = fovy;
-    this->update_device_geometry();
+    this->update_geometry();
 }
 
 const Source& PinHoleView::rayGeometryDefinition = PinHoleViewObj::rayGeometryDefinition;
@@ -90,11 +87,14 @@ PinHoleView::PinHoleView() :
     Handle<PinHoleViewObj>()
 {}
 
-PinHoleView::PinHoleView(const Buffer& renderBuffer,
-                         const Program& raygenProgram,
+PinHoleView::PinHoleView(const Context& context, 
+                         const Buffer& renderBuffer,
+                         const RayType& rayType,
                          float fovy,
-                         const Pose& pose) :
-    Handle<PinHoleViewObj>(new PinHoleViewObj(renderBuffer, raygenProgram, fovy, pose))
+                         const Source& raygenSource,
+                         const Sources& additionalHeaders) :
+    Handle<PinHoleViewObj>(new PinHoleViewObj(
+        context, renderBuffer, rayType, fovy, raygenSource, additionalHeaders))
 {}
 
 PinHoleView::operator ViewGeometry()

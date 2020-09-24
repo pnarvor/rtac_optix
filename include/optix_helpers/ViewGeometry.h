@@ -18,21 +18,26 @@ class ViewGeometryObj
 {
     public:
 
-    using Pose = rtac::types::Pose<float>;
+    using Pose    = rtac::types::Pose<float>;
     using Vector3 = rtac::types::Vector3<float>;
     using Matrix3 = rtac::types::Matrix3<float>;
+    using Shape   = Buffer::Shape;
 
     protected:
     
     Buffer  renderBuffer_;  // buffer where the image will be renderered.
     Program raygenProgram_; // compiled ray generation program.
     Pose    pose_;
-
+    
+    virtual void update_geometry();
+    
     public:
 
-    ViewGeometryObj(const Buffer& renderBuffer,
-                    const Program& raygenProgram,
-                    const Pose& pose = Pose());
+    ViewGeometryObj(const Context& context,
+                    const Buffer& renderBuffer,
+                    const RayType& rayType,
+                    const Source& raygenSource,
+                    const Sources& additionalHeaders);
     
     // virtual member function to be reimplemented by subclassing.
     virtual void set_pose(const Pose& pose);
@@ -46,24 +51,11 @@ class ViewGeometryObj
 
     Buffer  render_buffer()  const;
     Program raygen_program() const;
+    Shape   render_shape() const;
     Pose    pose()           const;
     void    write_data(uint8_t* dest) const;
 };
-
-class ViewGeometry : public Handle<ViewGeometryObj>
-{
-    public:
-
-    using Pose = ViewGeometryObj::Pose;
-    using Vector3 = ViewGeometryObj::Vector3;
-    using Matrix3 = ViewGeometryObj::Matrix3;
-
-    ViewGeometry();
-    ViewGeometry(const Buffer& renderBuffer,
-                 const Program& raygenProgram,
-                 const Pose& pose = Pose());
-    ViewGeometry(const std::shared_ptr<ViewGeometryObj>& p);
-};
+using ViewGeometry = Handle<ViewGeometryObj>;
 
 
 }; //namespace optix helpers

@@ -12,7 +12,7 @@
 #include <optix_helpers/samples/geometries.h>
 #include <optix_helpers/samples/items.h>
 #include <optix_helpers/samples/utils.h>
-#include <optix_helpers/samples/raygenerators.h>
+#include <optix_helpers/samples/viewgeometries.h>
 
 namespace optix_helpers { namespace samples { namespace scenes {
 
@@ -27,7 +27,7 @@ class SceneBase
     public:
 
     SceneBase() {};
-    ViewGeometry view() { return raygenerator_->view(); }
+    ViewGeometry view() { return raygenerator_; }
 
     void launch()
     {
@@ -37,7 +37,7 @@ class SceneBase
 };
 
 template <typename RenderBufferType>
-class Scene0 : public SceneBase<raygenerators::RgbCamera<RenderBufferType>>
+class Scene0 : public SceneBase<viewgeometries::PinHoleView>
 {
     public:
 
@@ -46,12 +46,42 @@ class Scene0 : public SceneBase<raygenerators::RgbCamera<RenderBufferType>>
 
     static const Source raygenSource;
 
+    protected:
+
+    RenderBufferType renderBuffer_;
+
     public:
 
     Scene0(size_t width, size_t height);
 
-    RenderBufferType render_buffer() { return this->raygenerator_->render_buffer(); }
+    RenderBufferType render_buffer() { return renderBuffer_; };
 };
+
+template <typename RenderBufferType>
+const Source Scene0<RenderBufferType>::raygenSource = Source(R"(
+#include <optix.h>
+
+using namespace optix;
+
+#include <rays/RGB.h>
+#include <view/pinhole.h>
+
+rtDeclareVariable(uint2, launchIndex, rtLaunchIndex,);
+rtDeclareVariable(rtObject, topObject,,);
+
+rtBuffer<float3, 2> renderBuffer;
+
+RT_PROGRAM void rgb_camera()
+{
+    raytypes::RGB payload;
+    payload.color = make_float3(0.0f,0.0f,0.0f);
+
+    Ray ray = pinhole_ray(launchIndex, 0);
+
+    rtTrace(topObject, ray, payload);
+    renderBuffer[launchIndex] = payload.color;
+}
+)", "rgb_camera");
 
 
 template <typename RenderBufferType>
@@ -68,11 +98,14 @@ Scene0<RenderBufferType>::Scene0(size_t width, size_t height)
     cout << "Stack size : " << (*this->context_)->getStackSize() << endl;
 
     raytypes::RGB rayType0(this->context_);
+    
+    renderBuffer_ = RenderBufferType(context_, RT_FORMAT_FLOAT3, "renderBuffer");
+    this->raygenerator_ = viewgeometries::PinHoleView(context_, renderBuffer_, rayType0, 90.0f, raygenSource);
+    this->raygenerator_->set_size(W,H);
+    this->raygenerator_->set_range(1.0e-2f, RT_DEFAULT_MAX);
+    this->raygenerator_->look_at({0.0,0.0,0.0},{ 2.0, 5.0, 4.0});
 
-    this->raygenerator_ = raygenerators::RgbCamera<RenderBufferType>(this->context_, rayType0, W, H);
-    this->raygenerator_->view_->set_range(1.0e-2f, RT_DEFAULT_MAX);
-    this->raygenerator_->view_->look_at({0.0,0.0,0.0},{ 2.0, 5.0, 4.0});
-    (*this->context_)->setRayGenerationProgram(0, *this->raygenerator_->raygenProgram_);
+    (*this->context_)->setRayGenerationProgram(0, *this->raygenerator_->raygen_program());
     (*this->context_)->setMissProgram(0, *raytypes::RGB::rgb_miss_program(this->context_, {0.8,0.8,0.8}));
     
     Material mirror   = materials::perfect_mirror(this->context_, rayType0);
@@ -125,32 +158,6 @@ Scene0<RenderBufferType>::Scene0(size_t width, size_t height)
     // CAN BE REPLACED WITH THIS (thanks to optix variable scope system)
     (*this->context_)["topObject"]->set(topObject);
 }
-
-template <typename RenderBufferType>
-const Source Scene0<RenderBufferType>::raygenSource = Source(R"(
-#include <optix.h>
-
-using namespace optix;
-
-#include <rays/RGB.h>
-#include <view/pinhole.h>
-
-rtDeclareVariable(uint2, launchIndex, rtLaunchIndex,);
-rtDeclareVariable(rtObject, topObject,,);
-
-rtBuffer<float3, 2> renderBuffer;
-
-RT_PROGRAM void pinhole_scene0()
-{
-    raytypes::RGB payload;
-    payload.color = make_float3(0.0f,0.0f,0.0f);
-
-    Ray ray = pinhole_ray(launchIndex, 0);
-
-    rtTrace(topObject, ray, payload);
-    renderBuffer[launchIndex] = payload.color;
-}
-)", "pinhole_scene0");
 
 }; //namespace scenes
 }; //namespace samples

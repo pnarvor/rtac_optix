@@ -4,14 +4,20 @@
 
 namespace optix_helpers {
 
-ViewGeometryObj::ViewGeometryObj(const Buffer& renderBuffer,
-                                 const Program& raygenProgram,
-                                 const Pose& pose) :
+ViewGeometryObj::ViewGeometryObj(const Context& context,
+                                 const Buffer& renderBuffer,
+                                 const RayType& rayType,
+                                 const Source& raygenSource,
+                                 const Sources& additionalHeaders) :
     renderBuffer_(renderBuffer),
-    raygenProgram_(raygenProgram),
-    pose_(pose)
+    raygenProgram_(context->create_program(raygenSource,
+        Sources({rayType->definition()}) + additionalHeaders))
 {
     raygenProgram_->set_object(renderBuffer);
+}
+
+void ViewGeometryObj::update_geometry()
+{
 }
 
 void ViewGeometryObj::set_pose(const Pose& pose)
@@ -21,7 +27,8 @@ void ViewGeometryObj::set_pose(const Pose& pose)
  
 void ViewGeometryObj::set_size(size_t width, size_t height)
 {
-    //(*renderBuffer_)->setSize(width, height);
+    renderBuffer_->set_size(width, height);
+    this->update_geometry();
 }
 
 void ViewGeometryObj::set_range(float zNear, float zFar)
@@ -75,6 +82,11 @@ Program ViewGeometryObj::raygen_program() const
     return raygenProgram_;
 }
 
+ViewGeometryObj::Shape ViewGeometryObj::render_shape() const
+{
+    return renderBuffer_->shape();
+}
+
 ViewGeometryObj::Pose ViewGeometryObj::pose() const
 {
     return pose_;
@@ -89,18 +101,18 @@ void ViewGeometryObj::write_data(uint8_t* dest) const
     (*renderBuffer_)->unmap();
 }
 
-ViewGeometry::ViewGeometry() :
-    Handle<ViewGeometryObj>()
-{}
-
-ViewGeometry::ViewGeometry(const Buffer& renderBuffer,
-                           const Program& raygenProgram,
-                           const Pose& pose) :
-    Handle<ViewGeometryObj>(new ViewGeometryObj(renderBuffer, raygenProgram, pose))
-{}
-
-ViewGeometry::ViewGeometry(const std::shared_ptr<ViewGeometryObj>& p) :
-    Handle<ViewGeometryObj>(p)
-{}
+//ViewGeometry::ViewGeometry() :
+//    Handle<ViewGeometryObj>()
+//{}
+//
+//ViewGeometry::ViewGeometry(const Buffer& renderBuffer,
+//                           const Program& raygenProgram,
+//                           const Pose& pose) :
+//    Handle<ViewGeometryObj>(new ViewGeometryObj(renderBuffer, raygenProgram, pose))
+//{}
+//
+//ViewGeometry::ViewGeometry(const std::shared_ptr<ViewGeometryObj>& p) :
+//    Handle<ViewGeometryObj>(p)
+//{}
 
 };
