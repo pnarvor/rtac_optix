@@ -63,6 +63,7 @@ list(APPEND optix_helpers_PUBLIC_HEADERS
     include/optix_helpers/RayGenerator.h
 )
 list(APPEND optix_helpers_SOURCES
+    src/utils.cpp
     src/Source.cpp
     src/Nvrtc.cpp
     src/Program.cpp
@@ -114,14 +115,14 @@ target_include_directories(optix_helpers
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
         $<INSTALL_INTERFACE:include>
         ${OPTIX_INCLUDE_DIR}
-        ${sutil_sdk_INCLUDE_DIR}
+        # ${sutil_sdk_INCLUDE_DIR}
         ${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES}
 )
 target_link_libraries(optix_helpers PUBLIC
     ${optix_LIBRARY}
     ${optixu_LIBRARY}
     ${optix_prime_LIBRARY}
-    ${sutil_sdk_LIBRARY}
+    # ${sutil_sdk_LIBRARY}
     ${CUDA_LIBRARIES}
     ${CUDA_nvrtc_LIBRARY}
     rtac_base
@@ -129,7 +130,7 @@ target_link_libraries(optix_helpers PUBLIC
 set(NVRTC_INCLUDE_DIRS "${OPTIX_INCLUDE_DIR}")
 set(NVRTC_INCLUDE_DIRS "${NVRTC_INCLUDE_DIRS}\\\;${OPTIX_INCLUDE_DIR}/optixu")
 set(NVRTC_INCLUDE_DIRS "${NVRTC_INCLUDE_DIRS}\\\;${OPTIX_PREFIX}/SDK/support/mdl-sdk/include")
-set(NVRTC_INCLUDE_DIRS "${NVRTC_INCLUDE_DIRS}\\\;${OPTIX_PREFIX}/SDK/sutils")
+# set(NVRTC_INCLUDE_DIRS "${NVRTC_INCLUDE_DIRS}\\\;${OPTIX_PREFIX}/SDK/sutils")
 set(NVRTC_INCLUDE_DIRS "${NVRTC_INCLUDE_DIRS}\\\;${OPTIX_PREFIX}/SDK/cuda")
 set(NVRTC_INCLUDE_DIRS "${NVRTC_INCLUDE_DIRS}\\\;${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES}")
 target_compile_definitions(optix_helpers PUBLIC

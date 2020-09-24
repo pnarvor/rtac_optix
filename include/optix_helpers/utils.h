@@ -7,6 +7,7 @@
 #include <optixu/optixpp.h>
 
 #include <rtac_base/types/common.h>
+#include <rtac_base/types/Rectangle.h>
 
 namespace optix_helpers {
 
@@ -21,6 +22,8 @@ inline optix::float3 make_float3(const std::array<T,3>& v)
 {
     return optix::make_float3(v[0], v[1], v[2]);
 }
+
+inline optix::float4 make_float4(const rtac::types::Rectangle<float>& rect);
 
 }; //namespace optix_helpers
 
