@@ -37,7 +37,7 @@ class SceneBase
 };
 
 template <typename RenderBufferType>
-class Scene0 : public SceneBase<raygenerators::PinHoleView>
+class Scene0 : public SceneBase<raygenerators::PinHole>
 {
     public:
 
@@ -100,7 +100,7 @@ Scene0<RenderBufferType>::Scene0(size_t width, size_t height)
     raytypes::RGB rayType0(this->context_);
     
     renderBuffer_ = RenderBufferType(context_, RT_FORMAT_FLOAT3, "renderBuffer");
-    this->raygenerator_ = raygenerators::PinHoleView(context_, renderBuffer_, rayType0, 90.0f, raygenSource);
+    this->raygenerator_ = raygenerators::PinHole(context_, renderBuffer_, rayType0, 90.0f, raygenSource);
     this->raygenerator_->set_size(W,H);
     this->raygenerator_->set_range(1.0e-2f, RT_DEFAULT_MAX);
     this->raygenerator_->look_at({0.0,0.0,0.0},{ 2.0, 5.0, 4.0});

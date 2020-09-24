@@ -1,6 +1,6 @@
 #ifndef _DEF_OPTIX_HELPERS_SAMPLES_RAY_GENERATORS_H_
 #define _DEF_OPTIX_HELPERS_SAMPLES_RAY_GENERATORS_H_
 
-#include <optix_helpers/samples/PinHoleView.h>
+#include <optix_helpers/samples/PinHole.h>
 
 #endif //_DEF_OPTIX_HELPERS_SAMPLES_VIEW_GEOMETRIES_H_

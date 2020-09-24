@@ -12,7 +12,7 @@
 
 namespace optix_helpers { namespace samples { namespace raygenerators {
 
-class PinHoleViewObj : public RayGeneratorObj
+class PinHoleObj : public RayGeneratorObj
 {
     public:
 
@@ -30,12 +30,12 @@ class PinHoleViewObj : public RayGeneratorObj
 
     public:
 
-    PinHoleViewObj(const Context& context, 
-                   const Buffer& renderBuffer,
-                   const RayType& rayType,
-                   float fovy,
-                   const Source& raygenSource,
-                   const Sources& additionalHeaders = {});
+    PinHoleObj(const Context& context, 
+               const Buffer& renderBuffer,
+               const RayType& rayType,
+               float fovy,
+               const Source& raygenSource,
+               const Sources& additionalHeaders = {});
 
     virtual void set_pose(const Pose& pose);
     virtual void set_range(float zNear, float zFar);
@@ -43,22 +43,22 @@ class PinHoleViewObj : public RayGeneratorObj
     void set_fovy(float fovy);
 };
 
-class PinHoleView : public Handle<PinHoleViewObj>
+class PinHole : public Handle<PinHoleObj>
 {
     public:
     
-    using Pose    = PinHoleViewObj::Pose;
-    using Vector3 = PinHoleViewObj::Vector3;
-    using Matrix3 = PinHoleViewObj::Matrix3;
+    using Pose    = PinHoleObj::Pose;
+    using Vector3 = PinHoleObj::Vector3;
+    using Matrix3 = PinHoleObj::Matrix3;
     static const Source& rayGeometryDefinition;
     
-    PinHoleView();
-    PinHoleView(const Context& context, 
-                const Buffer& renderBuffer,
-                const RayType& rayType,
-                float fovy,
-                const Source& raygenSource,
-                const Sources& additionalHeaders = {});
+    PinHole();
+    PinHole(const Context& context, 
+            const Buffer& renderBuffer,
+            const RayType& rayType,
+            float fovy,
+            const Source& raygenSource,
+            const Sources& additionalHeaders = {});
 
     operator RayGenerator();
 };
