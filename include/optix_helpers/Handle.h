@@ -11,25 +11,34 @@ namespace optix_helpers {
 template <class T>
 class Handle
 {
+    public:
+
+     //one single reference to the base ptr to be able to change it if needed (boost?)
+    template <typename BaseType> 
+    using BasePtr = std::shared_ptr<BaseType>;
+
+    using Ptr      = BasePtr<T>;
+    using ConstPtr = BasePtr<const T>;
+
     protected:
 
-    std::shared_ptr<T> obj_;
+    Ptr obj_;
 
     public:
 
     Handle(T* obj = NULL) : obj_(obj) {}
-    Handle(const std::shared_ptr<T>& obj) : obj_(obj) {}
+    Handle(const Ptr& obj) : obj_(obj) {}
 
     template<class ...P>
     Handle(P... args) : obj_(new T(args...)) {}
 
-    std::shared_ptr<T> operator->() { return obj_; }
-    T& operator*() { return *obj_; }
-    T* get() { return obj_->get(); }
+    Ptr operator->() { return obj_; }
+    T&  operator*()  { return *obj_; }
+    T*  get()        { return obj_->get(); }
 
-    std::shared_ptr<const T> operator->() const { return obj_; }
-    const T& operator*() const { return *obj_; }
-    const T* get() const { return obj_->get(); }
+    ConstPtr operator->() const { return obj_; }
+    const T& operator*()  const { return *obj_; }
+    const T* get()        const { return obj_->get(); }
 
     Handle<T> copy() const { return Handle(new T(*obj_)); }
 
