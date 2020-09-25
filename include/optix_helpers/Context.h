@@ -43,6 +43,7 @@ class Context : public Handle<ContextObj>
     public:
     
     Context(int entryPointCount = 1);
+    Context(const std::shared_ptr<ContextObj>& obj);
 };
 
 // Implementation

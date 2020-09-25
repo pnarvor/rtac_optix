@@ -61,6 +61,7 @@ list(APPEND optix_helpers_PUBLIC_HEADERS
     include/optix_helpers/Model.h
     include/optix_helpers/SceneItem.h
     include/optix_helpers/RayGenerator.h
+    include/optix_helpers/Scene.h
 )
 list(APPEND optix_helpers_SOURCES
     src/utils.cpp
@@ -78,6 +79,7 @@ list(APPEND optix_helpers_SOURCES
     src/Model.cpp
     src/SceneItem.cpp
     src/RayGenerator.cpp
+    src/Scene.cpp
 )
 
 if(BUILD_SAMPLES)

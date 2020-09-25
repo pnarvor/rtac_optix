@@ -5,7 +5,8 @@
 
 #include <rtac_base/types/Pose.h>
 
-#include <optix_helpers/Context.h>
+//#include <optix_helpers/Context.h>
+#include <optix_helpers/Scene.h>
 
 #include <optix_helpers/samples/raytypes.h>
 #include <optix_helpers/samples/materials.h>
@@ -21,7 +22,8 @@ class SceneBase
 {
     protected:
 
-    Context          context_;
+    //Context          context_;
+    Scene            context_;
     RayGeneratorType raygenerator_;
 
     public:
@@ -91,11 +93,11 @@ Scene0<RenderBufferType>::Scene0(size_t width, size_t height)
     size_t W = width;
     size_t H = height;
 
-    (*this->context_)->setMaxTraceDepth(10);
-    (*this->context_)->setMaxCallableProgramDepth(10);
-    cout << "Default stack size : " << (*this->context_)->getStackSize() << endl;
-    (*this->context_)->setStackSize(8096);
-    cout << "Stack size : " << (*this->context_)->getStackSize() << endl;
+    //(*this->context_)->setMaxTraceDepth(10);
+    //(*this->context_)->setMaxCallableProgramDepth(10);
+    //cout << "Default stack size : " << (*this->context_)->getStackSize() << endl;
+    //(*this->context_)->setStackSize(8096);
+    //cout << "Stack size : " << (*this->context_)->getStackSize() << endl;
 
     raytypes::RGB rayType0(this->context_);
     
@@ -140,23 +142,30 @@ Scene0<RenderBufferType>::Scene0(size_t width, size_t height)
     SceneItem lense1(this->context_, lense);
     lense1->set_pose(lense0->pose()*Quaternion({0.0,1.0,0.0,0.0}));
 
-    optix::Group topObject = (*this->context_)->createGroup();
-    topObject->setAcceleration((*this->context_)->createAcceleration("Trbvh"));
-    topObject->addChild(square0->node());
-    topObject->addChild(cube0->node());
-    topObject->addChild(cube1->node());
-    topObject->addChild(sphere0->node());
-    topObject->addChild(lense0->node());
-    topObject->addChild(lense1->node());
+    // optix::Group topObject = (*this->context_)->createGroup();
+    // topObject->setAcceleration((*this->context_)->createAcceleration("Trbvh"));
+    // topObject->addChild(square0->node());
+    // topObject->addChild(cube0->node());
+    // topObject->addChild(cube1->node());
+    // topObject->addChild(sphere0->node());
+    // topObject->addChild(lense0->node());
+    // topObject->addChild(lense1->node());
 
-    ///// THIS
-    //(*mirror->get_closest_hit_program(rayType0))["topObject"]->set(topObject);
-    //(*glass->get_closest_hit_program(rayType0))["topObject"]->set(topObject);
-    //(*lenseGlass->get_closest_hit_program(rayType0))["topObject"]->set(topObject);
-    //(*raygenProgram)["topObject"]->set(topObject);
+    // ///// THIS
+    // //(*mirror->get_closest_hit_program(rayType0))["topObject"]->set(topObject);
+    // //(*glass->get_closest_hit_program(rayType0))["topObject"]->set(topObject);
+    // //(*lenseGlass->get_closest_hit_program(rayType0))["topObject"]->set(topObject);
+    // //(*raygenProgram)["topObject"]->set(topObject);
 
-    // CAN BE REPLACED WITH THIS (thanks to optix variable scope system)
-    (*this->context_)["topObject"]->set(topObject);
+    // // CAN BE REPLACED WITH THIS (thanks to optix variable scope system)
+    // (*this->context_)["topObject"]->set(topObject);
+
+    context_->add_child(square0);
+    context_->add_child(cube0);
+    context_->add_child(cube1);
+    context_->add_child(sphere0);
+    context_->add_child(lense0);
+    context_->add_child(lense1);
 }
 
 }; //namespace scenes

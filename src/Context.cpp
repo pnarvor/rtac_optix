@@ -54,5 +54,9 @@ Context::Context(int entryPointCount) :
     Handle<ContextObj>(new ContextObj(entryPointCount))
 {}
 
+Context::Context(const std::shared_ptr<ContextObj>& obj) :
+    Handle<ContextObj>(obj)
+{}
+
 } //namespace optix_helpers
 
