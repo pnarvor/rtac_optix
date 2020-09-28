@@ -30,17 +30,18 @@ class TexturedMaterialObj : public MaterialObj
     const TextureSampler texture() const;
 };
 
-class TexturedMaterial : public Handle<TexturedMaterialObj>
-{
-    public:
-
-    TexturedMaterial();
-    TexturedMaterial(const Context& context,
-                     const TextureSampler& texture);
-
-    operator Material();
-    operator Material() const;
-};
+using TexturedMaterial = Handle<TexturedMaterialObj>;
+//class TexturedMaterial : public Handle<TexturedMaterialObj>
+//{
+//    public:
+//
+//    TexturedMaterial();
+//    TexturedMaterial(const Context& context,
+//                     const TextureSampler& texture);
+//
+//    operator Material();
+//    operator Material() const;
+//};
 
 }; //namespace optix_helpers
 

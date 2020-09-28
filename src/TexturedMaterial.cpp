@@ -32,23 +32,23 @@ const TextureSampler TexturedMaterialObj::texture() const
     return texture_;
 }
 
-TexturedMaterial::TexturedMaterial() :
-    Handle<TexturedMaterialObj>()
-{}
-
-TexturedMaterial::TexturedMaterial(const Context& context,
-                                   const TextureSampler& texture) :
-    Handle<TexturedMaterialObj>(context, texture)
-{}
-
-TexturedMaterial::operator Material()
-{
-    return Material(std::static_pointer_cast<MaterialObj>(this->obj_));
-}
-
-TexturedMaterial::operator Material() const
-{
-    return Material(std::static_pointer_cast<MaterialObj>(this->obj_));
-}
+//TexturedMaterial::TexturedMaterial() :
+//    Handle<TexturedMaterialObj>()
+//{}
+//
+//TexturedMaterial::TexturedMaterial(const Context& context,
+//                                   const TextureSampler& texture) :
+//    Handle<TexturedMaterialObj>(context, texture)
+//{}
+//
+//TexturedMaterial::operator Material()
+//{
+//    return Material(std::static_pointer_cast<MaterialObj>(this->obj_));
+//}
+//
+//TexturedMaterial::operator Material() const
+//{
+//    return Material(std::static_pointer_cast<MaterialObj>(this->obj_));
+//}
 
 };//namespace optix_helpers

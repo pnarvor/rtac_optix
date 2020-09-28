@@ -74,24 +74,24 @@ void PinHoleObj::set_fovy(float fovy)
     this->update_geometry();
 }
 
-const Source& PinHole::rayGeometryDefinition = PinHoleObj::rayGeometryDefinition;
+//const Source& PinHole::rayGeometryDefinition = PinHoleObj::rayGeometryDefinition;
 
-PinHole::PinHole()
-{}
-
-PinHole::PinHole(const Context& context, 
-                 const Buffer& renderBuffer,
-                 const RayType& rayType,
-                 const Source& raygenSource,
-                 const Sources& additionalHeaders) :
-    Handle<PinHoleObj>(new PinHoleObj(
-        context, renderBuffer, rayType, raygenSource, additionalHeaders))
-{}
-
-PinHole::operator RayGenerator()
-{
-    return RayGenerator(std::dynamic_pointer_cast<RayGeneratorObj>(this->obj_));
-}
+//PinHole::PinHole()
+//{}
+//
+//PinHole::PinHole(const Context& context, 
+//                 const Buffer& renderBuffer,
+//                 const RayType& rayType,
+//                 const Source& raygenSource,
+//                 const Sources& additionalHeaders) :
+//    Handle<PinHoleObj>(new PinHoleObj(
+//        context, renderBuffer, rayType, raygenSource, additionalHeaders))
+//{}
+//
+//PinHole::operator RayGenerator()
+//{
+//    return RayGenerator(std::dynamic_pointer_cast<RayGeneratorObj>(this->obj_));
+//}
 
 }; //namespace raygenerators
 }; //namespace samples

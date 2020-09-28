@@ -42,25 +42,26 @@ class PinHoleObj : public RayGeneratorObj
 
     void set_fovy(float fovy);
 };
+using PinHole = Handle<PinHoleObj>;
 
-class PinHole : public Handle<PinHoleObj>
-{
-    public:
-    
-    using Pose    = PinHoleObj::Pose;
-    using Vector3 = PinHoleObj::Vector3;
-    using Matrix3 = PinHoleObj::Matrix3;
-    static const Source& rayGeometryDefinition;
-    
-    PinHole();
-    PinHole(const Context& context, 
-            const Buffer& renderBuffer,
-            const RayType& rayType,
-            const Source& raygenSource,
-            const Sources& additionalHeaders = {});
-
-    operator RayGenerator();
-};
+//class PinHole : public Handle<PinHoleObj>
+//{
+//    public:
+//    
+//    using Pose    = PinHoleObj::Pose;
+//    using Vector3 = PinHoleObj::Vector3;
+//    using Matrix3 = PinHoleObj::Matrix3;
+//    static const Source& rayGeometryDefinition;
+//    
+//    PinHole();
+//    PinHole(const Context& context, 
+//            const Buffer& renderBuffer,
+//            const RayType& rayType,
+//            const Source& raygenSource,
+//            const Sources& additionalHeaders = {});
+//
+//    operator RayGenerator();
+//};
 
 }; //namespace raygenerators
 }; //namespace samples

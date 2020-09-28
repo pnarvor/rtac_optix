@@ -38,22 +38,22 @@ class BufferObj : public NamedObject<optix::Buffer>
 
     Shape shape() const;
 };
-
-class Buffer : public Handle<BufferObj>
-{
-    public:
-
-    using Shape = BufferObj::Shape;
-
-    Buffer();
-    Buffer(const Context& context,
-           RTbuffertype bufferType,
-           RTformat format,
-           const std::string& name);
-
-    // for downcasting
-    Buffer(const std::shared_ptr<BufferObj>& obj);
-};
+using Buffer = Handle<BufferObj>;
+//class Buffer : public Handle<BufferObj>
+//{
+//    public:
+//
+//    using Shape = BufferObj::Shape;
+//
+//    Buffer();
+//    Buffer(const Context& context,
+//           RTbuffertype bufferType,
+//           RTformat format,
+//           const std::string& name);
+//
+//    // for downcasting
+//    Buffer(const std::shared_ptr<BufferObj>& obj);
+//};
 
 class RenderBufferObj : public BufferObj
 {
@@ -68,17 +68,18 @@ class RenderBufferObj : public BufferObj
                     const std::string& name);
 };
 
-class RenderBuffer : public Handle<RenderBufferObj>
-{
-    public:
-    
-    RenderBuffer();
-    RenderBuffer(const Context& context, RTformat format,
-                 const std::string& name);
-    RenderBuffer(const std::shared_ptr<RenderBufferObj>& obj);
-
-    operator Buffer();    
-};
+using RenderBuffer = Handle<RenderBufferObj>;
+//class RenderBuffer : public Handle<RenderBufferObj>
+//{
+//    public:
+//    
+//    RenderBuffer();
+//    RenderBuffer(const Context& context, RTformat format,
+//                 const std::string& name);
+//    RenderBuffer(const std::shared_ptr<RenderBufferObj>& obj);
+//
+//    operator Buffer();    
+//};
 
 }; //namespace optix_helpers
 

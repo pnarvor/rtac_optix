@@ -35,16 +35,16 @@ BufferObj::Shape BufferObj::shape() const
     return res;
 }
 
-Buffer::Buffer()
-{}
-
-Buffer::Buffer(const Context& context,
-               RTbuffertype bufferType,
-               RTformat format,
-               const std::string& name) :
-    Handle<BufferObj>(context, bufferType, format, name)
-{
-}
+//Buffer::Buffer()
+//{}
+//
+//Buffer::Buffer(const Context& context,
+//               RTbuffertype bufferType,
+//               RTformat format,
+//               const std::string& name) :
+//    Handle<BufferObj>(context, bufferType, format, name)
+//{
+//}
 
 
 RenderBufferObj::RenderBufferObj(const Context& context, RTformat format,
@@ -52,30 +52,30 @@ RenderBufferObj::RenderBufferObj(const Context& context, RTformat format,
     BufferObj(context, RT_BUFFER_OUTPUT, format, name)
 {}
 
-Buffer::Buffer(const std::shared_ptr<BufferObj>& obj) :
-    Handle<BufferObj>(obj)
-{}
+//Buffer::Buffer(const std::shared_ptr<BufferObj>& obj) :
+//    Handle<BufferObj>(obj)
+//{}
 
 RenderBufferObj::RenderBufferObj(const optix::Buffer& buffer, const std::string& name) :
     BufferObj(buffer, name)
 {}
 
-RenderBuffer::RenderBuffer()
-{}
-
-RenderBuffer::RenderBuffer(const Context& context, RTformat format,
-                           const std::string& name) :
-    Handle<RenderBufferObj>(context, format, name)
-{}
-
-RenderBuffer::RenderBuffer(const std::shared_ptr<RenderBufferObj>& obj) :
-    Handle<RenderBufferObj>(obj)
-{}
-
-RenderBuffer::operator Buffer()
-{
-    return Buffer(std::dynamic_pointer_cast<BufferObj>(this->obj_));
-}
+//RenderBuffer::RenderBuffer()
+//{}
+//
+//RenderBuffer::RenderBuffer(const Context& context, RTformat format,
+//                           const std::string& name) :
+//    Handle<RenderBufferObj>(context, format, name)
+//{}
+//
+//RenderBuffer::RenderBuffer(const std::shared_ptr<RenderBufferObj>& obj) :
+//    Handle<RenderBufferObj>(obj)
+//{}
+//
+//RenderBuffer::operator Buffer()
+//{
+//    return Buffer(std::dynamic_pointer_cast<BufferObj>(this->obj_));
+//}
 
 }; //namespace optix_helpers
 

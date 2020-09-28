@@ -21,7 +21,7 @@ class RayGeneratorObj
     using Pose    = rtac::types::Pose<float>;
     using Vector3 = rtac::types::Vector3<float>;
     using Matrix3 = rtac::types::Matrix3<float>;
-    using Shape   = Buffer::Shape;
+    using Shape   = BufferObj::Shape;
 
     protected:
     

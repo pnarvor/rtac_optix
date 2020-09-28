@@ -13,6 +13,8 @@ class Handle
 {
     public:
 
+    template<typename> friend class Handle;
+
      //one single reference to the base ptr to be able to change it if needed (boost?)
     template <typename BaseType> 
     using BasePtr = std::shared_ptr<BaseType>;
@@ -28,7 +30,14 @@ class Handle
 
     Handle(T* obj = NULL) : obj_(obj) {}
     Handle(const Ptr& obj) : obj_(obj) {}
-
+    template <typename Tother>
+    Handle(Handle<Tother>& other) :
+        obj_(std::static_pointer_cast<T>(other.obj_))
+    {}
+    template <typename Tother>
+    Handle(const Handle<Tother>& other) :
+        obj_(std::static_pointer_cast<T>(other.obj_))
+    {}
     template<class ...P>
     Handle(P... args) : obj_(new T(args...)) {}
 

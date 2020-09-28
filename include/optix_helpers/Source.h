@@ -32,13 +32,14 @@ class SourceObj
     int num_lines() const;
 };
 
-class Source : public Handle<SourceObj>
-{
-    public:
-
-    Source();
-    Source(const std::string& source, const std::string& name);
-};
+using Source = Handle<SourceObj>;
+//class Source : public Handle<SourceObj>
+//{
+//    public:
+//
+//    Source();
+//    Source(const std::string& source, const std::string& name);
+//};
 
 using Sources = std::vector<Source>;
 

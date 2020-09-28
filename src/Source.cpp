@@ -33,13 +33,13 @@ int SourceObj::num_lines() const
     return std::count(source_.begin(), source_.end(), '\n');
 }
 
-Source::Source() :
-    Handle<SourceObj>()
-{}
-
-Source::Source(const std::string& source, const std::string& name) :
-    Handle<SourceObj>(new SourceObj(source, name))
-{}
+//Source::Source() :
+//    Handle<SourceObj>()
+//{}
+//
+//Source::Source(const std::string& source, const std::string& name) :
+//    Handle<SourceObj>(new SourceObj(source, name))
+//{}
 
 }; //namespace optix_helpers
 
