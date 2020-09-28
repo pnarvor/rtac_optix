@@ -41,10 +41,12 @@ class Handle
     template<class ...P>
     Handle(P... args) : obj_(new T(args...)) {}
 
+    Ptr ptr()        { return obj_; }
     Ptr operator->() { return obj_; }
     T&  operator*()  { return *obj_; }
     T*  get()        { return obj_->get(); }
 
+    ConstPtr ptr()        const { return obj_; }
     ConstPtr operator->() const { return obj_; }
     const T& operator*()  const { return *obj_; }
     const T* get()        const { return obj_->get(); }
