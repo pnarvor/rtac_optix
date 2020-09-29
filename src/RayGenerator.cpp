@@ -46,31 +46,32 @@ void RayGeneratorObj::look_at(const Vector3& target,
                               const Vector3& position,
                               const Vector3& up)
 {
-    using namespace rtac::types::indexing;
-    // local y points towards target.
-    Vector3 y = target - position;
-    if(y.norm() < 1e-6) {
-        // Camera too close to target, look towards world y.
-        y = Vector3({0.0,1.0,0.0});
-    }
-    y.normalize();
+    this->set_pose(rtac::geometry::look_at(target, position, up));
+    //using namespace rtac::types::indexing;
+    //// local y points towards target.
+    //Vector3 y = target - position;
+    //if(y.norm() < 1e-6) {
+    //    // Camera too close to target, look towards world y.
+    //    y = Vector3({0.0,1.0,0.0});
+    //}
+    //y.normalize();
 
-    Vector3 x = y.cross(up);
-    if(x.norm() < 1e-6) {
-        // We are looking towards up. Using last image up direction.
-        x = y.cross(pose_.rotation_matrix()(all,1));
-        if(x.norm() < 1e-6) {
-            // No luck... We have to find another non-colinear vector.
-            x = rtac::algorithm::find_orthogonal(y);
-        }
-    }
-    x.normalize();
-    Vector3 z = x.cross(y);
+    //Vector3 x = y.cross(up);
+    //if(x.norm() < 1e-6) {
+    //    // We are looking towards up. Using last image up direction.
+    //    x = y.cross(pose_.rotation_matrix()(all,1));
+    //    if(x.norm() < 1e-6) {
+    //        // No luck... We have to find another non-colinear vector.
+    //        x = rtac::algorithm::find_orthogonal(y);
+    //    }
+    //}
+    //x.normalize();
+    //Vector3 z = x.cross(y);
 
-    rtac::types::Matrix3<float> r;
-    r(all,0) = x; r(all,1) = y; r(all,2) = z;
+    //rtac::types::Matrix3<float> r;
+    //r(all,0) = x; r(all,1) = y; r(all,2) = z;
 
-    this->set_pose(Pose::from_rotation_matrix(r, position));
+    //this->set_pose(Pose::from_rotation_matrix(r, position));
 }
  
 Buffer RayGeneratorObj::render_buffer() const

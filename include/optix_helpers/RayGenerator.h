@@ -7,6 +7,7 @@
 #include <optixu/optixpp.h>
 
 #include <rtac_base/types/Pose.h>
+#include <rtac_base/geometry.h>
 
 #include <optix_helpers/Handle.h>
 #include <optix_helpers/Buffer.h>
