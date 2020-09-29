@@ -56,6 +56,11 @@ class Handle
     ConstPtr operator->() const { return obj_; }
     const T& operator*()  const { return *obj_; }
     const T* get()        const { return obj_->get(); }
+    template <typename Tother>
+    bool is(const Handle<Tother>& other) const
+    {
+        return this->ptr() == other.ptr();
+    }
 
     Handle<T> copy() const { return Handle(new T(*obj_)); }
 
