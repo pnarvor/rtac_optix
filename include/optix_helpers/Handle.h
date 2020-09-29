@@ -41,6 +41,12 @@ class Handle
     template<class ...P>
     Handle(P... args) : obj_(new T(args...)) {}
 
+    template<class ...P>
+    static Handle<T> New(P... args)
+    {
+        return Handle(new T(args...));
+    }
+
     Ptr ptr()        { return obj_; }
     Ptr operator->() { return obj_; }
     T&  operator*()  { return *obj_; }
