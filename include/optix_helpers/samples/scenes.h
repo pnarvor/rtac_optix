@@ -142,6 +142,10 @@ Scene0<RenderBufferType>::Scene0(size_t width, size_t height)
     SceneItem lense1(this->context_, lense);
     lense1->set_pose(lense0->pose()*Quaternion({0.0,1.0,0.0,0.0}));
 
+    SceneItem mesh0 = items::mesh(context_, rtac::types::Mesh<float, uint32_t>::cube());
+    mesh0->model()->add_material(mirror);
+    mesh0->set_pose(Pose({-2.3, -4.3, 1.0}));
+
     // optix::Group topObject = (*this->context_)->createGroup();
     // topObject->setAcceleration((*this->context_)->createAcceleration("Trbvh"));
     // topObject->addChild(square0->node());
@@ -166,6 +170,7 @@ Scene0<RenderBufferType>::Scene0(size_t width, size_t height)
     context_->add_child(sphere0);
     context_->add_child(lense0);
     context_->add_child(lense1);
+    context_->add_child(mesh0);
 }
 
 }; //namespace scenes

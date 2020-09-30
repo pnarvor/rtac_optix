@@ -15,6 +15,11 @@ namespace optix_helpers {
 
 class GeometryTrianglesObj
 {
+    public:
+    
+    template <typename Tp, typename Tf>
+    using Mesh = rtac::types::Mesh<Tp,Tf,3>;
+
     protected:
 
     optix::GeometryTriangles geometry_;
@@ -29,6 +34,8 @@ class GeometryTrianglesObj
                          bool withFaces = true,
                          bool withNormals = false,
                          bool withTextureCoordinates = false);
+    template <typename Tp, typename Tf>
+    GeometryTrianglesObj(const Context& context, const Mesh<Tp,Tf>& mesh);
     
     template <typename T>
     void set_points(size_t count, const T* points);
@@ -39,7 +46,7 @@ class GeometryTrianglesObj
     template <typename T>
     void set_texture_coordinates(size_t count, const T* texCoords);
     template <typename Tp, typename Tf>
-    void set_mesh(const rtac::types::Mesh<Tp,Tf,3>& mesh);
+    void set_mesh(const Mesh<Tp,Tf>& mesh);
 
     optix::Buffer points()  const;
     optix::Buffer faces()   const;
@@ -54,6 +61,13 @@ class GeometryTrianglesObj
     optix::GeometryTriangles operator->() const;
 };
 using GeometryTriangles = Handle<GeometryTrianglesObj>;
+
+template <typename Tp, typename Tf>
+GeometryTrianglesObj::GeometryTrianglesObj(const Context& context, const Mesh<Tp,Tf>& mesh) :
+    GeometryTrianglesObj(context, true, false, false)
+{
+    this->set_mesh(mesh);
+}
 
 template <typename T>
 void GeometryTrianglesObj::set_points(size_t count, const T* points)
@@ -112,7 +126,7 @@ void GeometryTrianglesObj::set_texture_coordinates(size_t count, const T* texCoo
 
 
 template <typename Tp, typename Tf>
-void GeometryTrianglesObj::set_mesh(const rtac::types::Mesh<Tp,Tf,3>& mesh)
+void GeometryTrianglesObj::set_mesh(const Mesh<Tp,Tf>& mesh)
 {
     // cannot use directly set_poitn and set_face because Eigen in column-wise order
     // change this.

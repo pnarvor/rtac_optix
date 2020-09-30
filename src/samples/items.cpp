@@ -19,7 +19,6 @@ SceneItem sphere(const Context& context, const Materials& materials, float radiu
     for(auto material : materials) {
         model->add_material(material);
     }
-    //return context->create_scene_item(model);
     return SceneItem(context, model);
 }
 
@@ -41,7 +40,6 @@ SceneItem tube(const Context& context, const Materials& materials,
     for(auto material : materials) {
         model->add_material(material);
     }
-    //return context->create_scene_item(model);
     return SceneItem(context, model);
 }
 
@@ -53,7 +51,6 @@ SceneItem parabola(const Context& context, const Materials& materials,
     for(auto material : materials) {
         model->add_material(material);
     }
-    //return context->create_scene_item(model);
     return SceneItem(context, model);
 }
 
