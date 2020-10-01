@@ -22,14 +22,22 @@ class SceneBase
 {
     protected:
 
-    //Context          context_;
     Scene            context_;
     RayGeneratorType raygenerator_;
 
     public:
 
     SceneBase() {};
-    RayGeneratorType view() { return raygenerator_; }
+
+    RayGeneratorType view()
+    { 
+        return raygenerator_;
+    }
+
+    void add_child(const SceneItem& item)
+    {
+        context_->add_child(item);
+    }
 
     void launch()
     {
@@ -39,7 +47,7 @@ class SceneBase
 };
 
 template <typename RenderBufferType>
-class Scene0 : public SceneBase<raygenerators::PinHole>
+class SceneRGB0 : public SceneBase<raygenerators::PinHole>
 {
     public:
 
@@ -50,17 +58,26 @@ class Scene0 : public SceneBase<raygenerators::PinHole>
 
     protected:
 
+    raytypes::RGB raytype_;
     RenderBufferType renderBuffer_;
 
     public:
 
-    Scene0(size_t width, size_t height);
+    SceneRGB0(size_t width, size_t height);
 
-    RenderBufferType render_buffer() { return renderBuffer_; };
+    RenderBufferType render_buffer()
+    {
+        return renderBuffer_;
+    }
+
+    raytypes::RGB raytype()
+    {
+        return raytype_;
+    }
 };
 
 template <typename RenderBufferType>
-const Source Scene0<RenderBufferType>::raygenSource = Source(R"(
+const Source SceneRGB0<RenderBufferType>::raygenSource = Source(R"(
 #include <optix.h>
 
 using namespace optix;
@@ -85,47 +102,61 @@ RT_PROGRAM void rgb_camera()
 }
 )", "rgb_camera");
 
-
 template <typename RenderBufferType>
-Scene0<RenderBufferType>::Scene0(size_t width, size_t height)
+SceneRGB0<RenderBufferType>::SceneRGB0(size_t width, size_t height) :
+    SceneBase(),
+    raytype_(this->context_)
 {
-    using namespace std;
-    size_t W = width;
-    size_t H = height;
-
-    //(*this->context_)->setMaxTraceDepth(10);
-    //(*this->context_)->setMaxCallableProgramDepth(10);
-    //cout << "Default stack size : " << (*this->context_)->getStackSize() << endl;
-    //(*this->context_)->setStackSize(8096);
-    //cout << "Stack size : " << (*this->context_)->getStackSize() << endl;
-
-    raytypes::RGB rayType0(this->context_);
+    //raytype_ = raytypes::RGB(this->context_);
     
     renderBuffer_ = RenderBufferType(context_, RT_FORMAT_FLOAT3, "renderBuffer");
-    this->raygenerator_ = raygenerators::PinHole(context_, renderBuffer_, rayType0, raygenSource);
-    this->raygenerator_->set_size(W,H);
+    this->raygenerator_ = raygenerators::PinHole(context_, renderBuffer_, raytype_, raygenSource);
+    this->raygenerator_->set_size(width,height);
     this->raygenerator_->set_range(1.0e-2f, RT_DEFAULT_MAX);
     this->raygenerator_->look_at({0.0,0.0,0.0},{ 2.0, 5.0, 4.0});
 
     (*this->context_)->setRayGenerationProgram(0, *this->raygenerator_->raygen_program());
     (*this->context_)->setMissProgram(0, *raytypes::RGB::rgb_miss_program(this->context_, {0.8,0.8,0.8}));
+}
+
+// 
+template <typename RenderBufferType>
+class Scene0 : public SceneRGB0<RenderBufferType>
+{
+    public:
+
+    using Pose = rtac::types::Pose<float>;
+    using Quaternion = rtac::types::Quaternion<float>;
+
+    static const Source raygenSource;
+
+    public:
+
+    Scene0(size_t width, size_t height);
+};
+
+template <typename RenderBufferType>
+Scene0<RenderBufferType>::Scene0(size_t width, size_t height) :
+    SceneRGB0<RenderBufferType>(width, height)
+{
+    using namespace std;
     
-    Material mirror   = materials::perfect_mirror(this->context_, rayType0);
-    Material glass    = materials::perfect_refraction(this->context_, rayType0, 1.1);
-    TexturedMaterial checkerboard = materials::checkerboard(this->context_, rayType0, 
+    Material mirror   = materials::perfect_mirror(this->context_, this->raytype_);
+    Material glass    = materials::perfect_refraction(this->context_, this->raytype_, 1.1);
+    TexturedMaterial checkerboard = materials::checkerboard(this->context_, this->raytype_, 
                                                             {255,255,255},
                                                             {0,0,0}, 10, 10);
 
     SceneItem square0 = items::square(this->context_,
-        {materials::checkerboard(this->context_, rayType0, {0,255,0}, {0,0,255}, 10, 10)},
+        {materials::checkerboard(this->context_, this->raytype_, {0,255,0}, {0,0,255}, 10, 10)},
         10);
 
     SceneItem cube0 = items::cube(this->context_,
-        {materials::checkerboard(this->context_, rayType0, {255,255,255}, {0,0,0}, 4, 4)});
+        {materials::checkerboard(this->context_, this->raytype_, {255,255,255}, {0,0,0}, 4, 4)});
     cube0->set_pose(Pose({4,0,1}));
 
     SceneItem cube1 = items::cube(this->context_,
-        {materials::checkerboard(this->context_, rayType0, {255,255,255}, {0,0,0}, 4, 4)});
+        {materials::checkerboard(this->context_, this->raytype_, {255,255,255}, {0,0,0}, 4, 4)});
     cube1->set_pose(Pose({-2.5,4,2}));
 
     SceneItem sphere0 = items::sphere(this->context_, {mirror}, 2.0);
@@ -133,7 +164,7 @@ Scene0<RenderBufferType>::Scene0(size_t width, size_t height)
 
     Model lense(this->context_);
     lense->set_geometry(geometries::parabola(this->context_, 0.1, -0.2, 0.2));
-    auto lenseGlass = materials::perfect_refraction(this->context_, rayType0, 1.7);
+    auto lenseGlass = materials::perfect_refraction(this->context_, this->raytype_, 1.7);
     lense->add_material(lenseGlass);
     
     SceneItem lense0(this->context_, lense);
@@ -142,35 +173,17 @@ Scene0<RenderBufferType>::Scene0(size_t width, size_t height)
     SceneItem lense1(this->context_, lense);
     lense1->set_pose(lense0->pose()*Quaternion({0.0,1.0,0.0,0.0}));
 
-    SceneItem mesh0 = items::mesh(context_, rtac::types::Mesh<float, uint32_t>::cube());
+    SceneItem mesh0 = items::mesh(this->context_, rtac::types::Mesh<float, uint32_t>::cube());
     mesh0->model()->add_material(mirror);
     mesh0->set_pose(Pose({-2.3, -4.3, 1.0}));
 
-    // optix::Group topObject = (*this->context_)->createGroup();
-    // topObject->setAcceleration((*this->context_)->createAcceleration("Trbvh"));
-    // topObject->addChild(square0->node());
-    // topObject->addChild(cube0->node());
-    // topObject->addChild(cube1->node());
-    // topObject->addChild(sphere0->node());
-    // topObject->addChild(lense0->node());
-    // topObject->addChild(lense1->node());
-
-    // ///// THIS
-    // //(*mirror->get_closest_hit_program(rayType0))["topObject"]->set(topObject);
-    // //(*glass->get_closest_hit_program(rayType0))["topObject"]->set(topObject);
-    // //(*lenseGlass->get_closest_hit_program(rayType0))["topObject"]->set(topObject);
-    // //(*raygenProgram)["topObject"]->set(topObject);
-
-    // // CAN BE REPLACED WITH THIS (thanks to optix variable scope system)
-    // (*this->context_)["topObject"]->set(topObject);
-
-    context_->add_child(square0);
-    context_->add_child(cube0);
-    context_->add_child(cube1);
-    context_->add_child(sphere0);
-    context_->add_child(lense0);
-    context_->add_child(lense1);
-    context_->add_child(mesh0);
+    this->add_child(square0);
+    this->add_child(cube0);
+    this->add_child(cube1);
+    this->add_child(sphere0);
+    this->add_child(lense0);
+    this->add_child(lense1);
+    this->add_child(mesh0);
 }
 
 }; //namespace scenes
