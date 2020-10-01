@@ -44,6 +44,11 @@ class SceneBase
         auto shape = raygenerator_->render_shape();
         (*context_)->launch(0, shape.width, shape.height);
     }
+
+    Scene context()
+    {
+        return context_;
+    }
 };
 
 template <typename RenderBufferType>
@@ -107,8 +112,6 @@ SceneRGB0<RenderBufferType>::SceneRGB0(size_t width, size_t height) :
     SceneBase(),
     raytype_(this->context_)
 {
-    //raytype_ = raytypes::RGB(this->context_);
-    
     renderBuffer_ = RenderBufferType(context_, RT_FORMAT_FLOAT3, "renderBuffer");
     this->raygenerator_ = raygenerators::PinHole(context_, renderBuffer_, raytype_, raygenSource);
     this->raygenerator_->set_size(width,height);
