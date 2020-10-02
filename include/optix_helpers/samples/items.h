@@ -33,12 +33,12 @@ template <typename Tp, typename Tf>
 SceneItem mesh(const Context& context, const rtac::types::Mesh<Tp,Tf,3>& m,
                const Materials& materials)
 {
-    Model model(context);
+    auto model = Model::New(context);
     model->set_geometry(geometries::mesh(context, m));
     for(auto material : materials) {
         model->add_material(material);
     }
-    return SceneItem(context, model);
+    return SceneItem::New(context, model);
 }
 
 }; //namespace items

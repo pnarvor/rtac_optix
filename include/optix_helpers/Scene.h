@@ -24,15 +24,16 @@ class SceneObj : public ContextObj
 
     void add_child(const SceneItem& item);
 };
-class Scene : public Handle<SceneObj>
-{
-    public:
-
-    Scene(const std::string& topObjectName = "topObject",
-          bool loadDefaultConfig = true);
-
-    operator Context();
-};
+using Scene = Handle<SceneObj>;
+//class Scene : public Handle<SceneObj>
+//{
+//    public:
+//
+//    Scene(const std::string& topObjectName = "topObject",
+//          bool loadDefaultConfig = true);
+//
+//    operator Context();
+//};
 
 }; //namespace optix_helpers
 #endif //_DEF_OPTIX_HELPERS_SCENE_H_

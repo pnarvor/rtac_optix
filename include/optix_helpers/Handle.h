@@ -30,10 +30,10 @@ class Handle
 
     Handle(T* obj = NULL) : obj_(obj) {}
     Handle(const Ptr& obj) : obj_(obj) {}
-    template <typename Tother>
-    Handle(Handle<Tother>& other) :
-        obj_(std::static_pointer_cast<T>(other.obj_))
-    {}
+    //template <typename Tother>
+    //Handle(Handle<Tother>& other) :
+    //    obj_(std::static_pointer_cast<T>(other.obj_))
+    //{}
     template <typename Tother>
     Handle(const Handle<Tother>& other) :
         obj_(std::static_pointer_cast<T>(other.obj_))

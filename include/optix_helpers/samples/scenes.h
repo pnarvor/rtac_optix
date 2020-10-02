@@ -27,7 +27,9 @@ class SceneBase
 
     public:
 
-    SceneBase() {};
+    SceneBase() :
+        context_(Scene::New())
+    {}
 
     RayGeneratorType view()
     { 
@@ -112,8 +114,8 @@ SceneRGB0<RenderBufferType>::SceneRGB0(size_t width, size_t height) :
     SceneBase(),
     raytype_(this->context_)
 {
-    renderBuffer_ = RenderBufferType(context_, RT_FORMAT_FLOAT3, "renderBuffer");
-    this->raygenerator_ = raygenerators::PinHole(context_, renderBuffer_, raytype_, raygenSource);
+    renderBuffer_ = RenderBufferType::New(context_, RT_FORMAT_FLOAT3, "renderBuffer");
+    this->raygenerator_ = raygenerators::PinHole::New(context_, renderBuffer_, raytype_, raygenSource);
     this->raygenerator_->set_size(width,height);
     this->raygenerator_->set_range(1.0e-2f, RT_DEFAULT_MAX);
     this->raygenerator_->look_at({0.0,0.0,0.0},{ 2.0, 5.0, 4.0});
@@ -165,7 +167,7 @@ Scene0<RenderBufferType>::Scene0(size_t width, size_t height) :
     SceneItem sphere0 = items::sphere(this->context_, {mirror}, 2.0);
     sphere0->set_pose(Pose({0,-0.5,1}));
 
-    Model lense(this->context_);
+    auto lense = Model::New(this->context_);
     lense->set_geometry(geometries::parabola(this->context_, 0.1, -0.2, 0.2));
     auto lenseGlass = materials::perfect_refraction(this->context_, this->raytype_, 1.7);
     lense->add_material(lenseGlass);

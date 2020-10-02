@@ -35,14 +35,14 @@ void SceneObj::add_child(const SceneItem& item)
     topObject_->addChild(item->node());
 }
 
-Scene::Scene(const std::string& topObjectName, bool loadDefaultConfig) :
-    Handle<SceneObj>(topObjectName, loadDefaultConfig)
-{}
-
-Scene::operator Context()
-{
-    return Context(std::dynamic_pointer_cast<ContextObj>(this->obj_));
-}
+//Scene::Scene(const std::string& topObjectName, bool loadDefaultConfig) :
+//    Handle<SceneObj>(topObjectName, loadDefaultConfig)
+//{}
+//
+//Scene::operator Context()
+//{
+//    return Context(std::dynamic_pointer_cast<ContextObj>(this->obj_));
+//}
 
 }; //namespace optix_helpers
 

@@ -37,14 +37,15 @@ class ContextObj
     optix::Context operator->() const;
     optix::Context context()    const; //? should be const ?
 };
+using Context = Handle<ContextObj>;
 
-class Context : public Handle<ContextObj>
-{
-    public:
-    
-    Context(int entryPointCount = 1);
-    Context(const std::shared_ptr<ContextObj>& obj);
-};
+//class Context : public Handle<ContextObj>
+//{
+//    public:
+//    
+//    Context(int entryPointCount = 1);
+//    Context(const std::shared_ptr<ContextObj>& obj);
+//};
 
 // Implementation
 template <typename RayT>
