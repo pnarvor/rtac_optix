@@ -34,7 +34,9 @@ void Nvrtc::load_default_include_dirs()
 }
 
 const std::string Nvrtc::defaultCompileOptions(
-    "-arch=compute_30 -use_fast_math -lineinfo -default-device -rdc=true -D__x86_64");
+    //"-arch=compute_30 -use_fast_math -lineinfo -default-device -rdc=true -D__x86_64");
+    // using default --gpu-architecture (-arch)
+    "-use_fast_math -lineinfo -default-device -rdc=true -D__x86_64");
 void Nvrtc::load_default_compile_options()
 {
     this->add_compile_options(defaultCompileOptions);
