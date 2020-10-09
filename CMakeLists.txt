@@ -110,7 +110,7 @@ endif()
 add_library(optix_helpers SHARED ${optix_helpers_SOURCES})
 set_target_properties(optix_helpers PROPERTIES 
     PUBLIC_HEADER "${optix_helpers_PUBLIC_HEADERS}"
-    # INSTALL_RPATH_USE_LINK_PATH True
+    INSTALL_RPATH_USE_LINK_PATH True
 )
 target_include_directories(optix_helpers
     PUBLIC
