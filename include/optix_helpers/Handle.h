@@ -65,6 +65,12 @@ class Handle
     Handle<T> copy() const { return Handle(new T(*obj_)); }
 
     operator bool() const { return (bool)obj_; }
+
+    template<typename Tother>
+    Handle<Tother> downcast()
+    {
+        return Handle<Tother>(std::dynamic_pointer_cast<Tother>(obj_));
+    }
 };
 
 }; //namespace optix_helpers
