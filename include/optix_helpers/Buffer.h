@@ -37,6 +37,12 @@ class BufferObj : public NamedObject<optix::Buffer>
     const optix::Buffer buffer() const;
 
     Shape shape() const;
+
+    template <typename T>
+    T* map(unsigned int mapFlags, T* userOutput = NULL);
+    template <typename T>
+    const T* map(T* userOutput = NULL) const;
+    void unmap() const;
 };
 using Buffer = Handle<BufferObj>;
 //class Buffer : public Handle<BufferObj>
@@ -54,6 +60,18 @@ using Buffer = Handle<BufferObj>;
 //    // for downcasting
 //    Buffer(const std::shared_ptr<BufferObj>& obj);
 //};
+
+template <typename T>
+T* BufferObj::map(unsigned int mapFlags, T* userOutput)
+{
+    return static_cast<T*>(object_->map(0, mapFlags, userOutput));
+}
+
+template <typename T>
+const T* BufferObj::map(T* userOutput) const
+{
+    return static_cast<const T*>(object_->map(0, RT_BUFFER_MAP_READ, userOutput));
+}
 
 class RenderBufferObj : public BufferObj
 {

@@ -11,7 +11,7 @@ class NamedObject
 {
     protected:
 
-    T object_;
+    mutable T object_;
     std::string name_;
 
     public:

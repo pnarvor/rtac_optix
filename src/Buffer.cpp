@@ -35,6 +35,11 @@ BufferObj::Shape BufferObj::shape() const
     return res;
 }
 
+void BufferObj::unmap() const
+{
+    object_->unmap();
+}
+
 //Buffer::Buffer()
 //{}
 //
