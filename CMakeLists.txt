@@ -148,28 +148,28 @@ include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/installation.cmake)
 install_target(optix_helpers)
 
 if(WITH_DISPLAY)
-    find_package(optix_helpers_display REQUIRED)
-    list(APPEND optix_display_PUBLIC_HEADERS
+    find_package(rtac_display REQUIRED)
+    list(APPEND optix_helpers_display_PUBLIC_HEADERS
         include/optix_helpers/display/RenderBufferGL.h
     )
-    add_library(optix_display SHARED
+    add_library(optix_helpers_display SHARED
         src/display/RenderBufferGL.cpp
     )
-    set_target_properties(optix_display PROPERTIES 
-        PUBLIC_HEADER "${optix_display_PUBLIC_HEADERS}"
+    set_target_properties(optix_helpers_display PROPERTIES 
+        PUBLIC_HEADER "${optix_helpers_display_PUBLIC_HEADERS}"
         INSTALL_RPATH_USE_LINK_PATH True
     )
-    target_include_directories(optix_display PUBLIC
+    target_include_directories(optix_helpers_display PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
         $<INSTALL_INTERFACE:include>
     )
-    target_link_libraries(optix_display PUBLIC
+    target_link_libraries(optix_helpers_display PUBLIC
         OpenGL::GL
         OpenGL::GLU
         GLEW::GLEW
         glfw
         optix_helpers
-        optix_helpers_display
+        rtac_display
     )
 endif()
 

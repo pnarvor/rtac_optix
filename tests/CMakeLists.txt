@@ -26,7 +26,7 @@ if(WITH_DISPLAY)
         render3d_test
     )
     list(APPEND test_deps
-        optix_display
+        optix_helpers_display
     )
 endif()
 

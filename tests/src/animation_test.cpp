@@ -11,12 +11,13 @@ using Pose = rtac::types::Pose<float>;
 using Quaternion = rtac::types::Quaternion<float>;
 
 #include <optix_helpers/samples/scenes.h>
-using namespace optix_helpers::samples;
-
-#include <optix_helpers/display/Display.h>
 #include <optix_helpers/display/RenderBufferGL.h>
-#include <optix_helpers/display/ImageRenderer.h>
+using namespace optix_helpers::samples;
 using namespace optix_helpers::display;
+
+#include <rtac_display/Display.h>
+#include <rtac_display/ImageRenderer.h>
+using namespace rtac::display;
 
 int main()
 {
