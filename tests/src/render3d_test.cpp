@@ -49,9 +49,7 @@ int main()
         view3d->set_pose(scene.view()->pose());
         
         scene.launch();
-        //imageRenderer->set_image(scene.render_buffer());
-        imageRenderer->set_image(scene.render_buffer()->shape(),
-                                 scene.render_buffer()->gl_id());
+        imageRenderer->set_image(scene.render_buffer());
         display.draw();
         
         cout << counter;

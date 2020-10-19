@@ -171,6 +171,8 @@ if(WITH_DISPLAY)
         optix_helpers
         rtac_display
     )
+    include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/installation.cmake)
+    install_target(optix_helpers_display)
 endif()
 
 
