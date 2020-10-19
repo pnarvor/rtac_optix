@@ -20,6 +20,15 @@ list(APPEND test_names
 list(APPEND test_deps
     optix_helpers
 )
+if(WITH_DISPLAY)
+    list(APPEND test_names
+        animation_test
+        render3d_test
+    )
+    list(APPEND test_deps
+        optix_display
+    )
+endif()
 
 foreach(name ${test_names})
     add_executable(${name} src/${name}.cpp)
