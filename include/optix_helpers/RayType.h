@@ -32,9 +32,9 @@ class RayType
 
     public:
 
-    Index              index()    const;
-    operator           Index()    const;
-    Source::ConstPtr   definition() const;
+    Index            index()    const;
+    operator         Index()    const;
+    Source::ConstPtr definition() const;
 };
 
 }; //namespace optix_helpers

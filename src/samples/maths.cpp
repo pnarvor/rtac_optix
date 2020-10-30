@@ -3,7 +3,7 @@
 
 namespace optix_helpers { namespace samples { namespace maths {
 
-const Source maths = Source(R"(
+const Source::ConstPtr maths = Source::New(R"(
 
 #include <optix.h>
 #include <optix_math.h>

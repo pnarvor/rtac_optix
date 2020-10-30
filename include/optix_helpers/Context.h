@@ -51,10 +51,10 @@ RayType Context::instanciate_raytype() const
 {
     if(RayT::typeIndex == RayType::uninitialized) {
         RayT::typeIndex = context_->getRayTypeCount();
-        return this->instanciate_raytype(RayT::definition);
+        return this->instanciate_raytype(RayT::typeDefinition);
     }
     else {
-        return RayType(RayT::typeIndex, RayT::definition);
+        return RayType(RayT::typeIndex, RayT::typeDefinition);
     }
 }
 

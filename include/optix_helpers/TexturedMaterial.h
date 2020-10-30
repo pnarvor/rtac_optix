@@ -12,36 +12,31 @@
 
 namespace optix_helpers {
 
-class TexturedMaterialObj : public MaterialObj
+class TexturedMaterial : public Material
 {
+    public:
+    
+    using Ptr      = Handle<TexturedMaterial>;
+    using ConstPtr = Handle<const TexturedMaterial>;
+
     protected:
 
-    TextureSampler texture_;
+    TextureSampler::ConstPtr texture_;
 
     public:
 
-    TexturedMaterialObj(const Context& context,
-                        const TextureSampler& texture);
+    static Ptr New(const Context::ConstPtr& context,
+                   const TextureSampler::ConstPtr& texture);
+    TexturedMaterial(const Context::ConstPtr& context,
+                     const TextureSampler::ConstPtr& texture);
 
-    virtual Program add_closest_hit_program(const RayType& rayType, const Program& program);
-    virtual Program add_any_hit_program(const RayType& rayType, const Program& program);
+    virtual Program::Ptr add_closest_hit_program(const RayType& rayType,
+                                                 const Program::Ptr& program);
+    virtual Program::Ptr add_any_hit_program(const RayType& rayType,       
+                                             const Program::Ptr& program);
 
-    TextureSampler texture();
-    const TextureSampler texture() const;
+    TextureSampler::ConstPtr texture() const;
 };
-
-using TexturedMaterial = Handle<TexturedMaterialObj>;
-//class TexturedMaterial : public Handle<TexturedMaterialObj>
-//{
-//    public:
-//
-//    TexturedMaterial();
-//    TexturedMaterial(const Context& context,
-//                     const TextureSampler& texture);
-//
-//    operator Material();
-//    operator Material() const;
-//};
 
 }; //namespace optix_helpers
 

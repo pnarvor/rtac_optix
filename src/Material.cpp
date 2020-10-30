@@ -2,49 +2,66 @@
 
 namespace optix_helpers {
 
-MaterialObj::MaterialObj(const Context& context) :
+Material::Ptr Material::New(const Context::ConstPtr& context)
+{
+    return Ptr(new Material(context));
+}
+
+Material::Material(const Context::ConstPtr& context) :
     material_((*context)->createMaterial())
 {}
 
-Program MaterialObj::add_closest_hit_program(const RayType& rayType, const Program& program)
+Program::Ptr Material::add_closest_hit_program(const RayType& rayType,
+                                                    const Program::Ptr& program)
 {
-    material_->setClosestHitProgram(rayType->index(), *program);
-    closestHitPrograms_.insert({rayType->index(), program});
-    rayTypes_.insert({rayType->index(), rayType});
+    material_->setClosestHitProgram(rayType.index(), *program);
+    closestHitPrograms_.insert({rayType.index(), program});
+    rayTypes_.insert({rayType.index(), rayType});
 
     return program;
 }
 
-Program MaterialObj::add_any_hit_program(const RayType& rayType, const Program& program)
+Program::Ptr Material::add_any_hit_program(const RayType& rayType,
+                                                const Program::Ptr& program)
 {
-    material_->setAnyHitProgram(rayType->index(), *program);
-    anyHitPrograms_.insert({rayType->index(), program});
-    rayTypes_.insert({rayType->index(), rayType});
+    material_->setAnyHitProgram(rayType.index(), *program);
+    anyHitPrograms_.insert({rayType.index(), program});
+    rayTypes_.insert({rayType.index(), rayType});
 
     return program;
 }
 
-Program MaterialObj::get_closest_hit_program(const RayType& rayType) const
+Program::ConstPtr Material::get_closest_hit_program(const RayType& rayType) const
 {
-    return closestHitPrograms_.at(rayType->index());
+    return closestHitPrograms_.at(rayType.index());
 }
 
-Program MaterialObj::get_any_hit_program(const RayType& rayType) const
+Program::ConstPtr Material::get_any_hit_program(const RayType& rayType) const
 {
-    return anyHitPrograms_.at(rayType->index());
+    return anyHitPrograms_.at(rayType.index());
 }
 
-optix::Material MaterialObj::material() const
+Program::Ptr Material::get_closest_hit_program(const RayType& rayType)
+{
+    return closestHitPrograms_.at(rayType.index());
+}
+
+Program::Ptr Material::get_any_hit_program(const RayType& rayType)
+{
+    return anyHitPrograms_.at(rayType.index());
+}
+
+optix::Material Material::material() const
 {
     return material_;
 }
 
-optix::Material MaterialObj::operator->() const
+optix::Material Material::operator->() const
 {
     return material_;
 }
 
-MaterialObj::operator optix::Material() const
+Material::operator optix::Material() const
 {
     return material_;
 }

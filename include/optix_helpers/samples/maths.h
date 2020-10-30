@@ -5,7 +5,7 @@
 
 namespace optix_helpers { namespace samples { namespace maths {
 
-extern const Source maths;
+extern const Source::ConstPtr maths;
 
 }; //namespace maths
 }; //namespace samples

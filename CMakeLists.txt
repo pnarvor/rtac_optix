@@ -72,8 +72,8 @@ list(APPEND optix_helpers_SOURCES
     src/Buffer.cpp
     src/RayType.cpp
     src/TextureSampler.cpp
-    # src/Material.cpp
-    # src/TexturedMaterial.cpp
+    src/Material.cpp
+    src/TexturedMaterial.cpp
     # src/Geometry.cpp
     # src/GeometryTriangles.cpp
     # src/Model.cpp
@@ -100,7 +100,7 @@ if(BUILD_SAMPLES)
         src/samples/utils.cpp
         src/samples/raytypes.cpp
         src/samples/textures.cpp
-        # src/samples/materials.cpp
+        src/samples/materials.cpp
         # src/samples/geometries.cpp
         # src/samples/items.cpp
         # src/samples/PinHole.cpp

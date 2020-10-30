@@ -14,13 +14,16 @@
 
 namespace optix_helpers {
 
-class MaterialObj
+class Material
 {
     //This is a class to help with material manipulations in optix
     public:
 
+    using Ptr      = Handle<Material>;
+    using ConstPtr = Handle<const Material>;
+
     using RayTypeCache = std::unordered_map<RayType::Index, RayType>;
-    using ProgramCache = std::unordered_map<RayType::Index, Program>;
+    using ProgramCache = std::unordered_map<RayType::Index, Program::Ptr>;
 
     protected:
     
@@ -31,20 +34,25 @@ class MaterialObj
 
     public:
 
-    MaterialObj(const Context& context);
+    static Ptr New(const Context::ConstPtr& context);
+    Material(const Context::ConstPtr& context);
 
-    virtual Program add_closest_hit_program(const RayType& rayType, const Program& program);
-    virtual Program add_any_hit_program(const RayType& rayType, const Program& program);
+    virtual Program::Ptr add_closest_hit_program(const RayType& rayType,
+                                                 const Program::Ptr& program);
+    virtual Program::Ptr add_any_hit_program(const RayType& rayType,
+                                             const Program::Ptr& program);
 
-    Program get_closest_hit_program(const RayType& rayType) const;
-    Program get_any_hit_program(const RayType& rayType)     const;
+    Program::ConstPtr get_closest_hit_program(const RayType& rayType) const;
+    Program::ConstPtr get_any_hit_program(const RayType& rayType)     const;
+    Program::Ptr get_closest_hit_program(const RayType& rayType);
+    Program::Ptr get_any_hit_program(const RayType& rayType);
     optix::Material material() const;
     optix::Material operator->() const;
     operator optix::Material() const;
 };
-using Material  = Handle<MaterialObj>;
-using Materials = std::vector<Material>;
+using Materials = std::vector<Material::ConstPtr>;
 
 }; //namespace optix_helpers
 
 #endif //_DEF_OPTIX_HELPERS_MATERIAL_H_
+

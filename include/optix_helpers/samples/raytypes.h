@@ -12,7 +12,7 @@ class RGB : public RayType
     public:
 
     static Index typeIndex;
-    static const Source::ConstPtr definition;
+    static const Source::ConstPtr typeDefinition;
 
     RGB(const Context::ConstPtr& context);
 

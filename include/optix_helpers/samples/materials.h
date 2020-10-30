@@ -14,27 +14,28 @@
 
 namespace optix_helpers { namespace samples { namespace materials {
 
-Material rgb(const Context& context, const raytypes::RGB& rayType, 
+Material::Ptr rgb(const Context::ConstPtr& context, const raytypes::RGB& rayType, 
              const std::array<float,3>& color = {1.0,1.0,1.0});
-Material white(const Context& context, const raytypes::RGB& rayType);
-Material black(const Context& context, const raytypes::RGB& rayType);
-Material red(const Context& context, const raytypes::RGB& rayType);
-Material green(const Context& context, const raytypes::RGB& rayType);
-Material blue(const Context& context, const raytypes::RGB& rayType);
+Material::Ptr white(const Context::ConstPtr& context, const raytypes::RGB& rayType);
+Material::Ptr black(const Context::ConstPtr& context, const raytypes::RGB& rayType);
+Material::Ptr red(const Context::ConstPtr& context, const raytypes::RGB& rayType);
+Material::Ptr green(const Context::ConstPtr& context, const raytypes::RGB& rayType);
+Material::Ptr blue(const Context::ConstPtr& context, const raytypes::RGB& rayType);
 
-Material lambert(const Context& context, const raytypes::RGB& raytype,
+Material::Ptr lambert(const Context::ConstPtr& context, const raytypes::RGB& raytype,
                  const std::array<float,3>& light = {0.0,0.0,0.0},
                  const std::array<float,3>& color = {1.0,1.0,1.0});
 
-Material barycentrics(const Context& context, const raytypes::RGB& rayType);
+Material::Ptr barycentrics(const Context::ConstPtr& context, const raytypes::RGB& rayType);
 
-TexturedMaterial checkerboard(const Context& context, const raytypes::RGB& rayType,
-                              const std::array<uint8_t,3>& color1 = {255,255,255},
-                              const std::array<uint8_t,3>& color2 = {0,0,0},
-                              size_t width = 64, size_t height = 64);
+TexturedMaterial::Ptr checkerboard(const Context::ConstPtr& context,
+                                   const raytypes::RGB& rayType,
+                                   const std::array<uint8_t,3>& color1 = {255,255,255},
+                                   const std::array<uint8_t,3>& color2 = {0,0,0},
+                                   size_t width = 64, size_t height = 64);
 
-Material perfect_mirror(const Context& context, const raytypes::RGB& rayType);
-Material perfect_refraction(const Context& context, const raytypes::RGB& rayType,
+Material::Ptr perfect_mirror(const Context::ConstPtr& context, const raytypes::RGB& rayType);
+Material::Ptr perfect_refraction(const Context::ConstPtr& context, const raytypes::RGB& rayType,
                             float refractiveIndex = 2.417);
 
 

@@ -2,53 +2,36 @@
 
 namespace optix_helpers {
 
-TexturedMaterialObj::TexturedMaterialObj(const Context& context, const TextureSampler& texture) :
-    MaterialObj(context),
+TexturedMaterial::Ptr TexturedMaterial::New(const Context::ConstPtr& context,
+                                            const TextureSampler::ConstPtr& texture)
+{
+    return Ptr(new TexturedMaterial(context, texture));
+}
+
+TexturedMaterial::TexturedMaterial(const Context::ConstPtr& context,
+                                   const TextureSampler::ConstPtr& texture) :
+    Material(context),
     texture_(texture)
 {
 }
 
-Program TexturedMaterialObj::add_closest_hit_program(const RayType& rayType,
-                                                     const Program& program)
+Program::Ptr TexturedMaterial::add_closest_hit_program(const RayType& rayType,
+                                                       const Program::Ptr& program)
 {
-    this->MaterialObj::add_closest_hit_program(rayType, program)->set_object(texture_);
+    this->Material::add_closest_hit_program(rayType, program)->set_object(texture_);
     return program;
 }
 
-Program TexturedMaterialObj::add_any_hit_program(const RayType& rayType,
-                                                 const Program& program)
+Program::Ptr TexturedMaterial::add_any_hit_program(const RayType& rayType,
+                                                   const Program::Ptr& program)
 {
-    this->MaterialObj::add_any_hit_program(rayType, program)->set_object(texture_);
+    this->Material::add_any_hit_program(rayType, program)->set_object(texture_);
     return program;
 }
 
-TextureSampler TexturedMaterialObj::texture()
+TextureSampler::ConstPtr TexturedMaterial::texture() const
 {
     return texture_;
 }
-
-const TextureSampler TexturedMaterialObj::texture() const
-{
-    return texture_;
-}
-
-//TexturedMaterial::TexturedMaterial() :
-//    Handle<TexturedMaterialObj>()
-//{}
-//
-//TexturedMaterial::TexturedMaterial(const Context& context,
-//                                   const TextureSampler& texture) :
-//    Handle<TexturedMaterialObj>(context, texture)
-//{}
-//
-//TexturedMaterial::operator Material()
-//{
-//    return Material(std::static_pointer_cast<MaterialObj>(this->obj_));
-//}
-//
-//TexturedMaterial::operator Material() const
-//{
-//    return Material(std::static_pointer_cast<MaterialObj>(this->obj_));
-//}
 
 };//namespace optix_helpers

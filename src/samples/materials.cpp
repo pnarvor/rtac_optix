@@ -2,10 +2,10 @@
 
 namespace optix_helpers { namespace samples { namespace materials {
 
-Material rgb(const Context& context, const raytypes::RGB& rayType,
-             const std::array<float,3>& color)
+Material::Ptr rgb(const Context::ConstPtr& context, const raytypes::RGB& rayType,
+                  const std::array<float,3>& color)
 {
-    Program closestHit = context->create_program(Source(R"(
+    auto closestHit = context->create_program(Source::New(R"(
     #include <optix.h>
     using namespace optix;
     
@@ -20,7 +20,7 @@ Material rgb(const Context& context, const raytypes::RGB& rayType,
         rayPayload.color = rgbColor;
     }
     
-    )", "closest_hit_rgb"), {rayType->definition()});
+    )", "closest_hit_rgb"), {rayType.definition()});
     (*closestHit)["rgbColor"]->setFloat(make_float3(color));
     
     auto material = Material::New(context);
@@ -28,9 +28,9 @@ Material rgb(const Context& context, const raytypes::RGB& rayType,
     return material;
 }
 
-Material white(const Context& context, const raytypes::RGB& rayType)
+Material::Ptr white(const Context::ConstPtr& context, const raytypes::RGB& rayType)
 {
-    Source closestHit(R"(
+    auto closestHit = Source::New(R"(
     #include <optix.h>
     using namespace optix;
     
@@ -50,34 +50,34 @@ Material white(const Context& context, const raytypes::RGB& rayType)
     
     auto material = Material::New(context);
     material->add_closest_hit_program(rayType,
-        context->create_program(closestHit, {rayType->definition()}));
+        context->create_program(closestHit, {rayType.definition()}));
     return material;
 }
 
-Material black(const Context& context, const raytypes::RGB& rayType)
+Material::Ptr black(const Context::ConstPtr& context, const raytypes::RGB& rayType)
 {
     return rgb(context, rayType, {0.0,0.0,0.0});
 }
 
-Material red(const Context& context, const raytypes::RGB& rayType)
+Material::Ptr red(const Context::ConstPtr& context, const raytypes::RGB& rayType)
 {
     return rgb(context, rayType, {1.0,0.0,0.0});
 }
 
-Material green(const Context& context, const raytypes::RGB& rayType)
+Material::Ptr green(const Context::ConstPtr& context, const raytypes::RGB& rayType)
 {
     return rgb(context, rayType, {0.0,1.0,0.0});
 }
 
-Material blue(const Context& context, const raytypes::RGB& rayType)
+Material::Ptr blue(const Context::ConstPtr& context, const raytypes::RGB& rayType)
 {
     return rgb(context, rayType, {0.0,0.0,1.0});
 }
 
-Material lambert(const Context& context, const raytypes::RGB& rayType,
+Material::Ptr lambert(const Context::ConstPtr& context, const raytypes::RGB& rayType,
                  const std::array<float,3>& light, const std::array<float,3>& color)
 {
-    Source closestHit(R"(
+    auto closestHit = Source::New(R"(
     #include <optix.h>
     #include <optix_math.h>
     using namespace optix;
@@ -105,7 +105,7 @@ Material lambert(const Context& context, const raytypes::RGB& rayType,
     
     )", "closest_hit_perfect_mirror");
     auto material = Material::New(context);
-    Program program = context->create_program(closestHit, {rayType->definition()});
+    auto program = context->create_program(closestHit, {rayType.definition()});
     
     (*program)["light"]->setFloat(make_float3(light));
     (*program)["color"]->setFloat(make_float3(color));
@@ -114,9 +114,9 @@ Material lambert(const Context& context, const raytypes::RGB& rayType,
     return material;
 }
 
-Material barycentrics(const Context& context, const raytypes::RGB& rayType)
+Material::Ptr barycentrics(const Context::ConstPtr& context, const raytypes::RGB& rayType)
 {
-    Source closestHit(R"(
+    auto closestHit = Source::New(R"(
     #include <optix.h>
     using namespace optix;
     
@@ -138,16 +138,17 @@ Material barycentrics(const Context& context, const raytypes::RGB& rayType)
     
     auto material = Material::New(context);
     material->add_closest_hit_program(rayType,
-        context->create_program(closestHit, {rayType->definition()}));
+        context->create_program(closestHit, {rayType.definition()}));
     return material;
 }
 
-TexturedMaterial checkerboard(const Context& context, const raytypes::RGB& rayType,
-                              const std::array<uint8_t,3>& color1,
-                              const std::array<uint8_t,3>& color2,
-                              size_t width, size_t height)
+TexturedMaterial::Ptr checkerboard(const Context::ConstPtr& context,
+                                   const raytypes::RGB& rayType,
+                                   const std::array<uint8_t,3>& color1,
+                                   const std::array<uint8_t,3>& color2,
+                                   size_t width, size_t height)
 {
-    Source closestHit(R"(
+    auto closestHit = Source::New(R"(
     #include <optix.h>
     using namespace optix;
     
@@ -169,13 +170,13 @@ TexturedMaterial checkerboard(const Context& context, const raytypes::RGB& rayTy
     auto material = TexturedMaterial::New(context,
         textures::checkerboard(context, "inTexture", color1, color2, width, height));
     material->add_closest_hit_program(rayType,
-        context->create_program(closestHit, {rayType->definition()}));
+        context->create_program(closestHit, {rayType.definition()}));
     return material;
 }
 
-Material perfect_mirror(const Context& context, const raytypes::RGB& rayType)
+Material::Ptr perfect_mirror(const Context::ConstPtr& context, const raytypes::RGB& rayType)
 {
-    Source closestHit(R"(
+    auto closestHit = Source::New(R"(
     #include <optix.h>
     #include <optix_math.h>
     using namespace optix;
@@ -212,14 +213,14 @@ Material perfect_mirror(const Context& context, const raytypes::RGB& rayType)
     )", "closest_hit_perfect_mirror");
     auto material = Material::New(context);
     material->add_closest_hit_program(rayType,
-        context->create_program(closestHit, {rayType->definition(), maths::maths}));
+        context->create_program(closestHit, {rayType.definition(), maths::maths}));
     return material;
 }
 
-Material perfect_refraction(const Context& context, const raytypes::RGB& rayType,
-                            float refractiveIndex)
+Material::Ptr perfect_refraction(const Context::ConstPtr& context, const raytypes::RGB& rayType,
+                                 float refractiveIndex)
 {
-    Source closestHit(R"(
+    auto closestHit = Source::New(R"(
     #include <optix.h>
     #include <optix_math.h>
     using namespace optix;
@@ -256,8 +257,8 @@ Material perfect_refraction(const Context& context, const raytypes::RGB& rayType
     
     )", "closest_hit_perfect_refraction");
     auto material = Material::New(context);
-    Program program = context->create_program(closestHit, 
-                                              {rayType->definition(), maths::maths});
+    auto program = context->create_program(closestHit, 
+                                           {rayType.definition(), maths::maths});
     (*program)["refractiveIndex"]->setFloat(refractiveIndex);
     material->add_closest_hit_program(rayType, program);
     return material;
