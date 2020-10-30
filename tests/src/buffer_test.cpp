@@ -9,29 +9,10 @@ using namespace optix_helpers;
 
 int main()
 {
-    Context context;
+    auto context = Context::New();
 
-    Buffer buffer(context->create_buffer(RT_BUFFER_OUTPUT));
-
-    (*buffer)->setFormat(RT_FORMAT_FLOAT);
-    cout << "buffer format : " << (*buffer)->getFormat() << endl;
-    (*buffer)->setFormat(RT_FORMAT_FLOAT2);
-    cout << "buffer format : " << (*buffer)->getFormat() << endl;
-    (*buffer)->setFormat(RT_FORMAT_FLOAT3);
-    cout << "buffer format : " << (*buffer)->getFormat() << endl;
-    (*buffer)->setFormat(RT_FORMAT_FLOAT4);
-    cout << "buffer format : " << (*buffer)->getFormat() << endl;
-
-    (*buffer)->setFormat(RT_FORMAT_BYTE);
-    cout << "buffer format : " << (*buffer)->getFormat() << endl;
-    (*buffer)->setFormat(RT_FORMAT_BYTE2);
-    cout << "buffer format : " << (*buffer)->getFormat() << endl;
-    (*buffer)->setFormat(RT_FORMAT_BYTE3);
-    cout << "buffer format : " << (*buffer)->getFormat() << endl;
-    (*buffer)->setFormat(RT_FORMAT_BYTE4);
-    cout << "buffer format : " << (*buffer)->getFormat() << endl;
-
-    getchar();
+    auto buffer = Buffer::New(context, RT_BUFFER_OUTPUT, RT_FORMAT_FLOAT3, "buffer");
+    buffer->set_size(1920, 1080);
 
     return 0;
 }

@@ -34,6 +34,7 @@ class Context
 
     Program::Ptr create_program(const Source::ConstPtr& source,
                                 const Sources& additionalHeaders = Sources()) const; 
+    RayType instanciate_raytype(const Source::ConstPtr& definition) const;
     template <typename RayT>
     RayType instanciate_raytype() const;
 
@@ -48,12 +49,13 @@ class Context
 template <typename RayT>
 RayType Context::instanciate_raytype() const
 {
-    if(RayT::index == RayType::uninitialized) {
-        // RayT never instanciated. Assigning new index.
-        RayT::index  = context_->getRayTypeCount();
-        context_->setRayTypeCount(RayT::index + 1);
+    if(RayT::typeIndex == RayType::uninitialized) {
+        RayT::typeIndex = context_->getRayTypeCount();
+        return this->instanciate_raytype(RayT::definition);
     }
-    return RayType(RayT::index, RayT::definition);
+    else {
+        return RayType(RayT::typeIndex, RayT::definition);
+    }
 }
 
 }; // namespace optix_helpers

@@ -11,14 +11,14 @@ class RGB : public RayType
 {
     public:
 
-    static Index index;
-    static const Source definition;
+    static Index typeIndex;
+    static const Source::ConstPtr definition;
 
-    RGB(const Context& context);
+    RGB(const Context::ConstPtr& context);
 
-    static Program rgb_miss_program(const Context& context,
-                                    const std::array<float,3>& color = {0,0,0});
-    static Program black_miss_program(const Context& context);
+    static Program::Ptr rgb_miss_program(const Context::ConstPtr& context,
+                                         const std::array<float,3>& color = {0,0,0});
+    static Program::Ptr black_miss_program(const Context::ConstPtr& context);
 };
 
 }; //namespace raytypes

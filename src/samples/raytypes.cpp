@@ -4,9 +4,9 @@
 
 namespace optix_helpers { namespace samples { namespace raytypes {
 
-RayType::Index RGB::index = RayType::uninitialized;
+RayType::Index RGB::typeIndex = RayType::uninitialized;
 
-const Source RGB::definition(R"(
+const Source::ConstPtr RGB::definition = Source::New(R"(
 #ifndef _DEF_RAYPAYLOAD_RGB_H_
 #define _DEF_RAYPAYLOAD_RGB_H_
 
@@ -22,13 +22,14 @@ struct RGB
 #endif //_DEF_RAYPAYLOAD_RGB_H_
 )", "rays/RGB.h");
 
-RGB::RGB(const Context& context) :
+RGB::RGB(const Context::ConstPtr& context) :
     RayType(context->instanciate_raytype<RGB>())
 {}
 
-Program RGB::rgb_miss_program(const Context& context, const std::array<float,3>& color)
+Program::Ptr RGB::rgb_miss_program(const Context::ConstPtr& context,
+                                   const std::array<float,3>& color)
 {
-    Program program = context->create_program(Source(R"(
+    auto program = context->create_program(Source::New(R"(
     #include <optix.h>
     using namespace optix;
     
@@ -50,9 +51,9 @@ Program RGB::rgb_miss_program(const Context& context, const std::array<float,3>&
     return program;
 }
 
-Program RGB::black_miss_program(const Context& context)
+Program::Ptr RGB::black_miss_program(const Context::ConstPtr& context)
 {
-    return context->create_program(Source(R"(
+    return context->create_program(Source::New(R"(
     #include <optix.h>
     using namespace optix;
     

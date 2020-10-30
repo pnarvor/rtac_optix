@@ -69,9 +69,9 @@ list(APPEND optix_helpers_SOURCES
     src/Nvrtc.cpp
     src/Program.cpp
     src/Context.cpp
-    # src/Buffer.cpp
+    src/Buffer.cpp
+    src/RayType.cpp
     # src/TextureSampler.cpp
-    # src/RayType.cpp
     # src/Material.cpp
     # src/TexturedMaterial.cpp
     # src/Geometry.cpp
@@ -82,30 +82,30 @@ list(APPEND optix_helpers_SOURCES
     # src/Scene.cpp
 )
 
-# if(BUILD_SAMPLES)
-#     list(APPEND optix_helpers_PUBLIC_HEADERS
-#         include/optix_helpers/samples/maths.h
-#         include/optix_helpers/samples/raytypes.h
-#         include/optix_helpers/samples/textures.h
-#         include/optix_helpers/samples/materials.h
-#         include/optix_helpers/samples/geometries.h
-#         include/optix_helpers/samples/items.h
-#         include/optix_helpers/samples/utils.h
-#         include/optix_helpers/samples/PinHole.h
-#         include/optix_helpers/samples/raygenerators.h
-#         include/optix_helpers/samples/scenes.h
-#     )
-#     list(APPEND optix_helpers_SOURCES
-#         src/samples/maths.cpp
-#         src/samples/raytypes.cpp
-#         src/samples/textures.cpp
-#         src/samples/materials.cpp
-#         src/samples/geometries.cpp
-#         src/samples/items.cpp
-#         src/samples/utils.cpp
-#         src/samples/PinHole.cpp
-#     )
-# endif()
+if(BUILD_SAMPLES)
+    list(APPEND optix_helpers_PUBLIC_HEADERS
+        include/optix_helpers/samples/maths.h
+        include/optix_helpers/samples/raytypes.h
+        include/optix_helpers/samples/textures.h
+        include/optix_helpers/samples/materials.h
+        include/optix_helpers/samples/geometries.h
+        include/optix_helpers/samples/items.h
+        include/optix_helpers/samples/utils.h
+        include/optix_helpers/samples/PinHole.h
+        include/optix_helpers/samples/raygenerators.h
+        include/optix_helpers/samples/scenes.h
+    )
+    list(APPEND optix_helpers_SOURCES
+        src/samples/maths.cpp
+        src/samples/raytypes.cpp
+        # src/samples/textures.cpp
+        # src/samples/materials.cpp
+        # src/samples/geometries.cpp
+        # src/samples/items.cpp
+        # src/samples/utils.cpp
+        # src/samples/PinHole.cpp
+    )
+endif()
 
 add_library(optix_helpers SHARED ${optix_helpers_SOURCES})
 set_target_properties(optix_helpers PROPERTIES 

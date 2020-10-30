@@ -10,51 +10,31 @@
 
 namespace optix_helpers {
 
-// forward declaration for allowing RayType to access RayTypeObj constructor
-class RayType;
+// forward declaration for allowing only Context to build RayTypes.
+class Context;
 
-class RayTypeObj
+class RayType
 {
     public:
 
     using Index = unsigned int;
-    static const Index uninitialized = UINT_MAX;
-    friend class RayType; // To allow RayType to instanciate a RayTypeObj
+    static constexpr const Index uninitialized = UINT_MAX;
+    friend class Context;
 
     protected:
 
-    Index  rayTypeIndex_; //Index of ray type as defined in optix kernels.
-    Source definition_;   //Optix header defining the ray payload type.
+    Index            rayTypeIndex_; //Index of ray type as defined in optix kernels.
+    Source::ConstPtr definition_;   //Optix header defining the ray payload type.
     
     private:
 
-    RayTypeObj(Index rayTypeIndex, const Source& definition);
+    RayType(Index rayTypeIndex, const Source::ConstPtr& definition);
 
     public:
 
-    Source definition() const;
-    Index    index()    const;
-    operator Index()    const;
-
-};
-
-// forward declaration for allowing only ContextObj to build RayTypes.
-class ContextObj;
-class RayType : public Handle<RayTypeObj>
-{
-    public:
-    
-    using Index = RayTypeObj::Index;
-    static const Index uninitialized = RayTypeObj::uninitialized;
-    friend class ContextObj;
-
-    RayType();
-
-    operator Index() const;
-    
-    private:
-
-    RayType(Index rayTypeIndex, const Source& definition);
+    Index              index()    const;
+    operator           Index()    const;
+    Source::ConstPtr   definition() const;
 };
 
 }; //namespace optix_helpers

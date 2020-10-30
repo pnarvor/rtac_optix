@@ -13,23 +13,29 @@
 
 namespace optix_helpers {
 
-class BufferObj : public NamedObject<optix::Buffer>
+class Buffer : public NamedObject<optix::Buffer>
 {
     public:
 
-    using Shape = rtac::types::Shape<size_t>;
+    using Ptr      = Handle<Buffer>;
+    using ConstPtr = Handle<const Buffer>;
+    using Shape    = rtac::types::Shape<size_t>;
 
     protected:
 
     // only for subclasses
-    BufferObj(const optix::Buffer& buffer, const std::string& name);
+    Buffer(const optix::Buffer& buffer, const std::string& name);
 
     public:
     
-    BufferObj(const Context& context,
-              RTbuffertype bufferType,
-              RTformat format,
-              const std::string& name);
+    static Ptr New(const Context::ConstPtr& context,
+                   RTbuffertype bufferType,
+                   RTformat format,
+                   const std::string& name);
+    Buffer(const Context::ConstPtr& context,
+           RTbuffertype bufferType,
+           RTformat format,
+           const std::string& name);
 
     virtual void set_size(size_t width, size_t height);
 
@@ -44,60 +50,19 @@ class BufferObj : public NamedObject<optix::Buffer>
     const T* map(T* userOutput = NULL) const;
     void unmap() const;
 };
-using Buffer = Handle<BufferObj>;
-//class Buffer : public Handle<BufferObj>
-//{
-//    public:
-//
-//    using Shape = BufferObj::Shape;
-//
-//    Buffer();
-//    Buffer(const Context& context,
-//           RTbuffertype bufferType,
-//           RTformat format,
-//           const std::string& name);
-//
-//    // for downcasting
-//    Buffer(const std::shared_ptr<BufferObj>& obj);
-//};
 
 template <typename T>
-T* BufferObj::map(unsigned int mapFlags, T* userOutput)
+T* Buffer::map(unsigned int mapFlags, T* userOutput)
 {
     return static_cast<T*>(object_->map(0, mapFlags, userOutput));
 }
 
 template <typename T>
-const T* BufferObj::map(T* userOutput) const
+const T* Buffer::map(T* userOutput) const
 {
     return static_cast<const T*>(object_->map(0, RT_BUFFER_MAP_READ, userOutput));
 }
 
-class RenderBufferObj : public BufferObj
-{
-    protected:
-    
-    // only for subclasses
-    RenderBufferObj(const optix::Buffer& buffer, const std::string& name);
-
-    public:
-    
-    RenderBufferObj(const Context& context, RTformat format,
-                    const std::string& name);
-};
-
-using RenderBuffer = Handle<RenderBufferObj>;
-//class RenderBuffer : public Handle<RenderBufferObj>
-//{
-//    public:
-//    
-//    RenderBuffer();
-//    RenderBuffer(const Context& context, RTformat format,
-//                 const std::string& name);
-//    RenderBuffer(const std::shared_ptr<RenderBufferObj>& obj);
-//
-//    operator Buffer();    
-//};
 
 }; //namespace optix_helpers
 

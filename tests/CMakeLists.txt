@@ -6,8 +6,8 @@ list(APPEND test_names
     sources_test
     nvcrt-test
     context_test
-    # buffer_test
-    # raytype_test
+    buffer_test
+    raytype_test
     # material_test
     # model_test
     # ortho_test

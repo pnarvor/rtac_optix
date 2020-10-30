@@ -31,6 +31,14 @@ Program::Ptr Context::create_program(const Source::ConstPtr& source,
     }
 }
 
+RayType Context::instanciate_raytype(const Source::ConstPtr& definition) const
+{
+    auto count = context_->getRayTypeCount();
+    RayType res(count, definition);
+    context_->setRayTypeCount(count + 1);
+    return res;
+}
+
 optix::Handle<optix::VariableObj> Context::operator[](const std::string& varname)
 {
     return context_[varname];
