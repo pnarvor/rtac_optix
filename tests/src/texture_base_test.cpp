@@ -11,20 +11,14 @@ using Pose = rtac::types::Pose<float>;
 
 #include <optix_helpers/Context.h>
 #include <optix_helpers/RayType.h>
-#include <optix_helpers/PinHoleView.h>
 using namespace optix_helpers;
 
 #include <optix_helpers/samples/raytypes.h>
 #include <optix_helpers/samples/materials.h>
-#include <optix_helpers/samples/geometries.h>
-#include <optix_helpers/samples/models.h>
-#include <optix_helpers/samples/items.h>
 #include <optix_helpers/samples/utils.h>
 using namespace optix_helpers::samples;
 
-#include "cusamples.h"
-
-const std::string raygenSource = R"(
+const auto raygenSource = Source::New(R"(
 
 #include <optix.h>
 
@@ -44,22 +38,21 @@ RT_PROGRAM void texture_test()
     renderBuffer[launchIndex] = make_float3(c.x,c.y,c.z);
 }
 
-)";
+)", "texture_test");
 
 int main()
 {
     int W = 512, H = 512;
 
-    Context context;
+    auto context = Context::New();
     
-    TextureSampler checkerboard = textures::checkerboard(context, "checkerboard_texture",
-                                                         {0,255,0}, {0,50,255},
-                                                         4, 4);
+    auto checkerboard = textures::checkerboard(context, "checkerboard_texture",
+                                               {0,255,0}, {0,50,255}, 4, 4);
 
-    Buffer renderBuffer = context->create_buffer(RT_BUFFER_OUTPUT, RT_FORMAT_FLOAT3, "renderBuffer");
-    (*renderBuffer)->setSize(W,H);
+    auto renderBuffer = Buffer::New(context, RT_BUFFER_OUTPUT, RT_FORMAT_FLOAT3, "renderBuffer");
+    renderBuffer->set_size(W,H);
 
-    Program raygenProgram = context->create_program(Source(raygenSource, "texture_test"));
+    auto raygenProgram = context->create_program(raygenSource);
     raygenProgram->set_object(renderBuffer);
     raygenProgram->set_object(checkerboard);
     

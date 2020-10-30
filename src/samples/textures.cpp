@@ -2,16 +2,16 @@
 
 namespace optix_helpers { namespace samples { namespace textures {
 
-TextureSampler checkerboard(const Context& context,
-                            const std::string& textureName,
-                            const std::array<uint8_t,3>& color1,
-                            const std::array<uint8_t,3>& color2,
-                            size_t width, size_t height)
+TextureSampler::Ptr checkerboard(const Context::ConstPtr& context,
+                                 const std::string& textureName,
+                                 const std::array<uint8_t,3>& color1,
+                                 const std::array<uint8_t,3>& color2,
+                                 size_t width, size_t height)
 {
     auto buffer = Buffer::New(context, RT_BUFFER_INPUT, RT_FORMAT_UNSIGNED_BYTE4,
                   "checkerboard_data");
-    (*buffer)->setSize(width, height);
-    uint8_t* data = static_cast<uint8_t*>((*buffer)->map());
+    buffer->set_size(width, height);
+    auto data = buffer->map<uint8_t*>();
     for(int h = 0; h < height; h++) {
         for(int w = 0; w < width; w ++) {
             int i = 4*(width*h + w);
@@ -29,9 +29,9 @@ TextureSampler checkerboard(const Context& context,
             }
         }
     }
-    (*buffer)->unmap();
+    buffer->unmap();
 
-    TextureSampler texture(context, textureName);
+    auto texture = TextureSampler::New(context, textureName);
     (*texture)->setBuffer(*buffer);
     
     // Behavior for texture coordinates outside border

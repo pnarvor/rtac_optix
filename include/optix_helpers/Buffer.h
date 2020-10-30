@@ -45,22 +45,22 @@ class Buffer : public NamedObject<optix::Buffer>
     Shape shape() const;
 
     template <typename T>
-    T* map(unsigned int mapFlags, T* userOutput = NULL);
+    T map(unsigned int mapFlags = RT_BUFFER_MAP_WRITE, T* userOutput = NULL);
     template <typename T>
-    const T* map(T* userOutput = NULL) const;
+    T map(T* userOutput = NULL) const;
     void unmap() const;
 };
 
 template <typename T>
-T* Buffer::map(unsigned int mapFlags, T* userOutput)
+T Buffer::map(unsigned int mapFlags, T* userOutput)
 {
-    return static_cast<T*>(object_->map(0, mapFlags, userOutput));
+    return static_cast<T>(object_->map(0, mapFlags, userOutput));
 }
 
 template <typename T>
-const T* Buffer::map(T* userOutput) const
+T Buffer::map(T* userOutput) const
 {
-    return static_cast<const T*>(object_->map(0, RT_BUFFER_MAP_READ, userOutput));
+    return static_cast<T>(object_->map(0, RT_BUFFER_MAP_READ, userOutput));
 }
 
 

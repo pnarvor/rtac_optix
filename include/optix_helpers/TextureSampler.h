@@ -11,21 +11,27 @@
 
 namespace optix_helpers {
 
-class TextureSamplerObj : public NamedObject<optix::TextureSampler>
+class TextureSampler : public NamedObject<optix::TextureSampler>
 {
+    public:
+
+    using Ptr      = Handle<TextureSampler>;
+    using ConstPtr = Handle<const TextureSampler>;
+
     protected:
 
     void load_default_texture_setup();
 
     public:
     
-    TextureSamplerObj(const Context& context, const std::string& name,
-                      bool defaultSetup = true);
+    static Ptr New(const Context::ConstPtr& context, const std::string& name,
+                   bool defaultSetup = true);
+    TextureSampler(const Context::ConstPtr& context, const std::string& name,
+                   bool defaultSetup = true);
 
     optix::TextureSampler       texture();
     const optix::TextureSampler texture() const;
 };
-using TextureSampler = Handle<TextureSamplerObj>;
 
 }; //namespace optix_helpers
 

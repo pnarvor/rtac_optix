@@ -8,11 +8,11 @@ list(APPEND test_names
     context_test
     buffer_test
     raytype_test
+    texture_base_test
     # material_test
     # model_test
     # ortho_test
     # pinhole_test
-    # texture_base_test
     # texture_test
     # mirror_test
     # scene_test
