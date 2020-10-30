@@ -48,7 +48,7 @@ class Nvrtc
     void add_compile_options(const std::string& options);
     void add_compile_options(const StringList& options);
     
-    std::string compile(const Source& source,
+    std::string compile(const Source::ConstPtr& source,
                         const Sources& additionalHeaders = Sources());
     void update_log();
 
@@ -74,3 +74,5 @@ using NVRTC_Helper = Nvrtc;
 std::ostream& operator<<(std::ostream& os, const optix_helpers::Nvrtc& nvrtc);
 
 #endif //_DEF_OPTIX_HELPERS_NVRTC_H_
+
+

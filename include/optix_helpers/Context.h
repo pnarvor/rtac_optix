@@ -14,8 +14,13 @@
 
 namespace optix_helpers {
 
-class ContextObj
+class Context
 {
+    public:
+    
+    using Ptr      = Handle<Context>;
+    using ConstPtr = Handle<const Context>;
+
     protected:
     
     // Fix the mutable keyword use
@@ -24,10 +29,11 @@ class ContextObj
 
     public:
 
-    ContextObj(int entryPointCount = 1);
+    static Ptr New(int entryPointCount = 1);
+    Context(int entryPointCount = 1);
 
-    Program create_program(const Source& source,
-                           const Sources& additionalHeaders = Sources()) const; 
+    Program::Ptr create_program(const Source::ConstPtr& source,
+                                const Sources& additionalHeaders = Sources()) const; 
     template <typename RayT>
     RayType instanciate_raytype() const;
 
@@ -37,19 +43,10 @@ class ContextObj
     optix::Context operator->() const;
     optix::Context context()    const; //? should be const ?
 };
-using Context = Handle<ContextObj>;
-
-//class Context : public Handle<ContextObj>
-//{
-//    public:
-//    
-//    Context(int entryPointCount = 1);
-//    Context(const std::shared_ptr<ContextObj>& obj);
-//};
 
 // Implementation
 template <typename RayT>
-RayType ContextObj::instanciate_raytype() const
+RayType Context::instanciate_raytype() const
 {
     if(RayT::index == RayType::uninitialized) {
         // RayT never instanciated. Assigning new index.

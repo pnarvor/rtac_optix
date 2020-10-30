@@ -12,36 +12,41 @@
 
 namespace optix_helpers {
 
-class ProgramObj
+class Program
 {
+    public:
+
+    using Ptr      = Handle<Program>;
+    using ConstPtr = Handle<const Program>;
+
     protected:
 
-    Source         source_;
-    Sources        headers_;
+    Source::ConstPtr source_;
+    Sources          headers_;
     mutable optix::Program program_; // fix this
 
     public:
+    
+    static Ptr New(const Source::ConstPtr& source, const Sources& headers,
+                   const optix::Program& program);
+    Program(const Source::ConstPtr& source, const Sources& headers,
+            const optix::Program& program);
 
-    ProgramObj(const Source& source, const Sources& headers,
-               const optix::Program& program);
-
-    //void set_buffer(const Buffer& buffer);
     template <class NamedType>
     void set_object(const NamedType& object);
 
     optix::Handle<optix::VariableObj> operator[](const std::string& varname);
     optix::Handle<optix::VariableObj> operator[](const char* varname);
 
-    const Source  source()      const;
-    const Sources headers()     const;
+    Source::ConstPtr source()  const;
+    const Sources    headers() const;
     optix::Program program()    const; //? should be const ?
     operator optix::Program()   const;
     optix::Program operator->() const; //? should be const ?
 };
-using Program = Handle<ProgramObj>;
 
 template <class NamedType>
-void ProgramObj::set_object(const NamedType& object)
+void Program::set_object(const NamedType& object)
 {
     program_[object->name()]->set(*object);
 }
@@ -49,5 +54,9 @@ void ProgramObj::set_object(const NamedType& object)
 }; //namespace optix_helpers
 
 std::ostream& operator<<(std::ostream& os, const optix_helpers::Program& program);
+std::ostream& operator<<(std::ostream& os, const optix_helpers::Program::ConstPtr& program);
+std::ostream& operator<<(std::ostream& os, const optix_helpers::Program::Ptr& program);
 
 #endif //_DEF_OPTIX_HELPERS_PROGRAM_H_
+
+

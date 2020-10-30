@@ -91,7 +91,7 @@ void Nvrtc::add_compile_options(const StringList& options)
     }
 }
 
-std::string Nvrtc::compile(const Source& source, const Sources& additionalHeaders)
+std::string Nvrtc::compile(const Source::ConstPtr& source, const Sources& additionalHeaders)
 {
     std::vector<const char*> options = this->nvrtc_options();
     std::vector<const char*> headers(additionalHeaders.size());

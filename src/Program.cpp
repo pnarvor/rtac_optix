@@ -2,49 +2,50 @@
 
 namespace optix_helpers {
 
-ProgramObj::ProgramObj(const Source& source, const Sources& headers,
-                       const optix::Program& program) :
+Program::Ptr Program::New(const Source::ConstPtr& source, const Sources& headers,
+                          const optix::Program& program)
+{
+    return Ptr(new Program(source, headers, program));
+}
+
+Program::Program(const Source::ConstPtr& source, const Sources& headers,
+                 const optix::Program& program) :
     source_(source),
     headers_(headers),
     program_(program)
 {}
 
-//void ProgramObj::set_buffer(const Buffer& buffer)
-//{
-//    program_[buffer->name()]->set(*buffer);
-//}
-
-const Source ProgramObj::source() const
+Source::ConstPtr Program::source() const
 {
     return source_;
 }
 
-const Sources ProgramObj::headers() const
+const Sources Program::headers() const
 {
     return headers_;
 }
 
-optix::Handle<optix::VariableObj> ProgramObj::operator[](const std::string& varname)
+optix::Handle<optix::VariableObj> Program::operator[](const std::string& varname)
 {
     return program_[varname];
 }
 
-optix::Handle<optix::VariableObj> ProgramObj::operator[](const char* varname)
+optix::Handle<optix::VariableObj> Program::operator[](const char* varname)
 {
     return program_[varname];
 }
 
-optix::Program ProgramObj::program() const
+optix::Program Program::program() const
 {
     return program_;
 }
 
-ProgramObj::operator optix::Program() const
+Program::operator optix::Program() const
 {
     return program_;
 }
 
-optix::Program ProgramObj::operator->() const
+optix::Program Program::operator->() const
 {
     return program_;
 }
@@ -53,13 +54,24 @@ optix::Program ProgramObj::operator->() const
 
 std::ostream& operator<<(std::ostream& os, const optix_helpers::Program& program)
 {
-    os << "Program " << program->source()->name() << " :\n";
-    for(auto header : program->headers()) {
+    os << "Program " << program.source()->name() << " :\n";
+    for(auto header : program.headers()) {
         os << header << "\n";
     }
-    os << program->source() << "\n";
+    os << program.source() << "\n";
 
     return os;
 }
 
+std::ostream& operator<<(std::ostream& os, const optix_helpers::Program::ConstPtr& program)
+{
+    os << *program;
+    return os;
+}
+
+std::ostream& operator<<(std::ostream& os, const optix_helpers::Program::Ptr& program)
+{
+    os << *program;
+    return os;
+}
 

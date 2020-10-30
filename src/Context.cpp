@@ -2,18 +2,24 @@
 
 namespace optix_helpers {
 
-ContextObj::ContextObj(int entryPointCount) :
+Context::Ptr Context::New(int entryPointCount)
+{
+    return Ptr(new Context(entryPointCount));
+}
+
+Context::Context(int entryPointCount) :
     context_(optix::Context::create())
 {
     context_->setEntryPointCount(entryPointCount);
 }
 
-Program ContextObj::create_program(const Source& source, const Sources& additionalHeaders) const
+Program::Ptr Context::create_program(const Source::ConstPtr& source,
+                                     const Sources& additionalHeaders) const
 {
     try {
         auto ptx = nvrtc_.compile(source, additionalHeaders);
         optix::Program program = context_->createProgramFromPTXString(ptx, source->name());
-        return Program(new ProgramObj(source, additionalHeaders, program));
+        return Program::New(source, additionalHeaders, program);
     }
     catch(const std::runtime_error& e) {
         std::ostringstream os;
@@ -25,38 +31,31 @@ Program ContextObj::create_program(const Source& source, const Sources& addition
     }
 }
 
-optix::Handle<optix::VariableObj> ContextObj::operator[](const std::string& varname)
+optix::Handle<optix::VariableObj> Context::operator[](const std::string& varname)
 {
     return context_[varname];
 }
 
-ContextObj::operator optix::Context() const
+Context::operator optix::Context() const
 {
     return context_;
 }
 
-optix::Context ContextObj::operator->()
+optix::Context Context::operator->()
 {
     return context_;
 }
 
-optix::Context ContextObj::operator->() const
+optix::Context Context::operator->() const
 {
     return context_;
 }
 
-optix::Context ContextObj::context() const
+optix::Context Context::context() const
 {
     return context_;
 }
-
-//Context::Context(int entryPointCount) :
-//    Handle<ContextObj>(new ContextObj(entryPointCount))
-//{}
-//
-//Context::Context(const std::shared_ptr<ContextObj>& obj) :
-//    Handle<ContextObj>(obj)
-//{}
 
 } //namespace optix_helpers
+
 

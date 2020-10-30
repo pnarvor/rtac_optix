@@ -69,43 +69,43 @@ list(APPEND optix_helpers_SOURCES
     src/Nvrtc.cpp
     src/Program.cpp
     src/Context.cpp
-    src/Buffer.cpp
-    src/TextureSampler.cpp
-    src/RayType.cpp
-    src/Material.cpp
-    src/TexturedMaterial.cpp
-    src/Geometry.cpp
-    src/GeometryTriangles.cpp
-    src/Model.cpp
-    src/SceneItem.cpp
-    src/RayGenerator.cpp
-    src/Scene.cpp
+    # src/Buffer.cpp
+    # src/TextureSampler.cpp
+    # src/RayType.cpp
+    # src/Material.cpp
+    # src/TexturedMaterial.cpp
+    # src/Geometry.cpp
+    # src/GeometryTriangles.cpp
+    # src/Model.cpp
+    # src/SceneItem.cpp
+    # src/RayGenerator.cpp
+    # src/Scene.cpp
 )
 
-if(BUILD_SAMPLES)
-    list(APPEND optix_helpers_PUBLIC_HEADERS
-        include/optix_helpers/samples/maths.h
-        include/optix_helpers/samples/raytypes.h
-        include/optix_helpers/samples/textures.h
-        include/optix_helpers/samples/materials.h
-        include/optix_helpers/samples/geometries.h
-        include/optix_helpers/samples/items.h
-        include/optix_helpers/samples/utils.h
-        include/optix_helpers/samples/PinHole.h
-        include/optix_helpers/samples/raygenerators.h
-        include/optix_helpers/samples/scenes.h
-    )
-    list(APPEND optix_helpers_SOURCES
-        src/samples/maths.cpp
-        src/samples/raytypes.cpp
-        src/samples/textures.cpp
-        src/samples/materials.cpp
-        src/samples/geometries.cpp
-        src/samples/items.cpp
-        src/samples/utils.cpp
-        src/samples/PinHole.cpp
-    )
-endif()
+# if(BUILD_SAMPLES)
+#     list(APPEND optix_helpers_PUBLIC_HEADERS
+#         include/optix_helpers/samples/maths.h
+#         include/optix_helpers/samples/raytypes.h
+#         include/optix_helpers/samples/textures.h
+#         include/optix_helpers/samples/materials.h
+#         include/optix_helpers/samples/geometries.h
+#         include/optix_helpers/samples/items.h
+#         include/optix_helpers/samples/utils.h
+#         include/optix_helpers/samples/PinHole.h
+#         include/optix_helpers/samples/raygenerators.h
+#         include/optix_helpers/samples/scenes.h
+#     )
+#     list(APPEND optix_helpers_SOURCES
+#         src/samples/maths.cpp
+#         src/samples/raytypes.cpp
+#         src/samples/textures.cpp
+#         src/samples/materials.cpp
+#         src/samples/geometries.cpp
+#         src/samples/items.cpp
+#         src/samples/utils.cpp
+#         src/samples/PinHole.cpp
+#     )
+# endif()
 
 add_library(optix_helpers SHARED ${optix_helpers_SOURCES})
 set_target_properties(optix_helpers PROPERTIES 
@@ -147,33 +147,33 @@ endif()
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/installation.cmake)
 install_target(optix_helpers)
 
-if(WITH_DISPLAY)
-    find_package(rtac_display REQUIRED)
-    list(APPEND optix_helpers_display_PUBLIC_HEADERS
-        include/optix_helpers/display/RenderBufferGL.h
-    )
-    add_library(optix_helpers_display SHARED
-        src/display/RenderBufferGL.cpp
-    )
-    set_target_properties(optix_helpers_display PROPERTIES 
-        PUBLIC_HEADER "${optix_helpers_display_PUBLIC_HEADERS}"
-        INSTALL_RPATH_USE_LINK_PATH True
-    )
-    target_include_directories(optix_helpers_display PUBLIC
-        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-        $<INSTALL_INTERFACE:include>
-    )
-    target_link_libraries(optix_helpers_display PUBLIC
-        OpenGL::GL
-        OpenGL::GLU
-        GLEW::GLEW
-        glfw
-        optix_helpers
-        rtac_display
-    )
-    include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/installation.cmake)
-    install_target(optix_helpers_display)
-endif()
+# if(WITH_DISPLAY)
+#     find_package(rtac_display REQUIRED)
+#     list(APPEND optix_helpers_display_PUBLIC_HEADERS
+#         include/optix_helpers/display/RenderBufferGL.h
+#     )
+#     add_library(optix_helpers_display SHARED
+#         src/display/RenderBufferGL.cpp
+#     )
+#     set_target_properties(optix_helpers_display PROPERTIES 
+#         PUBLIC_HEADER "${optix_helpers_display_PUBLIC_HEADERS}"
+#         INSTALL_RPATH_USE_LINK_PATH True
+#     )
+#     target_include_directories(optix_helpers_display PUBLIC
+#         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+#         $<INSTALL_INTERFACE:include>
+#     )
+#     target_link_libraries(optix_helpers_display PUBLIC
+#         OpenGL::GL
+#         OpenGL::GLU
+#         GLEW::GLEW
+#         glfw
+#         optix_helpers
+#         rtac_display
+#     )
+#     include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/installation.cmake)
+#     install_target(optix_helpers_display)
+# endif()
 
 
 
