@@ -14,30 +14,33 @@
 namespace optix_helpers
 {
 
-class ModelObj
+class Model
 {
+    public:
+
+    using Ptr      = Handle<Model>;
+    using ConstPtr = Handle<const Model>;
+
     protected:
 
     optix::GeometryInstance geomInstance_;
-    Geometry                geometry_;
-    GeometryTriangles       geometryTriangles_;
+    Geometry::Ptr           geometry_;
+    GeometryTriangles::Ptr  geometryTriangles_;
     Materials               materials_;
 
     public:
 
-    ModelObj(const Context& context);
+    static Ptr New(const Context::ConstPtr& context);
+    Model(const Context::ConstPtr& context);
 
-    void set_geometry(const Geometry& geometry);
-    void set_geometry(const GeometryTriangles& geometry);
-    void add_material(const Material& material);
+    void set_geometry(const Geometry::Ptr& geometry);
+    void set_geometry(const GeometryTriangles::Ptr& geometry);
+    void add_material(const Material::Ptr& material);
 
     optix::GeometryInstance geometry_instance() const;
     operator optix::GeometryInstance()          const;
     optix::GeometryInstance operator->()        const;
 };
-
-using Model = Handle<ModelObj>;
-
 
 };
 

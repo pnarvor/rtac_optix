@@ -3,56 +3,62 @@
 namespace optix_helpers
 {
 
-ModelObj::ModelObj(const Context& context) :
+Model::Ptr Model::New(const Context::ConstPtr& context)
+{
+    return Ptr(new Model(context));
+}
+
+Model::Model(const Context::ConstPtr& context) :
     geomInstance_((*context)->createGeometryInstance())
 {
 }
 
-void ModelObj::set_geometry(const Geometry& geometry)
+void Model::set_geometry(const Geometry::Ptr& geometry)
 {
     geometry_          = geometry;
-    geometryTriangles_ = GeometryTriangles();
+    geometryTriangles_ = GeometryTriangles::Ptr(NULL);
     geomInstance_->setGeometry(*geometry_);
 }
 
-void ModelObj::set_geometry(const GeometryTriangles& geometry)
+void Model::set_geometry(const GeometryTriangles::Ptr& geometry)
 {
-    geometry_          = Geometry();
+    geometry_          = Geometry::Ptr(NULL);
     geometryTriangles_ = geometry;
     geomInstance_->setGeometryTriangles(*geometryTriangles_);
     
     if(geometryTriangles_->points()) {
-        geomInstance_["vertex_buffer"]->set(geometryTriangles_->points());
+        geomInstance_["vertex_buffer"]->set(geometryTriangles_->points()->buffer());
     }
     if(geometryTriangles_->faces()) {
-        geomInstance_["index_buffer"]->set(geometryTriangles_->faces());
+        geomInstance_["index_buffer"]->set(geometryTriangles_->faces()->buffer());
     }
     if(geometryTriangles_->normals()) {
-        geomInstance_["normal_buffer"]->set(geometryTriangles_->normals());
+        geomInstance_["normal_buffer"]->set(geometryTriangles_->normals()->buffer());
     }
     if(geometryTriangles_->texture_coordinates()) {
-        geomInstance_["texcoord_buffer"]->set(geometryTriangles_->texture_coordinates());
+        geomInstance_["texcoord_buffer"]->set(geometryTriangles_
+            ->texture_coordinates()->buffer());
     }
 }
 
-void ModelObj::add_material(const Material& material)
+void Model::add_material(const Material::Ptr& material)
 {
     geomInstance_->setMaterialCount(materials_.size() + 1);
     geomInstance_->setMaterial(materials_.size(), *material);
     materials_.push_back(material);
 }
 
-optix::GeometryInstance ModelObj::geometry_instance() const
+optix::GeometryInstance Model::geometry_instance() const
 {
     return geomInstance_;
 }
 
-ModelObj::operator optix::GeometryInstance() const
+Model::operator optix::GeometryInstance() const
 {
     return geomInstance_;
 }
 
-optix::GeometryInstance ModelObj::operator->() const
+optix::GeometryInstance Model::operator->() const
 {
     return geomInstance_;
 }

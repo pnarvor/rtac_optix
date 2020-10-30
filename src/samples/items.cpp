@@ -2,7 +2,7 @@
 
 namespace optix_helpers { namespace samples { namespace items {
 
-SceneItem cube(const Context& context, const Materials& materials, float scale)
+SceneItem::Ptr cube(const Context::ConstPtr& context, const Materials& materials, float scale)
 {
     auto model = Model::New(context);
     model->set_geometry(geometries::cube(context, scale));
@@ -12,7 +12,7 @@ SceneItem cube(const Context& context, const Materials& materials, float scale)
     return SceneItem::New(context, model);
 }
 
-SceneItem sphere(const Context& context, const Materials& materials, float radius)
+SceneItem::Ptr sphere(const Context::ConstPtr& context, const Materials& materials, float radius)
 {
     auto model = Model::New(context);
     model->set_geometry(geometries::sphere(context, radius));
@@ -22,7 +22,7 @@ SceneItem sphere(const Context& context, const Materials& materials, float radiu
     return SceneItem::New(context, model);
 }
 
-SceneItem square(const Context& context, const Materials& materials, float scale)
+SceneItem::Ptr square(const Context::ConstPtr& context, const Materials& materials, float scale)
 {
     auto model = Model::New(context);
     model->set_geometry(geometries::square(context, scale));
@@ -32,7 +32,7 @@ SceneItem square(const Context& context, const Materials& materials, float scale
     return SceneItem::New(context, model);
 }
 
-SceneItem tube(const Context& context, const Materials& materials,
+SceneItem::Ptr tube(const Context::ConstPtr& context, const Materials& materials,
                float radius, float height)
 {
     auto model = Model::New(context);
@@ -43,7 +43,7 @@ SceneItem tube(const Context& context, const Materials& materials,
     return SceneItem::New(context, model);
 }
 
-SceneItem parabola(const Context& context, const Materials& materials,
+SceneItem::Ptr parabola(const Context::ConstPtr& context, const Materials& materials,
                    float a, float b, float height)
 {
     auto model = Model::New(context);

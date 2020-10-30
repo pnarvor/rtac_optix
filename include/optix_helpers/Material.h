@@ -50,7 +50,7 @@ class Material
     optix::Material operator->() const;
     operator optix::Material() const;
 };
-using Materials = std::vector<Material::ConstPtr>;
+using Materials = std::vector<Material::Ptr>;
 
 }; //namespace optix_helpers
 

@@ -76,8 +76,8 @@ list(APPEND optix_helpers_SOURCES
     src/TexturedMaterial.cpp
     src/Geometry.cpp
     src/GeometryTriangles.cpp
-    # src/Model.cpp
-    # src/SceneItem.cpp
+    src/Model.cpp
+    src/SceneItem.cpp
     # src/RayGenerator.cpp
     # src/Scene.cpp
 )
@@ -102,7 +102,7 @@ if(BUILD_SAMPLES)
         src/samples/textures.cpp
         src/samples/materials.cpp
         src/samples/geometries.cpp
-        # src/samples/items.cpp
+        src/samples/items.cpp
         # src/samples/PinHole.cpp
     )
 endif()

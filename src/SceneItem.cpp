@@ -2,9 +2,16 @@
 
 namespace optix_helpers {
 
-SceneItemObj::SceneItemObj(const Context& context,
-                           const Model& model,
-                           const std::string& acceleration) :
+SceneItem::Ptr SceneItem::New(const Context::ConstPtr& context,
+                              const Model::Ptr& model,
+                              const std::string& acceleration)
+{
+    return Ptr(new SceneItem(context, model, acceleration));
+}
+
+SceneItem::SceneItem(const Context::ConstPtr& context,
+                     const Model::Ptr& model,
+                     const std::string& acceleration) :
     model_(model),
     geomGroup_((*context)->createGeometryGroup()),
     transform_((*context)->createTransform())
@@ -15,17 +22,7 @@ SceneItemObj::SceneItemObj(const Context& context,
         geomGroup_->addChild(*model_);
 }
 
-void SceneItemObj::set_pose(const float* mat, const float* inv, bool transpose)
-{
-    transform_->setMatrix(transpose, mat, inv);
-}
-
-void SceneItemObj::set_pose(const Pose& pose)
-{
-    this->set_pose(pose.homogeneous_matrix().data(), NULL, true);
-}
-
-void SceneItemObj::set_model(const Model& model)
+void SceneItem::set_model(const Model::Ptr& model)
 {
     if(model) {
         model_ = model;
@@ -33,31 +30,46 @@ void SceneItemObj::set_model(const Model& model)
     }
 }
 
-Model SceneItemObj::model() const
+void SceneItem::set_pose(const float* mat, const float* inv, bool transpose)
+{
+    transform_->setMatrix(transpose, mat, inv);
+}
+
+void SceneItem::set_pose(const Pose& pose)
+{
+    this->set_pose(pose.homogeneous_matrix().data(), NULL, true);
+}
+
+Model::Ptr SceneItem::model()
 {
     return model_;
 }
 
-optix::GeometryGroup SceneItemObj::geometry_group() const
+Model::ConstPtr SceneItem::model() const
 {
-    return geomGroup_;
+    return model_;
 }
 
-optix::Transform SceneItemObj::transform() const
-{
-    return transform_;
-}
-
-optix::Transform SceneItemObj::node() const
-{
-    return this->transform();
-}
-
-SceneItemObj::Pose SceneItemObj::pose() const
+SceneItem::Pose SceneItem::pose() const
 {
     Matrix4 h;
     transform_->getMatrix(true, h.data(), NULL);
     return Pose::from_homogeneous_matrix(h);
+}
+
+optix::GeometryGroup SceneItem::geometry_group() const
+{
+    return geomGroup_;
+}
+
+optix::Transform SceneItem::transform() const
+{
+    return transform_;
+}
+
+optix::Transform SceneItem::node() const
+{
+    return this->transform();
 }
 
 }; //namespace optix_helpers

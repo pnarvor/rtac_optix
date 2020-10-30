@@ -13,37 +13,45 @@
 
 namespace optix_helpers {
 
-class SceneItemObj
+class SceneItem
 {
     public:
+
+    using Ptr      = Handle<SceneItem>;
+    using ConstPtr = Handle<const SceneItem>;
 
     using Pose    = rtac::types::Pose<float>;
     using Matrix4 = rtac::types::Matrix4<float>;
 
     protected:
 
-    Model model_;
+    Model::Ptr           model_;
     optix::GeometryGroup geomGroup_;
     optix::Transform     transform_;
 
     public:
 
-    SceneItemObj(const Context& context,
-                 const Model& model,
-                 const std::string& acceleration = "Trvbh");
+    static Ptr New(const Context::ConstPtr& context,
+                   const Model::Ptr& model,
+                   const std::string& acceleration = "Trvbh");
+    SceneItem(const Context::ConstPtr& context,
+              const Model::Ptr& model,
+              const std::string& acceleration = "Trvbh");
     
+    void set_model(const Model::Ptr& model);
     void set_pose(const float* mat, const float* inv = NULL, 
                   bool transpose = false);
     void set_pose(const Pose& pose);
-    void set_model(const Model& model);
 
-    Model model() const;
+    Model::Ptr       model();
+
+    Model::ConstPtr  model() const;
+    Pose             pose()  const;
+
     optix::GeometryGroup geometry_group() const;
     optix::Transform     transform() const;
     optix::Transform     node() const;
-    Pose                 pose() const;
 };
-using SceneItem = Handle<SceneItemObj>;
 
 }; //namespace optix_helpers
 
