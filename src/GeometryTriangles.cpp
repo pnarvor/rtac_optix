@@ -2,73 +2,106 @@
 
 namespace optix_helpers {
 
-GeometryTrianglesObj::GeometryTrianglesObj(const Context& context,
-                                           bool withFaces,
-                                           bool withNormals,
-                                           bool withTextureCoordinates) :
+GeometryTriangles::Ptr GeometryTriangles::New(const Context::ConstPtr& context,
+                                              bool withFaces,
+                                              bool withNormals,
+                                              bool withTextureCoordinates)
+{
+    return Ptr(new GeometryTriangles(context, withFaces, withNormals,
+                                     withTextureCoordinates));
+}
+
+GeometryTriangles::GeometryTriangles(const Context::ConstPtr& context,
+                                     bool withFaces,
+                                     bool withNormals,
+                                     bool withTextureCoordinates) :
     geometry_((*context)->createGeometryTriangles()),
-    points_((*context)->createBuffer(RT_BUFFER_INPUT, RT_FORMAT_FLOAT3))
+    points_(Buffer::New(context, RT_BUFFER_INPUT, RT_FORMAT_FLOAT3, "vertex_buffer")),
+    faces_(NULL),
+    normals_(NULL),
+    textureCoordinates_(NULL)
 {
     if(withFaces) {
-        faces_ = (*context)->createBuffer(RT_BUFFER_INPUT, RT_FORMAT_UNSIGNED_INT3);
+        faces_ = Buffer::New(context, RT_BUFFER_INPUT,
+                             RT_FORMAT_UNSIGNED_INT3, "index_buffer");
     }
     if(withNormals) {
-        normals_ = (*context)->createBuffer(RT_BUFFER_INPUT, RT_FORMAT_FLOAT3);
+        normals_ = Buffer::New(context, RT_BUFFER_INPUT,
+                               RT_FORMAT_FLOAT3, "normal_buffer");
     }
     if(withTextureCoordinates) {
-        textureCoordinates_ = (*context)->createBuffer(RT_BUFFER_INPUT, RT_FORMAT_FLOAT2);
+        textureCoordinates_ = Buffer::New(context, RT_BUFFER_INPUT,
+                                          RT_FORMAT_FLOAT2, "texcoord_buffer");
     }
 }
 
-optix::Buffer GeometryTrianglesObj::points() const
+Buffer::Ptr GeometryTriangles::points()
 {
     return points_;
 }
 
-optix::Buffer GeometryTrianglesObj::faces() const
+Buffer::Ptr GeometryTriangles::faces()
 {
     return faces_;
 }
 
-optix::Buffer GeometryTrianglesObj::normals() const
+Buffer::Ptr GeometryTriangles::normals()
 {
     return normals_;
 }
 
-optix::Buffer GeometryTrianglesObj::texture_coordinates() const
+Buffer::Ptr GeometryTriangles::texture_coordinates()
 {
     return textureCoordinates_;
 }
 
-size_t GeometryTrianglesObj::num_vertices() const
+Buffer::ConstPtr GeometryTriangles::points() const
 {
-    size_t count = 0;
+    return points_;
+}
+
+Buffer::ConstPtr GeometryTriangles::faces() const
+{
+    return faces_;
+}
+
+Buffer::ConstPtr GeometryTriangles::normals() const
+{
+    return normals_;
+}
+
+Buffer::ConstPtr GeometryTriangles::texture_coordinates() const
+{
+    return textureCoordinates_;
+}
+
+size_t GeometryTriangles::num_vertices() const
+{
     if(points_) {
-        points_->getSize(count);
+        return points_->size();
     }
-    return count;
+    return 0;
 }
 
-size_t GeometryTrianglesObj::num_faces() const
+size_t GeometryTriangles::num_faces() const
 {
-    size_t count = 0;
     if(faces_) {
-        faces_->getSize(count);
+        return faces_->size();
     }
-    return count;
+    return 0;
 }
 
-optix::GeometryTriangles GeometryTrianglesObj::geometry() const
+optix::GeometryTriangles GeometryTriangles::geometry() const
 {
     return geometry_;
 }
 
-GeometryTrianglesObj::operator optix::GeometryTriangles() const
+GeometryTriangles::operator optix::GeometryTriangles() const
 {
     return geometry_;
 }
 
-optix::GeometryTriangles GeometryTrianglesObj::operator->() const
+optix::GeometryTriangles GeometryTriangles::operator->() const
 {
     return geometry_;
 }

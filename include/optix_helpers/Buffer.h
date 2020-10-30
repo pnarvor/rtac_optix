@@ -37,12 +37,13 @@ class Buffer : public NamedObject<optix::Buffer>
            RTformat format,
            const std::string& name);
 
-    virtual void set_size(size_t width, size_t height);
+    virtual void set_size(size_t width, size_t height = 1);
 
     optix::Buffer       buffer();
     const optix::Buffer buffer() const;
 
     Shape shape() const;
+    size_t size() const;
 
     template <typename T>
     T map(unsigned int mapFlags = RT_BUFFER_MAP_WRITE, T* userOutput = NULL);

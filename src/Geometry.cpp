@@ -2,10 +2,21 @@
 
 namespace optix_helpers {
 
-GeometryObj::GeometryObj(const Context& context,
-                         const Program& intersectionProgram,
-                         const Program& boundingboxProgram,
-                         size_t primitiveCount) :
+Geometry::Ptr Geometry::New(const Context::ConstPtr& context,
+                            const Program::Ptr& intersectionProgram,
+                            const Program::Ptr& boundingboxProgram,
+                            size_t primitiveCount)
+{
+    return Ptr(new Geometry(context,
+                            intersectionProgram,
+                            boundingboxProgram,
+                            primitiveCount));
+}
+
+Geometry::Geometry(const Context::ConstPtr& context,
+                   const Program::Ptr& intersectionProgram,
+                   const Program::Ptr& boundingboxProgram,
+                   size_t primitiveCount) :
     geometry_((*context)->createGeometry()),
     intersectionProgram_(intersectionProgram),
     boundingboxProgram_(boundingboxProgram)
@@ -15,27 +26,37 @@ GeometryObj::GeometryObj(const Context& context,
     geometry_->setPrimitiveCount(primitiveCount);
 }
 
-Program GeometryObj::intersection_program() const
+Program::Ptr Geometry::intersection_program()
 {
     return intersectionProgram_;
 }
 
-Program GeometryObj::boundingbox_program() const
+Program::Ptr Geometry::boundingbox_program()
 {
     return boundingboxProgram_;
 }
 
-optix::Geometry GeometryObj::geometry() const
+Program::ConstPtr Geometry::intersection_program() const
+{
+    return intersectionProgram_;
+}
+
+Program::ConstPtr Geometry::boundingbox_program() const
+{
+    return boundingboxProgram_;
+}
+
+optix::Geometry Geometry::geometry() const
 {
     return geometry_;
 }
 
-GeometryObj::operator optix::Geometry() const
+Geometry::operator optix::Geometry() const
 {
     return geometry_;
 }
 
-optix::Geometry GeometryObj::operator->() const
+optix::Geometry Geometry::operator->() const
 {
     return geometry_;
 }

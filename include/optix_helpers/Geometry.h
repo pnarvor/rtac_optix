@@ -11,29 +11,41 @@
 
 namespace optix_helpers {
 
-class GeometryObj
+class Geometry
 {
+    public:
+
+    using Ptr      = Handle<Geometry>;
+    using ConstPtr = Handle<const Geometry>;
+
     protected:
     
     optix::Geometry geometry_;
-    Program intersectionProgram_;
-    Program boundingboxProgram_;
+    Program::Ptr intersectionProgram_;
+    Program::Ptr boundingboxProgram_;
 
     public:
 
-    GeometryObj(const Context& context,
-                const Program& intersectionProgram,
-                const Program& boundingboxProgram,
-                size_t primitiveCount);
+    static Ptr New(const Context::ConstPtr& context,
+                   const Program::Ptr& intersectionProgram,
+                   const Program::Ptr& boundingboxProgram,
+                   size_t primitiveCount);
+
+    Geometry(const Context::ConstPtr& context,
+             const Program::Ptr& intersectionProgram,
+             const Program::Ptr& boundingboxProgram,
+             size_t primitiveCount);
     
-    Program intersection_program() const;
-    Program boundingbox_program()  const;
+    Program::Ptr intersection_program();
+    Program::Ptr boundingbox_program();
+
+    Program::ConstPtr intersection_program() const;
+    Program::ConstPtr boundingbox_program()  const;
 
     optix::Geometry geometry()   const;
     operator optix::Geometry()   const;
     optix::Geometry operator->() const;
 };
-using Geometry = Handle<GeometryObj>;
 
 };
 

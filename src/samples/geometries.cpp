@@ -6,7 +6,7 @@ namespace optix_helpers { namespace samples { namespace geometries {
 
 using Mesh = rtac::types::Mesh<float,uint32_t,3>;
 
-GeometryTriangles cube(const Context& context, float scale)
+GeometryTriangles::Ptr cube(const Context::ConstPtr& context, float scale)
 {
     auto cube = GeometryTriangles::New(context, false, true, true);
     float points[108] = {//x+ faces
@@ -134,7 +134,7 @@ GeometryTriangles cube(const Context& context, float scale)
     cube->set_texture_coordinates(36, texCoords);
     cube->geometry()->setPrimitiveCount(12);
     
-    cube->geometry()->setAttributeProgram(*context->create_program(Source(R"(
+    cube->geometry()->setAttributeProgram(*context->create_program(Source::New(R"(
     #include <optix.h>
     #include <optixu/optixu_math_namespace.h>
     using namespace optix;
@@ -165,7 +165,7 @@ GeometryTriangles cube(const Context& context, float scale)
     return cube;
 }
 
-GeometryTriangles square(const Context& context, float scale)
+GeometryTriangles::Ptr square(const Context::ConstPtr& context, float scale)
 {
     auto square = GeometryTriangles::New(context, false, true, true);
     float points[18] = {//x+ faces
@@ -193,7 +193,7 @@ GeometryTriangles square(const Context& context, float scale)
     square->set_texture_coordinates(6, texCoords);
     square->geometry()->setPrimitiveCount(2);
 
-    square->geometry()->setAttributeProgram(*context->create_program(Source(R"(
+    square->geometry()->setAttributeProgram(*context->create_program(Source::New(R"(
     #include <optix.h>
     #include <optixu/optixu_math_namespace.h>
     using namespace optix;
@@ -224,9 +224,9 @@ GeometryTriangles square(const Context& context, float scale)
     return square;
 }
 
-Geometry sphere(const Context& context, float radius)
+Geometry::Ptr sphere(const Context::ConstPtr& context, float radius)
 {
-    Program intersection(context->create_program(Source(R"(
+    auto intersection = context->create_program(Source::New(R"(
     #include <optix.h>
     #include <optix_math.h>
 
@@ -261,9 +261,9 @@ Geometry sphere(const Context& context, float radius)
             rtReportIntersection(0);
         }
     }
-    )", "intersection"), {maths::maths}));
+    )", "intersection"), {maths::maths});
 
-    Program boundingbox(context->create_program(Source(R"(
+    auto boundingbox = context->create_program(Source::New(R"(
     #include <optix.h>
     
     rtDeclareVariable(float, radius,,);
@@ -277,7 +277,7 @@ Geometry sphere(const Context& context, float radius)
         bbox[4] =  radius;
         bbox[5] =  radius;
     }
-    )", "bounds")));
+    )", "bounds"));
     
     (*intersection)["radius"]->setFloat(radius);
     (*boundingbox)["radius"]->setFloat(radius);
@@ -285,9 +285,9 @@ Geometry sphere(const Context& context, float radius)
 }
 
 
-Geometry tube(const Context& context, float radius, float height)
+Geometry::Ptr tube(const Context::ConstPtr& context, float radius, float height)
 {
-    Program intersection(context->create_program(Source(R"(
+    auto intersection = context->create_program(Source::New(R"(
     #include <optix.h>
     #include <optix_math.h>
 
@@ -323,9 +323,9 @@ Geometry tube(const Context& context, float radius, float height)
             rtReportIntersection(0);
         }
     }
-    )", "intersection"), {maths::maths}));
+    )", "intersection"), {maths::maths});
 
-    Program boundingbox(context->create_program(Source(R"(
+    auto boundingbox = context->create_program(Source::New(R"(
     #include <optix.h>
     
     rtDeclareVariable(float, radius,,);
@@ -340,7 +340,7 @@ Geometry tube(const Context& context, float radius, float height)
         bbox[4] =  radius;
         bbox[5] =  height;
     }
-    )", "bounds")));
+    )", "bounds"));
     
     (*intersection)["radius"]->setFloat(radius);
     (*intersection)["height"]->setFloat(height);
@@ -349,9 +349,9 @@ Geometry tube(const Context& context, float radius, float height)
     return Geometry::New(context, intersection, boundingbox, 1);
 }
 
-Geometry parabola(const Context& context, float a, float b, float height)
+Geometry::Ptr parabola(const Context::ConstPtr& context, float a, float b, float height)
 {
-    Program intersection(context->create_program(Source(R"(
+    auto intersection = context->create_program(Source::New(R"(
     #include <optix.h>
     #include <optix_math.h>
 
@@ -389,9 +389,9 @@ Geometry parabola(const Context& context, float a, float b, float height)
             rtReportIntersection(0);
         }
     }
-    )", "intersection"), {maths::maths}));
+    )", "intersection"), {maths::maths});
 
-    Program boundingbox(context->create_program(Source(R"(
+    auto boundingbox = context->create_program(Source::New(R"(
     #include <optix.h>
     
     rtDeclareVariable(float, radius,,);
@@ -407,7 +407,7 @@ Geometry parabola(const Context& context, float a, float b, float height)
         bbox[4] =  radius;
         bbox[5] =     top;
     }
-    )", "bounds")));
+    )", "bounds"));
     
     if(fabs(a) < 1.0e-6) {
         throw std::runtime_error("a parameter too low for hyperbola");

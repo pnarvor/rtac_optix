@@ -44,6 +44,11 @@ Buffer::Shape Buffer::shape() const
     return res;
 }
 
+size_t Buffer::size() const
+{
+    return this->shape().area();
+}
+
 void Buffer::unmap() const
 {
     object_->unmap();

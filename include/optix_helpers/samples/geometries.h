@@ -12,27 +12,27 @@
 
 namespace optix_helpers { namespace samples { namespace geometries {
 
-GeometryTriangles cube(const Context& context, float scale = 1.0);
-Geometry          sphere(const Context& context, float radius = 1.0);
-GeometryTriangles square(const Context& context, float scale = 1.0);
-Geometry          tube(const Context& context, float radius = 1.0, 
+GeometryTriangles::Ptr cube(const Context::ConstPtr& context, float scale = 1.0);
+Geometry::Ptr          sphere(const Context::ConstPtr& context, float radius = 1.0);
+GeometryTriangles::Ptr square(const Context::ConstPtr& context, float scale = 1.0);
+Geometry::Ptr          tube(const Context::ConstPtr& context, float radius = 1.0, 
                        float height = 1.0);
 
 template <typename Tp, typename Tf>
-GeometryTriangles mesh(const Context& mesh, const rtac::types::Mesh<Tp,Tf,3>& m);
+GeometryTriangles::Ptr mesh(const Context::ConstPtr& mesh,
+                            const rtac::types::Mesh<Tp,Tf,3>& m);
 
-Geometry parabola(const Context& context, float a = 1.0, float b = 1.0,
+Geometry::Ptr parabola(const Context::ConstPtr& context, float a = 1.0, float b = 1.0,
                   float height = 1.0);
-
-
 
 // Implementation
 template <typename Tp, typename Tf>
-GeometryTriangles mesh(const Context& context, const rtac::types::Mesh<Tp,Tf,3>& m)
+GeometryTriangles::Ptr mesh(const Context::ConstPtr& context,
+                            const rtac::types::Mesh<Tp,Tf,3>& m)
 {
-    GeometryTriangles res(context, m);
+    auto res = GeometryTriangles::New(context, m);
 
-    res->geometry()->setAttributeProgram(*context->create_program(Source(R"(
+    res->geometry()->setAttributeProgram(*context->create_program(Source::New(R"(
     #include <optix.h>
     #include <optixu/optixu_math_namespace.h>
     using namespace optix;
