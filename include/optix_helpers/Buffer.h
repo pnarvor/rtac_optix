@@ -37,7 +37,8 @@ class Buffer : public NamedObject<optix::Buffer>
            RTformat format,
            const std::string& name);
 
-    virtual void set_size(size_t width, size_t height = 1);
+    virtual void set_size(size_t size);
+    virtual void set_size(size_t width, size_t height);
 
     optix::Buffer       buffer();
     const optix::Buffer buffer() const;

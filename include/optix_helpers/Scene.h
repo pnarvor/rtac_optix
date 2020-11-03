@@ -9,8 +9,13 @@
 
 namespace optix_helpers {
 
-class SceneObj : public ContextObj
+class Scene : public Context
 {
+    public:
+
+    using Ptr      = Handle<Scene>;
+    using ConstPtr = Handle<const Scene>;
+
     protected:
 
     optix::Group topObject_;
@@ -19,21 +24,13 @@ class SceneObj : public ContextObj
 
     public:
 
-    SceneObj(const std::string& topObjectName = "topObject",
-             bool loadDefaultConfig = true);
+    static Ptr New(const std::string& topObjectName = "topObject",
+                   bool loadDefaultConfig = true);
+    Scene(const std::string& topObjectName = "topObject",
+          bool loadDefaultConfig = true);
 
-    void add_child(const SceneItem& item);
+    void add_child(const SceneItem::Ptr& item);
 };
-using Scene = Handle<SceneObj>;
-//class Scene : public Handle<SceneObj>
-//{
-//    public:
-//
-//    Scene(const std::string& topObjectName = "topObject",
-//          bool loadDefaultConfig = true);
-//
-//    operator Context();
-//};
 
 }; //namespace optix_helpers
 #endif //_DEF_OPTIX_HELPERS_SCENE_H_

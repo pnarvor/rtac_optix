@@ -15,30 +15,39 @@
 
 namespace optix_helpers {
 
-class RayGeneratorObj
+class RayGenerator
 {
     public:
+
+    using Ptr      = Handle<RayGenerator>;
+    using ConstPtr = Handle<const RayGenerator>;
 
     using Pose    = rtac::types::Pose<float>;
     using Vector3 = rtac::types::Vector3<float>;
     using Matrix3 = rtac::types::Matrix3<float>;
-    using Shape   = BufferObj::Shape;
+    using Shape   = Buffer::Shape;
 
     protected:
     
-    Buffer  renderBuffer_;  // buffer where the image will be renderered.
-    Program raygenProgram_; // compiled ray generation program.
-    Pose    pose_;
+    Buffer::Ptr  renderBuffer_;  // buffer where the image will be renderered.
+    Program::Ptr raygenProgram_; // compiled ray generation program.
+    Pose         pose_;
     
     virtual void update_geometry();
     
     public:
 
-    RayGeneratorObj(const Context& context,
-                    const Buffer& renderBuffer,
-                    const RayType& rayType,
-                    const Source& raygenSource,
-                    const Sources& additionalHeaders);
+    static Ptr New(const Context::ConstPtr& context,
+                   const Buffer::Ptr& renderBuffer,
+                   const RayType& rayType,
+                   const Source::Ptr& raygenSource,
+                   const Sources& additionalHeaders);
+    
+    RayGenerator(const Context::ConstPtr& context,
+                 const Buffer::Ptr& renderBuffer,
+                 const RayType& rayType,
+                 const Source::Ptr& raygenSource,
+                 const Sources& additionalHeaders);
     
     // virtual member function to be reimplemented by subclassing.
     virtual void set_pose(const Pose& pose);
@@ -50,14 +59,12 @@ class RayGeneratorObj
                  const Vector3& position,
                  const Vector3& up = {0.0,0.0,1.0});
 
-    Buffer  render_buffer()  const;
-    Program raygen_program() const;
-    Shape   render_shape() const;
-    Pose    pose()           const;
-    void    write_data(uint8_t* dest) const;
+    Buffer::Ptr       render_buffer()  const;
+    Program::ConstPtr raygen_program() const;
+    Shape             render_shape() const;
+    Pose              pose()           const;
+    void              write_data(uint8_t* dest) const;
 };
-using RayGenerator = Handle<RayGeneratorObj>;
-
 
 }; //namespace optix helpers
 

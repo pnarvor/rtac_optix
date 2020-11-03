@@ -78,8 +78,8 @@ list(APPEND optix_helpers_SOURCES
     src/GeometryTriangles.cpp
     src/Model.cpp
     src/SceneItem.cpp
-    # src/RayGenerator.cpp
-    # src/Scene.cpp
+    src/RayGenerator.cpp
+    src/Scene.cpp
 )
 
 if(BUILD_SAMPLES)
@@ -103,7 +103,7 @@ if(BUILD_SAMPLES)
         src/samples/materials.cpp
         src/samples/geometries.cpp
         src/samples/items.cpp
-        # src/samples/PinHole.cpp
+        src/samples/PinHole.cpp
     )
 endif()
 
@@ -147,33 +147,33 @@ endif()
 include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/installation.cmake)
 install_target(optix_helpers)
 
-# if(WITH_DISPLAY)
-#     find_package(rtac_display REQUIRED)
-#     list(APPEND optix_helpers_display_PUBLIC_HEADERS
-#         include/optix_helpers/display/RenderBufferGL.h
-#     )
-#     add_library(optix_helpers_display SHARED
-#         src/display/RenderBufferGL.cpp
-#     )
-#     set_target_properties(optix_helpers_display PROPERTIES 
-#         PUBLIC_HEADER "${optix_helpers_display_PUBLIC_HEADERS}"
-#         INSTALL_RPATH_USE_LINK_PATH True
-#     )
-#     target_include_directories(optix_helpers_display PUBLIC
-#         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-#         $<INSTALL_INTERFACE:include>
-#     )
-#     target_link_libraries(optix_helpers_display PUBLIC
-#         OpenGL::GL
-#         OpenGL::GLU
-#         GLEW::GLEW
-#         glfw
-#         optix_helpers
-#         rtac_display
-#     )
-#     include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/installation.cmake)
-#     install_target(optix_helpers_display)
-# endif()
+if(WITH_DISPLAY)
+    find_package(rtac_display REQUIRED)
+    list(APPEND optix_helpers_display_PUBLIC_HEADERS
+        include/optix_helpers/display/GLBuffer.h
+    )
+    add_library(optix_helpers_display SHARED
+        src/display/GLBuffer.cpp
+    )
+    set_target_properties(optix_helpers_display PROPERTIES 
+        PUBLIC_HEADER "${optix_helpers_display_PUBLIC_HEADERS}"
+        INSTALL_RPATH_USE_LINK_PATH True
+    )
+    target_include_directories(optix_helpers_display PUBLIC
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+        $<INSTALL_INTERFACE:include>
+    )
+    target_link_libraries(optix_helpers_display PUBLIC
+        OpenGL::GL
+        OpenGL::GLU
+        GLEW::GLEW
+        glfw
+        optix_helpers
+        rtac_display
+    )
+    include(${CMAKE_CURRENT_SOURCE_DIR}/cmake/installation.cmake)
+    install_target(optix_helpers_display)
+endif()
 
 
 

@@ -27,6 +27,11 @@ const optix::Buffer Buffer::buffer() const
     return object_;
 }
 
+void Buffer::set_size(size_t size)
+{
+    object_->setSize(size);
+}
+
 void Buffer::set_size(size_t width, size_t height)
 {
     object_->setSize(width, height);

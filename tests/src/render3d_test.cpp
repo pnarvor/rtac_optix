@@ -11,14 +11,14 @@ using Pose = rtac::types::Pose<float>;
 using Quaternion = rtac::types::Quaternion<float>;
 
 #include <optix_helpers/samples/scenes.h>
-#include <optix_helpers/display/RenderBufferGL.h>
+#include <optix_helpers/display/GLBuffer.h>
 using namespace optix_helpers::samples;
 using namespace optix_helpers::display;
 
 #include <rtac_display/Display.h>
-#include <rtac_display/ImageRenderer.h>
-#include <rtac_display/View3D.h>
-#include <rtac_display/PinholeView.h>
+#include <rtac_display/renderers/ImageRenderer.h>
+#include <rtac_display/views/View3D.h>
+#include <rtac_display/views/PinholeView.h>
 using namespace rtac::display;
 
 int main()
@@ -27,7 +27,7 @@ int main()
 
     Display display;
     
-    scenes::Scene0<RenderBufferGL> scene(W,H);
+    scenes::Scene0<GLBuffer> scene(W,H);
 
     scene.view()->look_at({0.0,0.0,0.0}, { 2.0, 5.0, 4.0});
     float dangle = 0.001;

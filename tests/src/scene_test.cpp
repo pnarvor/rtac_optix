@@ -11,7 +11,7 @@ using namespace optix_helpers::samples;
 int main()
 {
     int W = 1920, H = 1080;
-    scenes::Scene0<RenderBuffer> scene(W,H);
+    scenes::Scene0<Buffer> scene(W,H);
     scene.launch();
     utils::display(scene.view()->render_buffer());
 

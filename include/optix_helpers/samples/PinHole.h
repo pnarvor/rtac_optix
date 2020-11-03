@@ -12,15 +12,18 @@
 
 namespace optix_helpers { namespace samples { namespace raygenerators {
 
-class PinHoleObj : public RayGeneratorObj
+class PinHole : public RayGenerator
 {
     public:
 
-    static const Source rayGeometryDefinition;
+    using Ptr      = Handle<PinHole>;
+    using ConstPtr = Handle<const PinHole>;
 
-    using Pose    = RayGeneratorObj::Pose;
-    using Vector3 = RayGeneratorObj::Vector3;
-    using Matrix3 = RayGeneratorObj::Matrix3;
+    static const Source::Ptr rayGeometryDefinition;
+
+    using Pose    = RayGenerator::Pose;
+    using Vector3 = RayGenerator::Vector3;
+    using Matrix3 = RayGenerator::Matrix3;
 
     constexpr static const float defaultFovy = 90.0f;
 
@@ -32,36 +35,22 @@ class PinHoleObj : public RayGeneratorObj
 
     public:
 
-    PinHoleObj(const Context& context, 
-               const Buffer& renderBuffer,
-               const RayType& rayType,
-               const Source& raygenSource,
-               const Sources& additionalHeaders = {});
+    static Ptr New(const Context::ConstPtr& context, 
+                   const Buffer::Ptr& renderBuffer,
+                   const RayType& rayType,
+                   const Source::Ptr& raygenSource,
+                   const Sources& additionalHeaders = {});
+
+    PinHole(const Context::ConstPtr& context, 
+            const Buffer::Ptr& renderBuffer,
+            const RayType& rayType,
+            const Source::Ptr& raygenSource,
+            const Sources& additionalHeaders = {});
 
     virtual void set_range(float zNear, float zFar);
 
     void set_fovy(float fovy);
 };
-using PinHole = Handle<PinHoleObj>;
-
-//class PinHole : public Handle<PinHoleObj>
-//{
-//    public:
-//    
-//    using Pose    = PinHoleObj::Pose;
-//    using Vector3 = PinHoleObj::Vector3;
-//    using Matrix3 = PinHoleObj::Matrix3;
-//    static const Source& rayGeometryDefinition;
-//    
-//    PinHole();
-//    PinHole(const Context& context, 
-//            const Buffer& renderBuffer,
-//            const RayType& rayType,
-//            const Source& raygenSource,
-//            const Sources& additionalHeaders = {});
-//
-//    operator RayGenerator();
-//};
 
 }; //namespace raygenerators
 }; //namespace samples

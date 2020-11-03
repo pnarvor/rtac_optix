@@ -10,25 +10,21 @@ list(APPEND test_names
     raytype_test
     texture_base_test
     material_test
-    # model_test
-    # ortho_test
-    # pinhole_test
-    # texture_test
-    # mirror_test
-    # scene_test
+    model_test
+    scene_test
 )
 list(APPEND test_deps
     optix_helpers
 )
-# if(WITH_DISPLAY)
-#     list(APPEND test_names
-#         animation_test
-#         render3d_test
-#     )
-#     list(APPEND test_deps
-#         optix_helpers_display
-#     )
-# endif()
+if(WITH_DISPLAY)
+    list(APPEND test_names
+        animation_test
+        render3d_test
+    )
+    list(APPEND test_deps
+        optix_helpers_display
+    )
+endif()
  
 foreach(name ${test_names})
     add_executable(${name} src/${name}.cpp)

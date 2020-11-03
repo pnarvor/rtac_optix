@@ -30,7 +30,8 @@ template <typename Tp, typename Tf>
 GeometryTriangles::Ptr mesh(const Context::ConstPtr& context,
                             const rtac::types::Mesh<Tp,Tf,3>& m)
 {
-    auto res = GeometryTriangles::New(context, m);
+    auto res = GeometryTriangles::New(context);
+    res->set_mesh(m);
 
     res->geometry()->setAttributeProgram(*context->create_program(Source::New(R"(
     #include <optix.h>

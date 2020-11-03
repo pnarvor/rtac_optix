@@ -2,8 +2,13 @@
 
 namespace optix_helpers {
 
-SceneObj::SceneObj(const std::string& topObjectName, bool loadDefaultConfig) :
-    ContextObj(),
+Scene::Ptr Scene::New(const std::string& topObjectName, bool loadDefaultConfig)
+{
+    return Ptr(new Scene(topObjectName, loadDefaultConfig));
+}
+
+Scene::Scene(const std::string& topObjectName, bool loadDefaultConfig) :
+    Context(),
     topObject_(context_->createGroup())
 {
     topObject_->setAcceleration(context_->createAcceleration("Trbvh"));
@@ -13,7 +18,7 @@ SceneObj::SceneObj(const std::string& topObjectName, bool loadDefaultConfig) :
         this->load_default_optix_config();
 }
 
-void SceneObj::load_default_optix_config()
+void Scene::load_default_optix_config()
 {
     using namespace std;
     cout << "Default trace depth : " << context_->getMaxTraceDepth() << endl;
@@ -30,19 +35,10 @@ void SceneObj::load_default_optix_config()
     cout << "Stack size : " << context_->getStackSize() << endl;
 }
 
-void SceneObj::add_child(const SceneItem& item)
+void Scene::add_child(const SceneItem::Ptr& item)
 {
     topObject_->addChild(item->node());
 }
-
-//Scene::Scene(const std::string& topObjectName, bool loadDefaultConfig) :
-//    Handle<SceneObj>(topObjectName, loadDefaultConfig)
-//{}
-//
-//Scene::operator Context()
-//{
-//    return Context(std::dynamic_pointer_cast<ContextObj>(this->obj_));
-//}
 
 }; //namespace optix_helpers
 

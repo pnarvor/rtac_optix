@@ -7,7 +7,7 @@
 
 namespace optix_helpers { namespace samples { namespace raygenerators {
 
-const Source PinHoleObj::rayGeometryDefinition = Source(R"(
+const Source::Ptr PinHole::rayGeometryDefinition = Source::New(R"(
 #include <optix.h>
 #include <optix_math.h>
 
@@ -29,19 +29,28 @@ optix::Ray pinhole_ray(const uint2& launchIndex, unsigned int rayType)
 
 using namespace rtac::types::indexing;
 
-PinHoleObj::PinHoleObj(const Context& context, 
-                       const Buffer& renderBuffer,
-                       const RayType& rayType,
-                       const Source& raygenSource,
-                       const Sources& additionalHeaders) :
-    RayGeneratorObj(context, renderBuffer, rayType, raygenSource,
-                    Sources({rayGeometryDefinition}) + additionalHeaders),
+PinHole::Ptr PinHole::New(const Context::ConstPtr& context, 
+                          const Buffer::Ptr& renderBuffer,
+                          const RayType& rayType,
+                          const Source::Ptr& raygenSource,
+                          const Sources& additionalHeaders)
+{
+    return Ptr(new PinHole(context, renderBuffer,rayType, raygenSource, additionalHeaders));
+}
+
+PinHole::PinHole(const Context::ConstPtr& context, 
+                 const Buffer::Ptr& renderBuffer,
+                 const RayType& rayType,
+                 const Source::Ptr& raygenSource,
+                 const Sources& additionalHeaders) :
+    RayGenerator(context, renderBuffer, rayType, raygenSource,
+                 Sources({rayGeometryDefinition}) + additionalHeaders),
     fovy_(defaultFovy)
 {
     this->set_range(1.0e-4f, RT_DEFAULT_MAX);
 }
 
-void PinHoleObj::update_geometry()
+void PinHole::update_geometry()
 {
     size_t w, h;
     (*renderBuffer_)->getSize(w, h);
@@ -63,35 +72,16 @@ void PinHoleObj::update_geometry()
     (*raygenProgram_)["pinholeStepY"]->setFloat(make_float3(stepY));
 }
 
-void PinHoleObj::set_range(float zNear, float zFar)
+void PinHole::set_range(float zNear, float zFar)
 {
     (*raygenProgram_)["pinholeRange"]->setFloat(optix::make_float2(zNear, zFar));
 }
 
-void PinHoleObj::set_fovy(float fovy)
+void PinHole::set_fovy(float fovy)
 {
     fovy_ = fovy;
     this->update_geometry();
 }
-
-//const Source& PinHole::rayGeometryDefinition = PinHoleObj::rayGeometryDefinition;
-
-//PinHole::PinHole()
-//{}
-//
-//PinHole::PinHole(const Context& context, 
-//                 const Buffer& renderBuffer,
-//                 const RayType& rayType,
-//                 const Source& raygenSource,
-//                 const Sources& additionalHeaders) :
-//    Handle<PinHoleObj>(new PinHoleObj(
-//        context, renderBuffer, rayType, raygenSource, additionalHeaders))
-//{}
-//
-//PinHole::operator RayGenerator()
-//{
-//    return RayGenerator(std::dynamic_pointer_cast<RayGeneratorObj>(this->obj_));
-//}
 
 }; //namespace raygenerators
 }; //namespace samples

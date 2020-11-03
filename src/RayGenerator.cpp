@@ -4,45 +4,55 @@
 
 namespace optix_helpers {
 
-RayGeneratorObj::RayGeneratorObj(const Context& context,
-                                 const Buffer& renderBuffer,
-                                 const RayType& rayType,
-                                 const Source& raygenSource,
-                                 const Sources& additionalHeaders) :
+RayGenerator::Ptr RayGenerator::New(const Context::ConstPtr& context,
+                                    const Buffer::Ptr& renderBuffer,
+                                    const RayType& rayType,
+                                    const Source::Ptr& raygenSource,
+                                    const Sources& additionalHeaders)
+{
+    return Ptr(new RayGenerator(context, renderBuffer, rayType,
+                                raygenSource, additionalHeaders));
+}
+
+RayGenerator::RayGenerator(const Context::ConstPtr& context,
+                           const Buffer::Ptr& renderBuffer,
+                           const RayType& rayType,
+                           const Source::Ptr& raygenSource,
+                           const Sources& additionalHeaders) :
     renderBuffer_(renderBuffer),
     raygenProgram_(context->create_program(raygenSource,
-        Sources({rayType->definition()}) + additionalHeaders))
+        Sources({rayType.definition()}) + additionalHeaders))
 {
     raygenProgram_->set_object(renderBuffer);
 }
 
-void RayGeneratorObj::update_geometry()
+void RayGenerator::update_geometry()
 {
 }
 
-void RayGeneratorObj::set_pose(const Pose& pose)
+void RayGenerator::set_pose(const Pose& pose)
 {
     pose_ = pose;
     this->update_geometry();
 }
  
-void RayGeneratorObj::set_size(size_t width, size_t height)
+void RayGenerator::set_size(size_t width, size_t height)
 {
     renderBuffer_->set_size(width, height);
     this->update_geometry();
 }
 
-void RayGeneratorObj::set_range(float zNear, float zFar)
+void RayGenerator::set_range(float zNear, float zFar)
 {
     //range modifier
 }
 
-void RayGeneratorObj::look_at(const Vector3& target)
+void RayGenerator::look_at(const Vector3& target)
 {
     this->look_at(target, pose_.translation(), {0.0,0.0,1.0});
 }
 
-void RayGeneratorObj::look_at(const Vector3& target,
+void RayGenerator::look_at(const Vector3& target,
                               const Vector3& position,
                               const Vector3& up)
 {
@@ -74,27 +84,27 @@ void RayGeneratorObj::look_at(const Vector3& target,
     //this->set_pose(Pose::from_rotation_matrix(r, position));
 }
  
-Buffer RayGeneratorObj::render_buffer() const
+Buffer::Ptr RayGenerator::render_buffer() const
 {
     return renderBuffer_;
 }
 
-Program RayGeneratorObj::raygen_program() const
+Program::ConstPtr RayGenerator::raygen_program() const
 {
     return raygenProgram_;
 }
 
-RayGeneratorObj::Shape RayGeneratorObj::render_shape() const
+RayGenerator::Shape RayGenerator::render_shape() const
 {
     return renderBuffer_->shape();
 }
 
-RayGeneratorObj::Pose RayGeneratorObj::pose() const
+RayGenerator::Pose RayGenerator::pose() const
 {
     return pose_;
 }
 
-void RayGeneratorObj::write_data(uint8_t* dest) const
+void RayGenerator::write_data(uint8_t* dest) const
 {
     size_t W,H;
     (*renderBuffer_)->getSize(W,H);
