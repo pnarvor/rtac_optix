@@ -10,22 +10,25 @@ using FrameCounter = rtac::misc::FrameCounter;
 using Pose = rtac::types::Pose<float>;
 using Quaternion = rtac::types::Quaternion<float>;
 
+#include <optix_helpers/Buffer.h>
 #include <optix_helpers/samples/scenes.h>
 #include <optix_helpers/display/GLBuffer.h>
+using namespace optix_helpers;
 using namespace optix_helpers::samples;
 using namespace optix_helpers::display;
 
 #include <rtac_display/Display.h>
+#include <rtac_display/GLVector.h>
 #include <rtac_display/renderers/ImageRenderer.h>
 using namespace rtac::display;
 
 int main()
 {
-    int W = 1920, H = 1080;
+    unsigned int W = 1920, H = 1080;
 
     Display display;
     
-    scenes::Scene0<GLBuffer> scene(W,H);
+    scenes::Scene0<Buffer> scene(W,H);
 
     scene.view()->look_at({0.0,0.0,0.0}, { 2.0, 5.0, 4.0});
     float dangle = 0.001;
@@ -34,12 +37,18 @@ int main()
     auto imageRenderer = ImageRenderer::New();
     display.add_renderer(imageRenderer);
     
+    auto vd = scene.render_buffer()->to_device_vector<float>();
+    
     FrameCounter counter;
     while(!display.should_close()) {
         scene.view()->set_pose(R * scene.view()->pose());
         
         scene.launch();
-        imageRenderer->set_image(scene.render_buffer());
+
+        scene.render_buffer()->to_device_vector<float>(vd);
+        GLVector<float> glv(vd);
+        //imageRenderer->set_image(scene.render_buffer());
+        imageRenderer->set_image({W,H}, glv.gl_id());
         display.draw();
         
         cout << counter;

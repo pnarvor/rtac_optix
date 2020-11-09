@@ -10,6 +10,9 @@ using namespace optix_helpers;
 int main()
 {
     auto context = Context::New();
+    
+    auto deviceCount =  context->context()->getDeviceCount();
+    cout << "Device count : " << deviceCount << endl;
 
     auto buffer = Buffer::New(context, RT_BUFFER_OUTPUT, RT_FORMAT_FLOAT3, "buffer");
     buffer->set_size(1920, 1080);

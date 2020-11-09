@@ -22,7 +22,7 @@ Buffer::Buffer(const optix::Buffer& buffer, const std::string& name) :
     NamedObject<optix::Buffer>(buffer, name)
 {}
 
-const optix::Buffer Buffer::buffer() const
+const optix::Buffer& Buffer::buffer() const
 {
     return object_;
 }
@@ -52,6 +52,23 @@ Buffer::Shape Buffer::shape() const
 size_t Buffer::size() const
 {
     return this->shape().area();
+}
+
+RTsize Buffer::element_size() const
+{
+    return this->buffer()->getElementSize();
+}
+
+void* Buffer::device_pointer(int deviceOrdinal)
+{
+    return this->buffer()->getDevicePointer(deviceOrdinal);
+}
+
+const void* Buffer::device_pointer(int deviceOrdinal) const
+{
+    //return this->buffer()->getDevicePointer(deviceOrdinal);
+    // Have to do it this way because of constness
+    return object_->getDevicePointer(deviceOrdinal);
 }
 
 void Buffer::unmap() const

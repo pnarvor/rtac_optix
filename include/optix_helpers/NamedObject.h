@@ -25,7 +25,7 @@ class NamedObject
         return object_;
     }
 
-    operator T() const
+    operator const T&() const
     {
         return object_;
     }
