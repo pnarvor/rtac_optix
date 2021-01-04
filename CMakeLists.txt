@@ -143,6 +143,7 @@ set(NVRTC_INCLUDE_DIRS "${NVRTC_INCLUDE_DIRS}\\\;${OPTIX_PREFIX}/SDK/cuda")
 set(NVRTC_INCLUDE_DIRS "${NVRTC_INCLUDE_DIRS}\\\;${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES}")
 target_compile_definitions(optix_helpers PUBLIC
     NVRTC_INCLUDE_DIRS="\\\"${NVRTC_INCLUDE_DIRS}\\\""
+    NVRTC_COMPILE_OPTIONS="-use_fast_math -lineinfo -default-device -rdc=true -D__x86_64 -arch=compute_61"
 )
 
 rtac_install_target(optix_helpers)

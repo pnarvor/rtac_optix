@@ -18,7 +18,6 @@ class Nvrtc
     public :
 
     using StringList = std::list<std::string>;
-    static const std::string defaultCompileOptions;
 
     protected:
     

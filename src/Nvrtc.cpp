@@ -5,6 +5,9 @@
 #ifndef NVRTC_INCLUDE_DIRS
 #define NVRTC_INCLUDE_DIRS ""
 #endif
+#ifndef NVRTC_COMPILE_OPTIONS
+#define NVRTC_COMPILE_OPTIONS "-use_fast_math -lineinfo -default-device -rdc=true -D__x86_64"
+#endif
 
 namespace optix_helpers {
 
@@ -33,13 +36,9 @@ void Nvrtc::load_default_include_dirs()
     this->add_include_dirs(parse_option_string(NVRTC_INCLUDE_DIRS, ";"));
 }
 
-const std::string Nvrtc::defaultCompileOptions(
-    //"-arch=compute_30 -use_fast_math -lineinfo -default-device -rdc=true -D__x86_64");
-    // using default --gpu-architecture (-arch)
-    "-use_fast_math -lineinfo -default-device -rdc=true -D__x86_64");
 void Nvrtc::load_default_compile_options()
 {
-    this->add_compile_options(defaultCompileOptions);
+    this->add_compile_options(NVRTC_COMPILE_OPTIONS);
 }
 
 void Nvrtc::clear_include_dirs()
