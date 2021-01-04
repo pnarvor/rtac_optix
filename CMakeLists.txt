@@ -41,7 +41,9 @@ find_library(CUDA_nvrtc_LIBRARY nvrtc
     PATH_SUFFIXES lib lib64
 )
 
-find_package(rtac_base REQUIRED)
+if(NOT TARGET rtac_base)
+    find_package(rtac_base REQUIRED)
+endif()
 
 list(APPEND optix_helpers_PUBLIC_HEADERS
     include/optix_helpers/utils.h

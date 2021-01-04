@@ -18,7 +18,7 @@ list(APPEND test_deps
 )
  
 foreach(name ${test_names})
-    add_executable(${name} src/${name}.cpp)
-    target_link_libraries(${name} ${test_deps})
+    add_executable(${PROJECT_NAME}_${name} src/${name}.cpp)
+    target_link_libraries(${PROJECT_NAME}_${name} ${test_deps})
 endforeach()
 
