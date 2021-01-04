@@ -44,6 +44,9 @@ find_library(CUDA_nvrtc_LIBRARY nvrtc
 if(NOT TARGET rtac_base)
     find_package(rtac_base REQUIRED)
 endif()
+if(NOT TARGET rtac_cuda)
+    find_package(rtac_cuda REQUIRED)
+endif()
 
 list(APPEND optix_helpers_PUBLIC_HEADERS
     include/optix_helpers/utils.h
@@ -130,6 +133,7 @@ target_link_libraries(optix_helpers PUBLIC
     ${CUDA_LIBRARIES}
     ${CUDA_nvrtc_LIBRARY}
     rtac_base
+    rtac_cuda
 )
 set(NVRTC_INCLUDE_DIRS "${OPTIX_INCLUDE_DIR}")
 set(NVRTC_INCLUDE_DIRS "${NVRTC_INCLUDE_DIRS}\\\;${OPTIX_INCLUDE_DIR}/optixu")
