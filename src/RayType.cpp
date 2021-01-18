@@ -26,7 +26,7 @@ Source::ConstPtr RayType::definition() const
 
 std::ostream& operator<<(std::ostream& os, const optix_helpers::RayType& rayType)
 {
-    if(rayType)
+    if(rayType != optix_helpers::RayType::uninitialized)
         os << "RayType " << (int)rayType.index() << "\n" << rayType.definition() << "\n";
     else
         os << "Empty RayType.\n";
