@@ -119,4 +119,9 @@ if(OptiX_FOUND AND NOT TARGET OptiX::OptiX)
         ${CUDA_LIBRARIES}
         ${CUDA_nvrtc_LIBRARY}
     )
+    target_include_directories(OptiX::OptiX INTERFACE
+        ${CUDA_TOOLKIT_INCLUDE}
+    )
 endif()
+
+
