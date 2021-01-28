@@ -1,6 +1,3 @@
-cmake_minimum_required(VERSION 3.10)
-project(optix_helpers_display VERSION 0.1)
-
 find_package(OpenGL REQUIRED)
 find_package(GLEW REQUIRED)
 
@@ -15,7 +12,7 @@ add_library(optix_helpers_display SHARED
     src/GLBuffer.cpp
 )
 set_target_properties(optix_helpers_display PROPERTIES 
-    PUBLIC_HEADER "${optix_helpers_display_PUBLIC_HEADERS}"
+    RTAC_PUBLIC_HEADERS "${optix_helpers_display_PUBLIC_HEADERS}"
     INSTALL_RPATH_USE_LINK_PATH True
 )
 target_include_directories(optix_helpers_display PUBLIC
