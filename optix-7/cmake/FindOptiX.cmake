@@ -109,18 +109,24 @@ if(OptiX_FOUND AND NOT TARGET OptiX::OptiX)
     # which does not exists for an all-header library.
     # However, an INTERFACE library version handling seems non-existent.
     add_library(OptiX::OptiX INTERFACE IMPORTED) 
-    set_target_properties(OptiX::OptiX PROPERTIES
-        INTERFACE_INCLUDE_DIRECTORIES "${OptiX_INCLUDE_DIRS}"
-        # VERSION "${OptiX_VERSION}" # Not compatible with INTERFACE library and 
-                                     # INTERFACE_VERSION not a standard cmake property.
-                                     # (WHY ????)
-    )
     target_link_libraries(OptiX::OptiX INTERFACE
         ${CUDA_LIBRARIES}
         ${CUDA_nvrtc_LIBRARY}
     )
     target_include_directories(OptiX::OptiX INTERFACE
+        ${OptiX_INCLUDE_DIRS}
         ${CUDA_TOOLKIT_INCLUDE}
+        ${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES}
+    )
+    set(NVRTC_INCLUDE_DIRS "${OptiX_INCLUDE_DIR}")
+    set(NVRTC_INCLUDE_DIRS "${NVRTC_INCLUDE_DIRS}\\\;${OptiX_INCLUDE_DIR}/optixu")
+    set(NVRTC_INCLUDE_DIRS "${NVRTC_INCLUDE_DIRS}\\\;${OptiX_PREFIX}/SDK/support/mdl-sdk/include")
+    # set(NVRTC_INCLUDE_DIRS "${NVRTC_INCLUDE_DIRS}\\\;${OptiX_PREFIX}/SDK/sutils")
+    set(NVRTC_INCLUDE_DIRS "${NVRTC_INCLUDE_DIRS}\\\;${OptiX_PREFIX}/SDK/cuda")
+    set(NVRTC_INCLUDE_DIRS "${NVRTC_INCLUDE_DIRS}\\\;${CMAKE_CUDA_TOOLKIT_INCLUDE_DIRECTORIES}")
+    target_compile_definitions(OptiX::OptiX INTERFACE
+        NVRTC_INCLUDE_DIRS="\\\"${NVRTC_INCLUDE_DIRS}\\\""
+        NVRTC_COMPILE_OPTIONS="-use_fast_math -lineinfo -default-device -rdc=true -D__x86_64 -arch=compute_61"
     )
 endif()
 
