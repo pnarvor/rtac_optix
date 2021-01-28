@@ -21,8 +21,8 @@ class GeometryTriangles
     using Ptr      = Handle<GeometryTriangles>;
     using ConstPtr = Handle<const GeometryTriangles>;
     
-    template <typename Tp, typename Tf>
-    using Mesh = rtac::types::Mesh<Tp,Tf,3>;
+    template <typename PointT, typename FaceT, template<typename> class VectorT>
+    using Mesh = rtac::types::Mesh<PointT, FaceT, VectorT>;
 
     protected:
 
@@ -42,8 +42,9 @@ class GeometryTriangles
                       bool withFaces = true,
                       bool withNormals = false,
                       bool withTextureCoordinates = false);
-    template <typename Tp, typename Tf>
-    GeometryTriangles(const Context::ConstPtr& context, const Mesh<Tp,Tf>& mesh);
+    template <typename PointT, typename FaceT, template<typename> class VectorT>
+    GeometryTriangles(const Context::ConstPtr& context,
+                      const Mesh<PointT,FaceT,VectorT>& mesh);
     
     template <typename T>
     void set_points(size_t count, const T* points);
@@ -53,8 +54,8 @@ class GeometryTriangles
     void set_normals(size_t count, const T* normals);
     template <typename T>
     void set_texture_coordinates(size_t count, const T* texCoords);
-    template <typename Tp, typename Tf>
-    void set_mesh(const Mesh<Tp,Tf>& mesh);
+    template <typename PointT, typename FaceT, template<typename> class VectorT>
+    void set_mesh(const Mesh<PointT,FaceT,VectorT>& mesh);
 
     Buffer::Ptr points();
     Buffer::Ptr faces();
@@ -74,8 +75,9 @@ class GeometryTriangles
     optix::GeometryTriangles operator->() const;
 };
 
-template <typename Tp, typename Tf>
-GeometryTriangles::GeometryTriangles(const Context::ConstPtr& context, const Mesh<Tp,Tf>& mesh) :
+template <typename PointT, typename FaceT, template<typename> class VectorT>
+GeometryTriangles::GeometryTriangles(const Context::ConstPtr& context,
+                                     const Mesh<PointT,FaceT,VectorT>& mesh) :
     GeometryTriangles(context, true, false, false)
 {
     this->set_mesh(mesh);
@@ -137,29 +139,27 @@ void GeometryTriangles::set_texture_coordinates(size_t count, const T* texCoords
 }
 
 
-template <typename Tp, typename Tf>
-void GeometryTriangles::set_mesh(const Mesh<Tp,Tf>& mesh)
+template <typename PointT, typename FaceT, template<typename> class VectorT>
+void GeometryTriangles::set_mesh(const Mesh<PointT,FaceT,VectorT>& mesh)
 {
-    // cannot use directly set_poitn and set_face because Eigen in column-wise order
+    // cannot use directly set_point and set_face because Eigen in column-wise order
     // change this.
     points_->set_size(mesh.num_points());
-    auto points = mesh.points();
     auto devicePoints = points_->map<float*>();
     for(int i = 0; i < mesh.num_points(); i++) {
-        devicePoints[3*i]     = points(i,0);
-        devicePoints[3*i + 1] = points(i,1);
-        devicePoints[3*i + 2] = points(i,2);
+        devicePoints[3*i]     = mesh.point(i).x;
+        devicePoints[3*i + 1] = mesh.point(i).y;
+        devicePoints[3*i + 2] = mesh.point(i).z;
     }
     points_->unmap();
     geometry_->setVertices(mesh.num_points(), *points_, (*points_)->getFormat());
 
     faces_->set_size(mesh.num_faces());
-    auto faces = mesh.faces();
     auto deviceFaces = faces_->map<uint32_t*>();
     for(int i = 0; i < mesh.num_faces(); i++) {
-        deviceFaces[3*i]     = faces(i,0);
-        deviceFaces[3*i + 1] = faces(i,1);
-        deviceFaces[3*i + 2] = faces(i,2);
+        deviceFaces[3*i]     = mesh.face(i).x;
+        deviceFaces[3*i + 1] = mesh.face(i).y;
+        deviceFaces[3*i + 2] = mesh.face(i).z;
     }
     faces_->unmap();
     geometry_->setPrimitiveCount(mesh.num_faces());

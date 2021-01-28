@@ -1,10 +1,6 @@
 #include <optix_helpers/samples/geometries.h>
 
-#include <rtac_base/types/Mesh.h>
-
 namespace optix_helpers { namespace samples { namespace geometries {
-
-using Mesh = rtac::types::Mesh<float,uint32_t,3>;
 
 GeometryTriangles::Ptr cube(const Context::ConstPtr& context, float scale)
 {

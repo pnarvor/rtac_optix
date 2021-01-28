@@ -178,7 +178,7 @@ Scene0<RenderBufferType>::Scene0(size_t width, size_t height) :
     auto lense1 = SceneItem::New(this->context_, lense);
     lense1->set_pose(lense0->pose()*Quaternion({0.0,1.0,0.0,0.0}));
 
-    auto mesh0 = items::mesh(this->context_, rtac::types::Mesh<float, uint32_t>::cube());
+    auto mesh0 = items::mesh(this->context_, rtac::types::Mesh<>::cube());
     mesh0->model()->add_material(mirror);
     mesh0->set_pose(Pose({-2.3, -4.3, 1.0}));
 

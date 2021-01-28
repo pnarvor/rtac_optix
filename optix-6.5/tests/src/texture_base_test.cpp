@@ -6,7 +6,7 @@ using namespace rtac::files;
 
 #include <rtac_base/types/Mesh.h>
 #include <rtac_base/types/Pose.h>
-using Mesh = rtac::types::Mesh<float,uint32_t,3>;
+using Mesh = rtac::types::Mesh<>;
 using Pose = rtac::types::Pose<float>;
 
 #include <optix_helpers/Context.h>

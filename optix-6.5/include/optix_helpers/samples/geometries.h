@@ -18,17 +18,17 @@ GeometryTriangles::Ptr square(const Context::ConstPtr& context, float scale = 1.
 Geometry::Ptr          tube(const Context::ConstPtr& context, float radius = 1.0, 
                        float height = 1.0);
 
-template <typename Tp, typename Tf>
-GeometryTriangles::Ptr mesh(const Context::ConstPtr& mesh,
-                            const rtac::types::Mesh<Tp,Tf,3>& m);
+template <typename PointT, typename FaceT, template<typename> class VectorT>
+GeometryTriangles::Ptr mesh(const Context::ConstPtr& context,
+                            const rtac::types::Mesh<PointT,FaceT,VectorT>& m);
 
 Geometry::Ptr parabola(const Context::ConstPtr& context, float a = 1.0, float b = 1.0,
                   float height = 1.0);
 
 // Implementation
-template <typename Tp, typename Tf>
+template <typename PointT, typename FaceT, template<typename> class VectorT>
 GeometryTriangles::Ptr mesh(const Context::ConstPtr& context,
-                            const rtac::types::Mesh<Tp,Tf,3>& m)
+                            const rtac::types::Mesh<PointT,FaceT,VectorT>& m)
 {
     auto res = GeometryTriangles::New(context);
     res->set_mesh(m);

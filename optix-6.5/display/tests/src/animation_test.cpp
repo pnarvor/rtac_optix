@@ -3,8 +3,8 @@
 #include <chrono>
 using namespace std;
 
-#include <rtac_base/misc.h>
-using FrameCounter = rtac::misc::FrameCounter;
+#include <rtac_base/time.h>
+using FrameCounter = rtac::time::FrameCounter;
 
 #include <rtac_base/types/Pose.h>
 using Pose = rtac::types::Pose<float>;

@@ -24,13 +24,15 @@ SceneItem::Ptr tube(const Context::ConstPtr& context, const Materials& materials
                     float radius = 1.0, float height = 1.0);
 SceneItem::Ptr parabola(const Context::ConstPtr& context, const Materials& materials = Materials(),
                         float a = 1.0, float b = 0.0, float height = 1.0);
-template <typename Tp, typename Tf>
-SceneItem::Ptr mesh(const Context::ConstPtr& context, const rtac::types::Mesh<Tp,Tf,3>& m,
+template <typename PointT, typename FaceT, template<typename> class VectorT>
+SceneItem::Ptr mesh(const Context::ConstPtr& context,
+                    const rtac::types::Mesh<PointT,FaceT,VectorT>& m,
                     const Materials& materials = Materials());
 
 // Implementation
-template <typename Tp, typename Tf>
-SceneItem::Ptr mesh(const Context::ConstPtr& context, const rtac::types::Mesh<Tp,Tf,3>& m,
+template <typename PointT, typename FaceT, template<typename> class VectorT>
+SceneItem::Ptr mesh(const Context::ConstPtr& context,
+                    const rtac::types::Mesh<PointT,FaceT,VectorT>& m,
                     const Materials& materials)
 {
     auto model = Model::New(context);
