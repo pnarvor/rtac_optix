@@ -8,6 +8,7 @@ target_link_libraries(compile_test
 
 list(APPEND test_names
     nvrtc_ptx.cpp
+    optix_hello.cpp # from OptiX 7.1 SDK
 )
 
 list(APPEND test_deps
