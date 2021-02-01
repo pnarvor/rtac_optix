@@ -1,8 +1,19 @@
 function(rtac_target_add_ptx TARGET_NAME)
     
     message(STATUS "argument : ${ARGN}")
-	cmake_parse_arguments(ARGUMENTS "" "" "CUDA_SOURCES" ${ARGN} )
-    
+	cmake_parse_arguments(ARGUMENTS "TAG_FOR_INSTALL" "OUTPUT_NAME;INSTALL_DESTINATION" "CUDA_SOURCES" ${ARGN} )
+
+    # output filename
+    if("${ARGUMENTS_OUTPUT_NAME}" STREQUAL "")
+        set(output_name "${TARGET_NAME}_ptx_files.h")
+    else()
+        set(output_name "${ARGUMENTS_OUTPUT_NAME}")
+    endif()
+
+    if("${ARGUMENTS_INSTALL_DESTINATION}" STREQUAL "")
+        set(ARGUMENTS_INSTALL_DESTINATION "${TARGET_NAME}")
+    endif()
+
     enable_language(CUDA)
     if(NOT TARGET OptiX::OptiX)
         find_package(OptiX REQUIRED)
@@ -41,28 +52,20 @@ function(rtac_target_add_ptx TARGET_NAME)
         list(APPEND ptx_files ${ptx_output_file})
 
     endforeach()
-    
-    # This alone is not working, PRE_BUILD seems to be the same as PRE_LINK and
-    # the generated file is needed at compilation.
-    # add_custom_command(TARGET ${TARGET_NAME} PRE_BUILD
-    #                    COMMAND ${CMAKE_COMMAND}
-    #                    -DSOURCE_FILES="${ARGUMENTS_CUDA_SOURCES}"
-    #                    -DPTX_FILES="${ptx_files}"
-    #                    -DTARGET_NAME=${TARGET_NAME}
-    #                    -DOUTPUT_FILE=${ptx_target_output_dir}/${TARGET_NAME}_ptx_files.h
-    #                    -P ${CMAKE_SOURCE_DIR}/cmake/generate_ptx_header.cmake
-    #                    COMMENT "Generating PTX header file ${TARGET_NAME}_ptx_files.h")
-    add_custom_command(OUTPUT ${ptx_target_output_dir}/${TARGET_NAME}_ptx_files.h
+   
+    # Command responsible to include all compilated PTX file into a C++ header
+    # file. PTX strings can be retrieved from a filename keyed dictionary.
+    add_custom_command(OUTPUT ${ptx_target_output_dir}/${output_name}
                        COMMAND ${CMAKE_COMMAND}
                        -DSOURCE_FILES="${ARGUMENTS_CUDA_SOURCES}"
                        -DPTX_FILES="${ptx_files}"
                        -DTARGET_NAME=${TARGET_NAME}
-                       -DOUTPUT_FILE=${ptx_target_output_dir}/${TARGET_NAME}_ptx_files.h
+                       -DOUTPUT_FILE=${ptx_target_output_dir}/${output_name}
                        -P ${CMAKE_SOURCE_DIR}/cmake/generate_ptx_header.cmake
-                       COMMENT "Generating PTX header file ${TARGET_NAME}_ptx_files.h")
+                       COMMENT "Generating PTX header file ${output_name}")
     set(ptx_header_target ${TARGET_NAME}_PTX_GEN_HEADER)
     add_custom_target(${ptx_header_target}
-        DEPENDS ${ptx_target_output_dir}/${TARGET_NAME}_ptx_files.h
+        DEPENDS ${ptx_target_output_dir}/${output_name}
     )
     add_dependencies(${ptx_header_target} ${ptx_target})
 
@@ -73,6 +76,11 @@ function(rtac_target_add_ptx TARGET_NAME)
     # Adding a dependency to ensure header generation before compilation of
     # TARGET_NAME
     add_dependencies(${TARGET_NAME} ${ptx_header_target})
+
+    if(ARGUMENTS_TAG_FOR_INSTALL)
+        install(FILES ${ptx_target_output_dir}/${output_name}
+                DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${ARGUMENTS_INSTALL_DESTINATION})
+    endif()
 
 endfunction()
 
