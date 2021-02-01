@@ -1,6 +1,8 @@
 #include <iostream>
 using namespace std;
 
+#include <compile_test_ptx_files.h>
+
 #include "compile_test.h"
 
 template <typename T>
@@ -29,5 +31,10 @@ int main()
 
     print(in);
     print(out);
+
+    auto ptxDict = compile_test::get_ptx_files();
+    for(auto& f : ptxDict) {
+        cout << "PTX file " << f.first << endl << f.second << "\n\n\n\n\n\n";
+    }
     return 0;
 }

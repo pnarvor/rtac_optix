@@ -130,4 +130,8 @@ if(OptiX_FOUND AND NOT TARGET OptiX::OptiX)
     )
 endif()
 
+# including utility cmake modules
+include(${CMAKE_CURRENT_LIST_DIR}/rtac_target_add_ptx.cmake)
+
+
 
