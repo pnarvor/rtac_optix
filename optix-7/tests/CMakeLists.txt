@@ -5,7 +5,7 @@ add_executable(compile_test
 target_link_libraries(compile_test
     optix_helpers
 )
-rtac_target_add_ptx(compile_test
+target_add_ptx(compile_test
     CUDA_SOURCES
         src/compile_test.cu
 )

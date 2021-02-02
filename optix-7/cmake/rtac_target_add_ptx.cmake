@@ -1,4 +1,4 @@
-function(rtac_target_add_ptx TARGET_NAME)
+function(target_add_ptx TARGET_NAME)
 
     # TAG_FOR_INSTALL             : Option to enable installation of the generated header.
     # OUTPUT_NAME <name>          : Name of the generated header.
