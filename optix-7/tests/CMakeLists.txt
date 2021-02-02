@@ -12,7 +12,6 @@ target_add_ptx(compile_test
 
 list(APPEND test_names
     nvrtc_ptx.cpp
-    optix_hello.cpp # from OptiX 7.1 SDK
 )
 
 list(APPEND test_deps
@@ -32,5 +31,6 @@ foreach(name ${test_names})
 
 endforeach(name)
 
+add_subdirectory(optix_hello)
 
 
