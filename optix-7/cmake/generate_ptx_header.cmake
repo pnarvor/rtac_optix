@@ -32,9 +32,16 @@ list(LENGTH PTX_FILES list_length)
 while(${list_length} GREATER 0)
     list(POP_FRONT SOURCE_FILES source_name)
     list(POP_FRONT PTX_FILES    ptx_name)
-    file(READ ${ptx_name} ptx_content)
     string(APPEND output_content "    ptxDict[\"${source_name}\"] = R\"(")
-    string(APPEND output_content ${ptx_content})
+
+    # string(APPEND output_content "${ptx_content}")
+    # Have to do it this way because of cmake handling of special characters.
+    # (; characters get deleted from ptx content).
+    file(APPEND ${OUTPUT_FILE} ${output_content})
+    set(output_content "")
+    file(READ ${ptx_name} ptx_content)
+    file(APPEND ${OUTPUT_FILE} "${ptx_content}")
+
     string(APPEND output_content "    )\"\;\n\n")
     list(LENGTH PTX_FILES list_length)
 endwhile()
