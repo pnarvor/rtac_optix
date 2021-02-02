@@ -3,13 +3,14 @@ function(target_add_ptx TARGET_NAME)
     # TAG_FOR_INSTALL             : Option to enable installation of the generated header.
     # OUTPUT_NAME <name>          : Name of the generated header.
     # INSTALL_DESTINATION <path>  : Install destination of the generated header relative to the installation path.
+    #                               Will also be used as a prefix to generation path in the build directory.
     # CUDA_SOURCES <file_path...> : CUDA sources to be compiled and added to the generated header.
 
 	cmake_parse_arguments(ARGUMENTS "TAG_FOR_INSTALL" "OUTPUT_NAME;INSTALL_DESTINATION" "CUDA_SOURCES" ${ARGN} )
 
     # output filename
     if("${ARGUMENTS_OUTPUT_NAME}" STREQUAL "")
-        set(output_name "${TARGET_NAME}_ptx_files.h")
+        set(output_name "ptx_files.h")
     else()
         set(output_name "${ARGUMENTS_OUTPUT_NAME}")
     endif()
@@ -64,18 +65,17 @@ function(target_add_ptx TARGET_NAME)
    
     # Command responsible to include all compilated PTX file into a C++ header
     # file. PTX strings can be retrieved from a filename keyed dictionary.
-    add_custom_command(OUTPUT ${ptx_target_output_dir}/${output_name}
+    set(full_output_path ${ptx_target_output_dir}/${ARGUMENTS_INSTALL_DESTINATION}/${output_name})
+    add_custom_command(OUTPUT ${full_output_path}
                        COMMAND ${CMAKE_COMMAND}
                        -DSOURCE_FILES="${ARGUMENTS_CUDA_SOURCES}"
                        -DPTX_FILES="${ptx_files}"
                        -DTARGET_NAME=${TARGET_NAME}
-                       -DOUTPUT_FILE=${ptx_target_output_dir}/${output_name}
+                       -DOUTPUT_FILE=${full_output_path}
                        -P ${CMAKE_SOURCE_DIR}/cmake/generate_ptx_header.cmake
-                       COMMENT "Generating PTX header file ${output_name}")
+                       COMMENT "Generating PTX header file ${ARGUMENTS_INSTALL_DESTINATION}/${output_name}")
     set(ptx_header_target ${TARGET_NAME}_PTX_GEN_HEADER)
-    add_custom_target(${ptx_header_target}
-        DEPENDS ${ptx_target_output_dir}/${output_name}
-    )
+    add_custom_target(${ptx_header_target} DEPENDS ${full_output_path})
     # This target must be built only when ptx_target is finished
     add_dependencies(${ptx_header_target} ${ptx_target})
 
@@ -88,7 +88,7 @@ function(target_add_ptx TARGET_NAME)
     add_dependencies(${TARGET_NAME} ${ptx_header_target})
 
     if(ARGUMENTS_TAG_FOR_INSTALL)
-        install(FILES ${ptx_target_output_dir}/${output_name}
+        install(FILES ${full_output_path}
                 DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${ARGUMENTS_INSTALL_DESTINATION})
     endif()
 

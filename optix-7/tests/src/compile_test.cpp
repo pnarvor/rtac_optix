@@ -1,7 +1,7 @@
 #include <iostream>
 using namespace std;
 
-#include <compile_test_ptx_files.h>
+#include <compile_test/ptx_files.h>
 
 #include "compile_test.h"
 
