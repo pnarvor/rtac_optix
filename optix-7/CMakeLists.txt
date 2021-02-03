@@ -11,35 +11,35 @@ if(NOT TARGET rtac_cuda)
     find_package(rtac_cuda REQUIRED)
 endif()
 
-list(APPEND optix_helpers_PUBLIC_HEADERS
-    include/optix_helpers/Handle.h
-    include/optix_helpers/Source.h
-    include/optix_helpers/Nvrtc.h
-    include/optix_helpers/Pipeline.h
+list(APPEND rtac_optix_PUBLIC_HEADERS
+    include/rtac_optix/Handle.h
+    include/rtac_optix/Source.h
+    include/rtac_optix/Nvrtc.h
+    include/rtac_optix/Pipeline.h
 )
-list(APPEND optix_helpers_SOURCES
+list(APPEND rtac_optix_SOURCES
     src/Source.cpp
     src/Nvrtc.cpp
     src/Pipeline.cpp
 )
 
-add_library(optix_helpers SHARED ${optix_helpers_SOURCES})
-set_target_properties(optix_helpers PROPERTIES 
-    RTAC_PUBLIC_HEADERS "${optix_helpers_PUBLIC_HEADERS}"
+add_library(rtac_optix SHARED ${rtac_optix_SOURCES})
+set_target_properties(rtac_optix PROPERTIES 
+    RTAC_PUBLIC_HEADERS "${rtac_optix_PUBLIC_HEADERS}"
     INSTALL_RPATH_USE_LINK_PATH True
 )
-target_include_directories(optix_helpers
+target_include_directories(rtac_optix
     PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
         $<INSTALL_INTERFACE:include>
 )
-target_link_libraries(optix_helpers PUBLIC
+target_link_libraries(rtac_optix PUBLIC
     OptiX::OptiX
     rtac_base
     rtac_cuda
 )
 
-rtac_install_target(optix_helpers
+rtac_install_target(rtac_optix
     ADDITIONAL_CONFIG_FILES ${CMAKE_CURRENT_SOURCE_DIR}/cmake/FindOptiX.cmake
 )
 

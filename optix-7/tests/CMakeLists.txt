@@ -1,9 +1,9 @@
 # add_executable(compile_test
 #     src/compile_test.cpp
 #     src/compile_test.cu
-# )
+# 
 # target_link_libraries(compile_test
-#     optix_helpers
+#     rtac_optix
 # )
 # target_add_ptx(compile_test
 #     CUDA_SOURCES
@@ -15,7 +15,7 @@
 # )
 # 
 # list(APPEND test_deps
-#     optix_helpers
+#     rtac_optix
 # )
 # 
 # foreach(name ${test_names})

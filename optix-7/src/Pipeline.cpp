@@ -1,6 +1,6 @@
-#include <optix_helpers/Pipeline.h>
+#include <rtac_optix/Pipeline.h>
 
-namespace optix_helpers {
+namespace rtac { namespace optix {
 
 OptixPipelineCompileOptions Pipeline::default_pipeline_compile_options()
 {
@@ -51,7 +51,8 @@ Pipeline::Pipeline() :
     pipeline_(nullptr)
 {}
 
-}; // namespace optix_helpers
+}; //namespace optix
+}; //namespace rtac
 
 
 

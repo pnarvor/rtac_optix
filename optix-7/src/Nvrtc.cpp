@@ -1,4 +1,4 @@
-#include <optix_helpers/Nvrtc.h>
+#include <rtac_optix/Nvrtc.h>
 
 #include <cstring>
 
@@ -9,7 +9,7 @@
 #define NVRTC_COMPILE_OPTIONS "-use_fast_math -lineinfo -default-device -rdc=true -D__x86_64"
 #endif
 
-namespace optix_helpers {
+namespace rtac { namespace optix {
 
 Nvrtc::Nvrtc() :
     program_(0)
@@ -225,9 +225,10 @@ void Nvrtc::check_error(nvrtcResult errorCode)
     }
 }
 
-}; //namespace optix_helpers
+}; //namespace optix
+}; //namespace rtac
 
-std::ostream& operator<<(std::ostream& os, const optix_helpers::Nvrtc& nvrtc)
+std::ostream& operator<<(std::ostream& os, const rtac::optix::Nvrtc& nvrtc)
 {
     os << "NVRTC compile options :\n";
     os << "Include dirs :";

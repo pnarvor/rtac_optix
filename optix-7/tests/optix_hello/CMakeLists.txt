@@ -6,7 +6,7 @@ add_executable(optix_hello
     src/optix_hello.cpp
 )
 target_link_libraries(optix_hello PRIVATE
-    optix_helpers
+    rtac_optix
     rtac_cuda
 )
 target_add_ptx(optix_hello

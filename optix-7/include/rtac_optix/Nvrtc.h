@@ -1,5 +1,5 @@
-#ifndef _DEF_OPTIX_HELPERS_NVRTC_H_
-#define _DEF_OPTIX_HELPERS_NVRTC_H_
+#ifndef _DEF_RTAC_OPTIX_NVRTC_H_
+#define _DEF_RTAC_OPTIX_NVRTC_H_
 
 #include <iostream>
 #include <fstream>
@@ -9,9 +9,9 @@
 #include <list>
 #include <nvrtc.h>
 
-#include <optix_helpers/Source.h>
+#include <rtac_optix/Source.h>
 
-namespace optix_helpers {
+namespace rtac { namespace optix {
 
 class Nvrtc
 {
@@ -65,10 +65,11 @@ class Nvrtc
     static void check_error(nvrtcResult errorCode);
 };
 
-}; //namespace optix_helpers
+}; //namespace optix
+}; //namespace rtac
 
-std::ostream& operator<<(std::ostream& os, const optix_helpers::Nvrtc& nvrtc);
+std::ostream& operator<<(std::ostream& os, const rtac::optix::Nvrtc& nvrtc);
 
-#endif //_DEF_OPTIX_HELPERS_NVRTC_H_
+#endif //_DEF_RTAC_OPTIX_NVRTC_H_
 
 

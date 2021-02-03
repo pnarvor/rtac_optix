@@ -1,9 +1,9 @@
 #include <iostream>
 using namespace std;
 
-#include <optix_helpers/Source.h>
-#include <optix_helpers/Nvrtc.h>
-using namespace optix_helpers;
+#include <rtac_optix/Source.h>
+#include <rtac_optix/Nvrtc.h>
+using namespace rtac::optix;
 
 int main()
 {

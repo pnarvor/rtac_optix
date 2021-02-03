@@ -1,14 +1,14 @@
-#ifndef _DEF_OPTIX_HELPERS_PIPELINE_H_
-#define _DEF_OPTIX_HELPERS_PIPELINE_H_
+#ifndef _DEF_RTAC_OPTIX_PIPELINE_H_
+#define _DEF_RTAC_OPTIX_PIPELINE_H_
 
 #include <iostream>
 #include <cstring>
 
-#include <rtac_base/types/Handle.h>
-
 #include <optix.h>
 
-namespace optix_helpers {
+#include <rtac_optix/Handle.h>
+
+namespace rtac { namespace optix {
 
 class Pipeline
 {
@@ -29,6 +29,7 @@ class Pipeline
     Pipeline();
 };
 
-}; // namespace optix_helpers
+}; //namespace optix
+}; //namespace rtac
 
-#endif //_DEF_OPTIX_HELPERS_PIPELINE_H_
+#endif //_DEF_RTAC_OPTIX_PIPELINE_H_

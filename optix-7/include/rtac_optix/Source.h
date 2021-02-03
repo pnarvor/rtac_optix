@@ -7,9 +7,9 @@
 #include <algorithm>
 #include <vector>
 
-#include <optix_helpers/Handle.h>
+#include <rtac_optix/Handle.h>
 
-namespace optix_helpers {
+namespace rtac { namespace optix {
 
 class Source
 {
@@ -40,12 +40,13 @@ class Source
 
 using Sources = std::vector<Source::ConstPtr>;
 
-}; //namespace optix_helpers
+}; //namespace optix
+}; //namespace rtac
 
-optix_helpers::Sources operator+(const optix_helpers::Sources& lhs, 
-                                 const optix_helpers::Sources& rhs);
-std::ostream& operator<<(std::ostream& os, const optix_helpers::Source& source);
-std::ostream& operator<<(std::ostream& os, const optix_helpers::Source::ConstPtr& source);
-std::ostream& operator<<(std::ostream& os, const optix_helpers::Source::Ptr& source);
+rtac::optix::Sources operator+(const rtac::optix::Sources& lhs, 
+                                 const rtac::optix::Sources& rhs);
+std::ostream& operator<<(std::ostream& os, const rtac::optix::Source& source);
+std::ostream& operator<<(std::ostream& os, const rtac::optix::Source::ConstPtr& source);
+std::ostream& operator<<(std::ostream& os, const rtac::optix::Source::Ptr& source);
 
 #endif //_DEF_RTAC_OPTIX_SOURCE_H_

@@ -1,6 +1,6 @@
-#include <optix_helpers/Source.h>
+#include <rtac_optix/Source.h>
 
-namespace optix_helpers {
+namespace rtac { namespace optix {
 
 Source::Ptr Source::New(const std::string& source, const std::string& name)
 {
@@ -38,17 +38,18 @@ int Source::num_lines() const
     return std::count(source_.begin(), source_.end(), '\n');
 }
 
-}; //namespace optix_helpers
+}; //namespace optix
+}; //namespace rtac
 
-optix_helpers::Sources operator+(const optix_helpers::Sources& lhs, 
-                                 const optix_helpers::Sources& rhs)
+rtac::optix::Sources operator+(const rtac::optix::Sources& lhs, 
+                                 const rtac::optix::Sources& rhs)
 {
-    optix_helpers::Sources res = lhs;
+    rtac::optix::Sources res = lhs;
     res.insert(res.end(), rhs.begin(), rhs.end());
     return res;
 }
 
-std::ostream& operator<<(std::ostream& os, const optix_helpers::Source& source)
+std::ostream& operator<<(std::ostream& os, const rtac::optix::Source& source)
 {
     os << "Optix source file " << source.name() << "\n";
     int Nlines = source.num_lines();
@@ -61,13 +62,13 @@ std::ostream& operator<<(std::ostream& os, const optix_helpers::Source& source)
     return os;
 }
 
-std::ostream& operator<<(std::ostream& os, const optix_helpers::Source::ConstPtr& source)
+std::ostream& operator<<(std::ostream& os, const rtac::optix::Source::ConstPtr& source)
 {
     os << *source;
     return os;
 }
 
-std::ostream& operator<<(std::ostream& os, const optix_helpers::Source::Ptr& source)
+std::ostream& operator<<(std::ostream& os, const rtac::optix::Source::Ptr& source)
 {
     os << *source;
     return os;
