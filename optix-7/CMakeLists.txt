@@ -15,10 +15,12 @@ list(APPEND optix_helpers_PUBLIC_HEADERS
     include/optix_helpers/Handle.h
     include/optix_helpers/Source.h
     include/optix_helpers/Nvrtc.h
+    include/optix_helpers/Pipeline.h
 )
 list(APPEND optix_helpers_SOURCES
     src/Source.cpp
     src/Nvrtc.cpp
+    src/Pipeline.cpp
 )
 
 add_library(optix_helpers SHARED ${optix_helpers_SOURCES})
