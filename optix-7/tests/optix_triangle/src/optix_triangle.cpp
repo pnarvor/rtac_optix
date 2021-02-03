@@ -181,17 +181,8 @@ int main( int argc, char* argv[] )
     rtac::optix::Pipeline pipeline0(context);
     pipeline0.add_module("src/optix_triangle.cu", ptxFiles["src/optix_triangle.cu"]);
 
-    OptixProgramGroupDesc raygen_prog_group_desc    = {}; //
-    raygen_prog_group_desc.kind                     = OPTIX_PROGRAM_GROUP_KIND_RAYGEN;
-    raygen_prog_group_desc.raygen.module            = pipeline0.module("src/optix_triangle.cu");
-    raygen_prog_group_desc.raygen.entryFunctionName = "__raygen__rg";
-    auto raygen_prog_group = pipeline0.add_program_group(raygen_prog_group_desc);
-
-    OptixProgramGroupDesc miss_prog_group_desc  = {};
-    miss_prog_group_desc.kind                   = OPTIX_PROGRAM_GROUP_KIND_MISS;
-    miss_prog_group_desc.miss.module            = pipeline0.module("src/optix_triangle.cu");
-    miss_prog_group_desc.miss.entryFunctionName = "__miss__ms";
-    auto miss_prog_group = pipeline0.add_program_group(miss_prog_group_desc);
+    auto raygen_prog_group = pipeline0.add_raygen_program("__raygen__rg", "src/optix_triangle.cu");
+    auto miss_prog_group   = pipeline0.add_miss_program("__miss__ms", "src/optix_triangle.cu");
 
     OptixProgramGroupDesc hitgroup_prog_group_desc = {};
     hitgroup_prog_group_desc.kind                         = OPTIX_PROGRAM_GROUP_KIND_HITGROUP;

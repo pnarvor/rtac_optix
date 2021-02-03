@@ -66,6 +66,11 @@ class Pipeline
     // for convenience.
     OptixModule add_module(const std::string& name, const std::string& ptxContent,
                            bool forceReplace = false);
+
+    OptixProgramGroup add_raygen_program(const std::string& entryPoint,
+                                         const std::string& moduleName);
+    OptixProgramGroup add_miss_program(const std::string& entryPoint,
+                                       const std::string& moduleName);
 };
 
 }; //namespace optix

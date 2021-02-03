@@ -60,13 +60,14 @@ Pipeline::Pipeline(const Context& context) :
 
 Pipeline::~Pipeline()
 {
+    // Destroying created programs.
+    for(auto& program : programs_) {
+        optixProgramGroupDestroy(program);
+    }
+
     // Destroying created modules.
     for(auto& pair : modules_) {
         optixModuleDestroy(pair.second);
-    }
-
-    for(auto& program : programs_) {
-        optixProgramGroupDestroy(program);
     }
 
     //Destroying pipeline
@@ -196,6 +197,28 @@ OptixModule Pipeline::add_module(const std::string& name, const std::string& ptx
     return this->add_module(name, ptxContent,
                             Pipeline::default_module_compile_options(),
                             forceReplace);
+}
+
+OptixProgramGroup Pipeline::add_raygen_program(const std::string& entryPoint,
+                                               const std::string& moduleName)
+{
+    OptixProgramGroupDesc description    = {};
+    description.kind                     = OPTIX_PROGRAM_GROUP_KIND_RAYGEN;
+    description.raygen.module            = this->module(moduleName);
+    description.raygen.entryFunctionName = entryPoint.c_str();
+
+    return this->add_program_group(description);
+}
+
+OptixProgramGroup Pipeline::add_miss_program(const std::string& entryPoint,
+                                             const std::string& moduleName)
+{
+    OptixProgramGroupDesc description    = {};
+    description.kind                     = OPTIX_PROGRAM_GROUP_KIND_MISS;
+    description.raygen.module            = this->module(moduleName);
+    description.raygen.entryFunctionName = entryPoint.c_str();
+
+    return this->add_program_group(description);
 }
 
 }; //namespace optix
