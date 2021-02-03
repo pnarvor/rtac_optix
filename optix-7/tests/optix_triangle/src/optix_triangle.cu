@@ -122,6 +122,7 @@ extern "C" __global__ void __raygen__rg()
                     (unsigned char)(255 * result.y),
                     (unsigned char)(255 * result.z),
                     255u);
+        //make_uchar4(0u, 200u, 255u, 255u);
 }
 
 

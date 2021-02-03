@@ -98,8 +98,6 @@ int main( int argc, char* argv[] )
     OPTIX_CHECK( optixInit() );
     rtac::optix::Context context;
 
-    auto ptxFiles = optix_triangle::get_ptx_files(); 
-
     //
     // accel handling
     //
@@ -179,145 +177,28 @@ int main( int argc, char* argv[] )
         CUDA_CHECK( cudaFree( reinterpret_cast<void*>( d_vertices        ) ) );
     }
 
-    //
-    // Create module
-    //
-    OptixModule module = nullptr;
-    OptixPipelineCompileOptions pipeline_compile_options = {};
-    {
-        OptixModuleCompileOptions module_compile_options = {};
-        module_compile_options.maxRegisterCount     = OPTIX_COMPILE_DEFAULT_MAX_REGISTER_COUNT;
-        module_compile_options.optLevel             = OPTIX_COMPILE_OPTIMIZATION_DEFAULT;
-        module_compile_options.debugLevel           = OPTIX_COMPILE_DEBUG_LEVEL_LINEINFO;
-
-        pipeline_compile_options.usesMotionBlur        = false;
-        pipeline_compile_options.traversableGraphFlags = OPTIX_TRAVERSABLE_GRAPH_FLAG_ALLOW_SINGLE_GAS;
-        pipeline_compile_options.numPayloadValues      = 3;
-        pipeline_compile_options.numAttributeValues    = 3;
-    #ifdef DEBUG // Enables debug exceptions during optix launches. This may incur significant performance cost and should only be done during development.
-        pipeline_compile_options.exceptionFlags = OPTIX_EXCEPTION_FLAG_DEBUG | OPTIX_EXCEPTION_FLAG_TRACE_DEPTH | OPTIX_EXCEPTION_FLAG_STACK_OVERFLOW;
-    #else
-        pipeline_compile_options.exceptionFlags = OPTIX_EXCEPTION_FLAG_NONE;
-    #endif
-        pipeline_compile_options.pipelineLaunchParamsVariableName = "params";
-        pipeline_compile_options.usesPrimitiveTypeFlags = OPTIX_PRIMITIVE_TYPE_FLAGS_TRIANGLE;
-
-        //const std::string ptx = sutil::getPtxString( OPTIX_SAMPLE_NAME, OPTIX_SAMPLE_DIR, "optixTriangle.cu" );
-        const std::string ptx = ptxFiles["src/optix_triangle.cu"];
-        size_t sizeof_log = sizeof( log );
-
-        OPTIX_CHECK_LOG( optixModuleCreateFromPTX(
-                    context,
-                    &module_compile_options,
-                    &pipeline_compile_options,
-                    ptx.c_str(),
-                    ptx.size(),
-                    log,
-                    &sizeof_log,
-                    &module
-                    ) );
-    }
-
+    auto ptxFiles = optix_triangle::get_ptx_files(); 
     rtac::optix::Pipeline pipeline0(context);
     pipeline0.add_module("src/optix_triangle.cu", ptxFiles["src/optix_triangle.cu"]);
 
-    //
-    // Create program groups
-    //
-    OptixProgramGroup raygen_prog_group   = nullptr;
-    OptixProgramGroup miss_prog_group     = nullptr;
-    OptixProgramGroup hitgroup_prog_group = nullptr;
-    {
-        OptixProgramGroupOptions program_group_options   = {}; // Initialize to zeros
+    OptixProgramGroupDesc raygen_prog_group_desc    = {}; //
+    raygen_prog_group_desc.kind                     = OPTIX_PROGRAM_GROUP_KIND_RAYGEN;
+    raygen_prog_group_desc.raygen.module            = pipeline0.module("src/optix_triangle.cu");
+    raygen_prog_group_desc.raygen.entryFunctionName = "__raygen__rg";
+    auto raygen_prog_group = pipeline0.add_program_group(raygen_prog_group_desc);
 
-        OptixProgramGroupDesc raygen_prog_group_desc    = {}; //
-        raygen_prog_group_desc.kind                     = OPTIX_PROGRAM_GROUP_KIND_RAYGEN;
-        raygen_prog_group_desc.raygen.module            = pipeline0.module("src/optix_triangle.cu");
-        raygen_prog_group_desc.raygen.entryFunctionName = "__raygen__rg";
-        size_t sizeof_log = sizeof( log );
-        OPTIX_CHECK_LOG( optixProgramGroupCreate(
-                    context,
-                    &raygen_prog_group_desc,
-                    1,   // num program groups
-                    &program_group_options,
-                    log,
-                    &sizeof_log,
-                    &raygen_prog_group
-                    ) );
+    OptixProgramGroupDesc miss_prog_group_desc  = {};
+    miss_prog_group_desc.kind                   = OPTIX_PROGRAM_GROUP_KIND_MISS;
+    miss_prog_group_desc.miss.module            = pipeline0.module("src/optix_triangle.cu");
+    miss_prog_group_desc.miss.entryFunctionName = "__miss__ms";
+    auto miss_prog_group = pipeline0.add_program_group(miss_prog_group_desc);
 
-        OptixProgramGroupDesc miss_prog_group_desc  = {};
-        miss_prog_group_desc.kind                   = OPTIX_PROGRAM_GROUP_KIND_MISS;
-        miss_prog_group_desc.miss.module            = pipeline0.module("src/optix_triangle.cu");
-        miss_prog_group_desc.miss.entryFunctionName = "__miss__ms";
-        sizeof_log = sizeof( log );
-        OPTIX_CHECK_LOG( optixProgramGroupCreate(
-                    context,
-                    &miss_prog_group_desc,
-                    1,   // num program groups
-                    &program_group_options,
-                    log,
-                    &sizeof_log,
-                    &miss_prog_group
-                    ) );
-
-        OptixProgramGroupDesc hitgroup_prog_group_desc = {};
-        hitgroup_prog_group_desc.kind                         = OPTIX_PROGRAM_GROUP_KIND_HITGROUP;
-        hitgroup_prog_group_desc.hitgroup.moduleCH            = pipeline0.module("src/optix_triangle.cu");
-        hitgroup_prog_group_desc.hitgroup.entryFunctionNameCH = "__closesthit__ch";
-        sizeof_log = sizeof( log );
-        OPTIX_CHECK_LOG( optixProgramGroupCreate(
-                    context,
-                    &hitgroup_prog_group_desc,
-                    1,   // num program groups
-                    &program_group_options,
-                    log,
-                    &sizeof_log,
-                    &hitgroup_prog_group
-                    ) );
-    }
-
-    //
-    // Link pipeline
-    //
-    OptixPipeline pipeline = nullptr;
-    {
-        const uint32_t    max_trace_depth  = 1;
-        OptixProgramGroup program_groups[] = { raygen_prog_group, miss_prog_group, hitgroup_prog_group };
-
-        OptixPipelineLinkOptions pipeline_link_options = {};
-        pipeline_link_options.maxTraceDepth          = max_trace_depth;
-        pipeline_link_options.debugLevel             = OPTIX_COMPILE_DEBUG_LEVEL_FULL;
-        size_t sizeof_log = sizeof( log );
-        OPTIX_CHECK_LOG( optixPipelineCreate(
-                    context,
-                    &pipeline_compile_options,
-                    &pipeline_link_options,
-                    program_groups,
-                    sizeof( program_groups ) / sizeof( program_groups[0] ),
-                    log,
-                    &sizeof_log,
-                    &pipeline
-                    ) );
-
-        OptixStackSizes stack_sizes = {};
-        for( auto& prog_group : program_groups )
-        {
-            OPTIX_CHECK( optixUtilAccumulateStackSizes( prog_group, &stack_sizes ) );
-        }
-
-        uint32_t direct_callable_stack_size_from_traversal;
-        uint32_t direct_callable_stack_size_from_state;
-        uint32_t continuation_stack_size;
-        OPTIX_CHECK( optixUtilComputeStackSizes( &stack_sizes, max_trace_depth,
-                                                 0,  // maxCCDepth
-                                                 0,  // maxDCDEpth
-                                                 &direct_callable_stack_size_from_traversal,
-                                                 &direct_callable_stack_size_from_state, &continuation_stack_size ) );
-        OPTIX_CHECK( optixPipelineSetStackSize( pipeline, direct_callable_stack_size_from_traversal,
-                                                direct_callable_stack_size_from_state, continuation_stack_size,
-                                                1  // maxTraversableDepth
-                                                ) );
-    }
+    OptixProgramGroupDesc hitgroup_prog_group_desc = {};
+    hitgroup_prog_group_desc.kind                         = OPTIX_PROGRAM_GROUP_KIND_HITGROUP;
+    hitgroup_prog_group_desc.hitgroup.moduleCH            = pipeline0.module("src/optix_triangle.cu");
+    hitgroup_prog_group_desc.hitgroup.entryFunctionNameCH = "__closesthit__ch";
+    auto hitgroup_prog_group = pipeline0.add_program_group(hitgroup_prog_group_desc);
+    pipeline0.link();
 
     //
     // Set up shader binding table
@@ -370,12 +251,11 @@ int main( int argc, char* argv[] )
         sbt.hitgroupRecordCount         = 1;
     }
 
-    //sutil::CUDAOutputBuffer<uchar4> output_buffer( sutil::CUDAOutputBufferType::CUDA_DEVICE, width, height );
-    rtac::cuda::DeviceVector<uchar4> output_buffer(width*height); 
 
     //
     // launch
     //
+    rtac::cuda::DeviceVector<uchar4> output_buffer(width*height); 
     {
         CUstream stream;
         CUDA_CHECK( cudaStreamCreate( &stream ) );
@@ -399,8 +279,7 @@ int main( int argc, char* argv[] )
                     cudaMemcpyHostToDevice
                     ) );
 
-        OPTIX_CHECK( optixLaunch( pipeline, stream, d_param, sizeof( Params ), &sbt, width, height, /*depth=*/1 ) );
-        //CUDA_SYNC_CHECK();
+        OPTIX_CHECK( optixLaunch( pipeline0, stream, d_param, sizeof( Params ), &sbt, width, height, /*depth=*/1 ) );
         cudaDeviceSynchronize();
         CUDA_CHECK(cudaGetLastError());
     }
@@ -415,35 +294,11 @@ int main( int argc, char* argv[] )
     }
     rtac::files::write_ppm("output.ppm", width, height, rgbData.data());
 
-    ////
-    //// Display results
-    ////
-    //{
-    //    sutil::ImageBuffer buffer;
-    //    buffer.data         = output_buffer.getHostPointer();
-    //    buffer.width        = width;
-    //    buffer.height       = height;
-    //    buffer.pixel_format = sutil::BufferImageFormat::UNSIGNED_BYTE4;
-    //    if( outfile.empty() )
-    //        sutil::displayBufferWindow( argv[0], buffer );
-    //    else
-    //        sutil::saveImage( outfile.c_str(), buffer, false );
-    //}
-
-    //
-    // Cleanup
-    //
     {
         CUDA_CHECK( cudaFree( reinterpret_cast<void*>( sbt.raygenRecord       ) ) );
         CUDA_CHECK( cudaFree( reinterpret_cast<void*>( sbt.missRecordBase     ) ) );
         CUDA_CHECK( cudaFree( reinterpret_cast<void*>( sbt.hitgroupRecordBase ) ) );
         CUDA_CHECK( cudaFree( reinterpret_cast<void*>( d_gas_output_buffer    ) ) );
-
-        OPTIX_CHECK( optixPipelineDestroy( pipeline ) );
-        OPTIX_CHECK( optixProgramGroupDestroy( hitgroup_prog_group ) );
-        OPTIX_CHECK( optixProgramGroupDestroy( miss_prog_group ) );
-        OPTIX_CHECK( optixProgramGroupDestroy( raygen_prog_group ) );
-        OPTIX_CHECK( optixModuleDestroy( module ) );
     }
     return 0;
 }

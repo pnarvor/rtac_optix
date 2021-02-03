@@ -44,6 +44,13 @@ OptixModuleCompileOptions Pipeline::default_module_compile_options()
     return res;
 }
 
+OptixProgramGroupOptions Pipeline::default_program_group_options()
+{
+    OptixProgramGroupOptions res;
+    std::memset(&res, 0, sizeof(res)); // unused by optix for now
+    return res;
+}
+
 Pipeline::Pipeline(const Context& context) :
     context_(context),
     pipeline_(new OptixPipeline),
@@ -56,6 +63,10 @@ Pipeline::~Pipeline()
     // Destroying created modules.
     for(auto& pair : modules_) {
         optixModuleDestroy(pair.second);
+    }
+
+    for(auto& program : programs_) {
+        optixProgramGroupDestroy(program);
     }
 
     //Destroying pipeline
@@ -97,16 +108,15 @@ OptixModule Pipeline::add_module(const std::string& name, const std::string& ptx
         }
     }
 
-    OPTIX_CHECK( optixModuleCreateFromPTX(
-                context_,
-                &moduleOptions,
-                &compileOptions_,
-                ptxContent.c_str(), ptxContent.size(),
-                nullptr, nullptr, // These are logging related, log will also
-                                  // be written in context log, but with less
-                                  // tracking information (TODO Fix this).
-                &module
-                ) );
+    OPTIX_CHECK( 
+    optixModuleCreateFromPTX(context_,
+        &moduleOptions, &compileOptions_,
+        ptxContent.c_str(), ptxContent.size(),
+        nullptr, nullptr, // These are logging related, log will also
+                          // be written in context log, but with less
+                          // tracking information (TODO Fix this).
+        &module
+        ) );
 
     modules_[name] = module;
     return module;
@@ -121,6 +131,65 @@ OptixModule Pipeline::module(const std::string& name)
         return it->second;
 }
 
+OptixProgramGroup Pipeline::add_program_group(const OptixProgramGroupDesc& description)
+{
+    OptixProgramGroup program;
+    auto opts = Pipeline::default_program_group_options();
+
+    OPTIX_CHECK(
+    optixProgramGroupCreate(context_, &description, 1, &opts,
+        nullptr, nullptr, // These are logging related, log will also
+                          // be written in context log, but with less
+                          // tracking information (TODO Fix this).
+        &program));
+    
+    programs_.push_back(program);
+    return program;
+}
+
+void Pipeline::link(bool autoStackSizes)
+{
+    OPTIX_CHECK(
+    optixPipelineCreate(context_, &compileOptions_, &linkOptions_,
+        programs_.data(), programs_.size(), 
+        nullptr, nullptr, // These are logging related, log will also
+                          // be written in context log, but with less
+                          // tracking information (TODO Fix this).
+        &(*pipeline_)));
+    
+    if(autoStackSizes)
+        this->autoset_stack_sizes();
+}
+
+void Pipeline::autoset_stack_sizes()
+{
+    // This is complicated...
+    // Taken from the optix_triangle example in the OptiX-7.2 SDK
+    OptixStackSizes stackSizes = {};
+    for( auto& prog : programs_ ) {
+        OPTIX_CHECK(optixUtilAccumulateStackSizes(prog, &stackSizes));
+    }
+    
+    uint32_t directCallableStackSizeFromTraversal;
+    uint32_t directCallableStackSizeFromState;
+    uint32_t continuationStackSize;
+    OPTIX_CHECK(
+    optixUtilComputeStackSizes(&stackSizes, linkOptions_.maxTraceDepth,
+        0,  // maxCCDepth ?
+        0,  // maxDCDEpth ?
+        &directCallableStackSizeFromTraversal,
+        &directCallableStackSizeFromState,
+        &continuationStackSize));
+    OPTIX_CHECK(
+    optixPipelineSetStackSize( (*pipeline_.get()),
+        directCallableStackSizeFromTraversal,
+        directCallableStackSizeFromState, continuationStackSize,
+        1  // maxTraversableDepth ?
+        ) );
+
+}
+
+// BELOW HERE, ONLY METHOD OVERLOADS
 OptixModule Pipeline::add_module(const std::string& name, const std::string& ptxContent,
                                  bool forceReplace)
 {
