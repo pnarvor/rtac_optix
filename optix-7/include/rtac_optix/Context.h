@@ -6,6 +6,9 @@
 #include <cstring>
 
 #include <optix.h>
+// careful : because of OptiX function table optix_stubs.h must be included to
+// ensure proper linking.
+#include <optix_stubs.h>
 
 #include <rtac_optix/Handle.h>
 #include <rtac_optix/utils.h>
@@ -25,7 +28,7 @@ class Context
 
     static ContextPtr new_context(const OptixDeviceContextOptions& options,
                                   CUcontext cudaContext = 0);
-    
+
     public:
 
     static OptixDeviceContextOptions default_options();

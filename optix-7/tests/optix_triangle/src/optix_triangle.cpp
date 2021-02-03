@@ -26,45 +26,32 @@
 // OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 //
 
-#include <optix.h>
-#include <optix_function_table_definition.h>
-#include <optix_stack_size.h>
-#include <optix_stubs.h>
-
-#include <cuda_runtime.h>
-
-//#include <sampleConfig.h>
-
-//#include <sutil/CUDAOutputBuffer.h>
-//#include <sutil/Exception.h>
-//#include <sutil/sutil.h>
-
-#include "optix_triangle.h"
-#include <optix_triangle/ptx_files.h>
-#include <rtac_base/cuda/DeviceVector.h>
-#include <rtac_base/cuda/HostVector.h>
-#include <rtac_base/files.h>
-
 #include <array>
 #include <iomanip>
 #include <iostream>
 #include <string>
 
-//#include <sutil/Camera.h>
-//#include <sutil/Trackball.h>
+#include <cuda_runtime.h>
 
+#include <optix.h>
+#include <optix_function_table_definition.h>
+#include <optix_stack_size.h>
+#include <optix_stubs.h>
+
+#include <rtac_base/cuda/DeviceVector.h>
+#include <rtac_base/cuda/HostVector.h>
+#include <rtac_base/files.h>
+
+#include <rtac_optix/utils.h>
+#include <rtac_optix/Context.h>
+
+#include <optix_triangle/ptx_files.h>
+#include "optix_triangle.h"
 
 void CUDA_CHECK(const cudaError_t res)
 {
     if( res != cudaSuccess ) {
         throw std::runtime_error("Got cuda error");
-    }
-}
-
-void OPTIX_CHECK(const OptixResult& res)
-{
-    if( res != OPTIX_SUCCESS ) {
-        throw std::runtime_error("Got optix error");
     }
 }
 
@@ -88,26 +75,6 @@ typedef SbtRecord<MissData>       MissSbtRecord;
 typedef SbtRecord<HitGroupData>   HitGroupSbtRecord;
 
 
-//void configureCamera( sutil::Camera& cam, const uint32_t width, const uint32_t height )
-//{
-//    cam.setEye( {0.0f, 0.0f, 2.0f} );
-//    cam.setLookat( {0.0f, 0.0f, 0.0f} );
-//    cam.setUp( {0.0f, 1.0f, 3.0f} );
-//    cam.setFovY( 45.0f );
-//    cam.setAspectRatio( (float)width / (float)height );
-//}
-
-
-void printUsageAndExit( const char* argv0 )
-{
-    std::cerr << "Usage  : " << argv0 << " [options]\n";
-    std::cerr << "Options: --file | -f <filename>      Specify file for image output\n";
-    std::cerr << "         --help | -h                 Print this usage message\n";
-    std::cerr << "         --dim=<width>x<height>      Set image dimensions; defaults to 512x384\n";
-    exit( 1 );
-}
-
-
 static void context_log_cb( unsigned int level, const char* tag, const char* message, void* /*cbdata */)
 {
     std::cerr << "[" << std::setw( 2 ) << level << "][" << std::setw( 12 ) << tag << "]: "
@@ -123,27 +90,11 @@ int main( int argc, char* argv[] )
 
     char log[2048]; // For error reporting from OptiX creation functions
 
-    //
-    // Initialize CUDA and create OptiX context
-    //
-    OptixDeviceContext context = nullptr;
-    {
-        // Initialize CUDA
-        CUDA_CHECK( cudaFree( 0 ) );
-
-        // Initialize the OptiX API, loading all API entry points
-        OPTIX_CHECK( optixInit() );
-
-        // Specify context options
-        OptixDeviceContextOptions options = {};
-        options.logCallbackFunction       = &context_log_cb;
-        options.logCallbackLevel          = 4;
-
-        // Associate a CUDA context (and therefore a specific GPU) with this
-        // device context
-        CUcontext cuCtx = 0;  // zero means take the current context
-        OPTIX_CHECK( optixDeviceContextCreate( cuCtx, &options, &context ) );
-    }
+    // Initialize CUDA
+    CUDA_CHECK( cudaFree( 0 ) );
+    // Initialize the OptiX API, loading all API entry points
+    OPTIX_CHECK( optixInit() );
+    rtac::optix::Context context;
 
     auto ptxFiles = optix_triangle::get_ptx_files(); 
 
@@ -488,8 +439,6 @@ int main( int argc, char* argv[] )
         OPTIX_CHECK( optixProgramGroupDestroy( miss_prog_group ) );
         OPTIX_CHECK( optixProgramGroupDestroy( raygen_prog_group ) );
         OPTIX_CHECK( optixModuleDestroy( module ) );
-
-        OPTIX_CHECK( optixDeviceContextDestroy( context ) );
     }
     return 0;
 }

@@ -41,7 +41,6 @@ target_link_libraries(rtac_optix PUBLIC
     rtac_base
     rtac_cuda
 )
-
 rtac_install_target(rtac_optix
     ADDITIONAL_CONFIG_FILES ${CMAKE_CURRENT_SOURCE_DIR}/cmake/FindOptiX.cmake
 )
