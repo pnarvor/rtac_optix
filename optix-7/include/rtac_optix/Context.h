@@ -21,19 +21,19 @@ class Context
 
     using ContextPtr = Handle<OptixDeviceContext>;
 
+    static OptixDeviceContextOptions default_options();
+    static void log_callback(unsigned int level, const char* tag,
+                             const char* message, void* data);
+
     protected:
-    
-    OptixDeviceContextOptions options_;
-    mutable ContextPtr context_;
 
     static ContextPtr new_context(const OptixDeviceContextOptions& options,
                                   CUcontext cudaContext = 0);
 
-    public:
+    OptixDeviceContextOptions options_;
+    mutable ContextPtr        context_;
 
-    static OptixDeviceContextOptions default_options();
-    static void log_callback(unsigned int level, const char* tag,
-                             const char* message, void* data);
+    public:
 
     Context();
 

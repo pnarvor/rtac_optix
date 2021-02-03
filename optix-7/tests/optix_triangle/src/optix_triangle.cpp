@@ -30,6 +30,7 @@
 #include <iomanip>
 #include <iostream>
 #include <string>
+using namespace std;
 
 #include <cuda_runtime.h>
 
@@ -44,6 +45,7 @@
 
 #include <rtac_optix/utils.h>
 #include <rtac_optix/Context.h>
+#include <rtac_optix/Pipeline.h>
 
 #include <optix_triangle/ptx_files.h>
 #include "optix_triangle.h"
@@ -216,6 +218,9 @@ int main( int argc, char* argv[] )
                     ) );
     }
 
+    rtac::optix::Pipeline pipeline0(context);
+    pipeline0.add_module("src/optix_triangle.cu", ptxFiles["src/optix_triangle.cu"]);
+
     //
     // Create program groups
     //
@@ -227,7 +232,7 @@ int main( int argc, char* argv[] )
 
         OptixProgramGroupDesc raygen_prog_group_desc    = {}; //
         raygen_prog_group_desc.kind                     = OPTIX_PROGRAM_GROUP_KIND_RAYGEN;
-        raygen_prog_group_desc.raygen.module            = module;
+        raygen_prog_group_desc.raygen.module            = pipeline0.module("src/optix_triangle.cu");
         raygen_prog_group_desc.raygen.entryFunctionName = "__raygen__rg";
         size_t sizeof_log = sizeof( log );
         OPTIX_CHECK_LOG( optixProgramGroupCreate(
@@ -242,7 +247,7 @@ int main( int argc, char* argv[] )
 
         OptixProgramGroupDesc miss_prog_group_desc  = {};
         miss_prog_group_desc.kind                   = OPTIX_PROGRAM_GROUP_KIND_MISS;
-        miss_prog_group_desc.miss.module            = module;
+        miss_prog_group_desc.miss.module            = pipeline0.module("src/optix_triangle.cu");
         miss_prog_group_desc.miss.entryFunctionName = "__miss__ms";
         sizeof_log = sizeof( log );
         OPTIX_CHECK_LOG( optixProgramGroupCreate(
@@ -257,7 +262,7 @@ int main( int argc, char* argv[] )
 
         OptixProgramGroupDesc hitgroup_prog_group_desc = {};
         hitgroup_prog_group_desc.kind                         = OPTIX_PROGRAM_GROUP_KIND_HITGROUP;
-        hitgroup_prog_group_desc.hitgroup.moduleCH            = module;
+        hitgroup_prog_group_desc.hitgroup.moduleCH            = pipeline0.module("src/optix_triangle.cu");
         hitgroup_prog_group_desc.hitgroup.entryFunctionNameCH = "__closesthit__ch";
         sizeof_log = sizeof( log );
         OPTIX_CHECK_LOG( optixProgramGroupCreate(
