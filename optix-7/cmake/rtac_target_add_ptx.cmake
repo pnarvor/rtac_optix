@@ -67,6 +67,7 @@ function(target_add_ptx TARGET_NAME)
     # file. PTX strings can be retrieved from a filename keyed dictionary.
     set(full_output_path ${ptx_target_output_dir}/${ARGUMENTS_INSTALL_DESTINATION}/${output_name})
     add_custom_command(OUTPUT ${full_output_path}
+                       DEPENDS ${ARGUMENTS_CUDA_SOURCES}
                        COMMAND ${CMAKE_COMMAND}
                        -DSOURCE_FILES="${ARGUMENTS_CUDA_SOURCES}"
                        -DPTX_FILES="${ptx_files}"
