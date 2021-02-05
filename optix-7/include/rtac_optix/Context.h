@@ -28,14 +28,15 @@ class Context
     protected:
 
     static ContextPtr new_context(const OptixDeviceContextOptions& options,
-                                  CUcontext cudaContext = 0);
+                                  CUcontext cudaContext = 0,
+                                  bool diskCacheEnabled = true);
 
     OptixDeviceContextOptions options_;
     mutable ContextPtr        context_;
 
     public:
 
-    Context();
+    Context(bool diskCacheEnabled = true);
 
     operator OptixDeviceContext() const;
 };

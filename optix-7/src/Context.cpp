@@ -1,13 +1,20 @@
 #include <rtac_optix/Context.h>
+#include <optix_function_table_definition.h> // ?
 
 namespace rtac { namespace optix {
 
 Context::ContextPtr Context::new_context(const OptixDeviceContextOptions& options,
-                                         CUcontext cudaContext)
+                                         CUcontext cudaContext,
+                                         bool diskCacheEnabled)
 {
     auto context = new OptixDeviceContext;
     
     OPTIX_CHECK( optixDeviceContextCreate(cudaContext, &options, context) );
+
+    if(diskCacheEnabled)
+        OPTIX_CHECK(optixDeviceContextSetCacheEnabled(*context, 1));
+    else 
+        OPTIX_CHECK(optixDeviceContextSetCacheEnabled(*context, 0));
     
     // this allows to auto-delete the context once it is not referenced
     // anymore (the shared_ptr is keeping track of references).
@@ -35,9 +42,9 @@ void Context::log_callback( unsigned int level, const char* tag, const char* mes
               << message << "\n";
 }
 
-Context::Context() :
+Context::Context(bool diskCacheEnabled) :
     options_(Context::default_options()),
-    context_(Context::new_context(options_))
+    context_(Context::new_context(options_, 0, diskCacheEnabled))
 {
 }
 
