@@ -30,8 +30,10 @@
 #     set_target_properties(${test_target_name} PROPERTIES OUTPUT_NAME ${executable_name})
 # 
 # endforeach(name)
-# 
+
+
 # add_subdirectory(optix_hello)
-add_subdirectory(optix_triangle)
+# add_subdirectory(optix_triangle)
+add_subdirectory(pinhole)
 
 

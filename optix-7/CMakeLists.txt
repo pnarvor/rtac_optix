@@ -22,6 +22,8 @@ list(APPEND rtac_optix_PUBLIC_HEADERS
     # These files were copied from the optix-7.2 SDK
     include/rtac_optix/optix_SDK/sutil/Preprocessor.h
     include/rtac_optix/optix_SDK/sutil/vec_math.h
+
+    include/rtac_optix/samples/PinholeCamera.h
 )
 list(APPEND rtac_optix_SOURCES
     src/Source.cpp
