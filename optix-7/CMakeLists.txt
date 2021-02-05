@@ -18,6 +18,10 @@ list(APPEND rtac_optix_PUBLIC_HEADERS
     include/rtac_optix/utils.h
     include/rtac_optix/Context.h
     include/rtac_optix/Pipeline.h
+
+    # These files were copied from the optix-7.2 SDK
+    include/rtac_optix/optix_SDK/sutil/Preprocessor.h
+    include/rtac_optix/optix_SDK/sutil/vec_math.h
 )
 list(APPEND rtac_optix_SOURCES
     src/Source.cpp
@@ -35,6 +39,8 @@ target_include_directories(rtac_optix
     PUBLIC
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
         $<INSTALL_INTERFACE:include>
+        $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include/rtac_optix/optix_SDK>
+        $<INSTALL_INTERFACE:include/rtac_optix/optix_SDK>
 )
 target_link_libraries(rtac_optix PUBLIC
     OptiX::OptiX
