@@ -18,6 +18,7 @@ list(APPEND rtac_optix_PUBLIC_HEADERS
     include/rtac_optix/utils.h
     include/rtac_optix/Context.h
     include/rtac_optix/Pipeline.h
+    include/rtac_optix/AccelerationStruct.h
 
     # These files were copied from the optix-7.2 SDK
     include/rtac_optix/optix_SDK/sutil/Preprocessor.h
@@ -30,6 +31,7 @@ list(APPEND rtac_optix_SOURCES
     src/Nvrtc.cpp
     src/Context.cpp
     src/Pipeline.cpp
+    src/AccelerationStruct.cpp
 )
 
 add_library(rtac_optix SHARED ${rtac_optix_SOURCES})

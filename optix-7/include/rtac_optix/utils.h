@@ -4,6 +4,7 @@
 #include <iostream>
 #include <cstring>
 #include <sstream>
+#include <array>
 
 #include <cuda_runtime.h>
 #include <optix.h>
@@ -32,6 +33,30 @@ T zero()
     std::memset(&res, 0, sizeof(T));
     return res;
 }
+
+inline unsigned int compute_aligned_offset(unsigned int size,
+                                           unsigned int bytesAlignment)
+{
+    // This function computes the lowest number divisible by bytesAlignement
+    // but greater than size. This allows to get a pointer aligned on a memory
+    // space.
+    return bytesAlignment * ((size + bytesAlignment - 1) / bytesAlignment);
+}
+
+template <unsigned int NumSizes, typename T = unsigned int>
+std::array<T,NumSizes> compute_aligned_offsets(const std::array<T,NumSizes>& sizes,
+                                                unsigned int bytesAlignment)
+{
+    // same as above but will accumulate offsets (for several pointers on a
+    // contigous memory space).
+    std::array<T,NumSizes> res;
+    for(int i = 0, currentOffset = 0; i < NumSizes; i++) {
+        res[i] = currentOffset + compute_aligned_offset(sizes[i], bytesAlignment);
+        currentOffset = res[i];
+    }
+    return res;
+}
+
 
 template <typename T>
 struct SbtRecord
