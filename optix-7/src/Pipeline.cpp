@@ -65,11 +65,6 @@ Pipeline::~Pipeline()
         optixProgramGroupDestroy(program);
     }
 
-    // Destroying created modules.
-    for(auto& pair : modules_) {
-        optixModuleDestroy(pair.second);
-    }
-
     //Destroying pipeline
     if(*pipeline_) {
         optixPipelineDestroy(*pipeline_);
@@ -98,16 +93,18 @@ OptixModule Pipeline::add_module(const std::string& name, const std::string& ptx
                                  const OptixModuleCompileOptions& moduleOptions,
                                  bool forceReplace)
 {
-    OptixModule module = nullptr;
+    OptixModule* module;
 
     // Checking if module already compiled.
     if(!forceReplace) {
         auto it = modules_.find(name);
         if(it != modules_.end()) {
             // A module with this name already exists. Ignoring compilation.
-            return it->second;
+            return *it->second;
         }
     }
+    module  = new OptixModule;
+    *module = nullptr;
 
     OPTIX_CHECK( 
     optixModuleCreateFromPTX(context_,
@@ -116,20 +113,27 @@ OptixModule Pipeline::add_module(const std::string& name, const std::string& ptx
         nullptr, nullptr, // These are logging related, log will also
                           // be written in context log, but with less
                           // tracking information (TODO Fix this).
-        &module
+        module
         ) );
 
-    modules_[name] = module;
-    return module;
+    // this allows to auto-delete the module once it is not referenced
+    // anymore (the shared_ptr is keeping track of references).
+    auto moduleDeleter = [](OptixModule* module) {
+        if(*module != nullptr)
+            OPTIX_CHECK( optixModuleDestroy(*module) );
+        delete module;
+    };
+
+    modules_[name] = Handle<OptixModule>(module, moduleDeleter);
+    return *module;
 }
 
 OptixModule Pipeline::module(const std::string& name)
 {
     auto it = modules_.find(name);
     if(it == modules_.end())
-        return nullptr;
-    else
-        return it->second;
+        throw std::runtime_error("No module with name '" + name + "'");
+    return *it->second;
 }
 
 OptixProgramGroup Pipeline::add_program_group(const OptixProgramGroupDesc& description)

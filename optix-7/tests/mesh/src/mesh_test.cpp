@@ -103,14 +103,12 @@ int main()
     params.cam       = samples::PinholeCamera::New({0.0f,0.0f,0.0f}, {5.0f,4.0f,3.0f});
     params.topObject = handle;
     
-    cout << "Launching" << endl << flush;
     OPTIX_CHECK(optixLaunch(pipeline, 0,
                             reinterpret_cast<CUdeviceptr>(memcpy::host_to_device(params)),
                             sizeof(params), &sbt, W,H,1));
     cudaDeviceSynchronize();
-    cout << "Done." << endl << flush;
+
     HostVector<uchar3> output(imgData);
-    cudaDeviceSynchronize();
 
     write_ppm("output.ppm", W, H, reinterpret_cast<const char*>(output.data()));
 

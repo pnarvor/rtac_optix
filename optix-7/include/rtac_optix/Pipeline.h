@@ -23,7 +23,7 @@ class Pipeline
     public:
 
     using PipelinePtr = Handle<OptixPipeline>;
-    using ModuleDict  = std::unordered_map<std::string, OptixModule>;
+    using ModuleDict  = std::unordered_map<std::string, Handle<OptixModule>>;
     using Programs    = std::vector<OptixProgramGroup>;
 
     static OptixPipelineCompileOptions default_pipeline_compile_options();
