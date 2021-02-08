@@ -4,6 +4,10 @@ using namespace std;
 #include <cuda_runtime.h>
 #include <optix.h>
 
+#include <rtac_base/files.h>
+using namespace rtac::files;
+
+#include <rtac_base/cuda/utils.h>
 #include <rtac_base/cuda/DeviceMesh.h>
 using namespace rtac::cuda;
 
@@ -17,12 +21,13 @@ using namespace rtac::optix;
 
 #include "mesh_test.h"
 
-using RaygenRecord = SbtRecord<RaygenData>;
-using MissRecord   = SbtRecord<MissData>;
+using RaygenRecord     = SbtRecord<RaygenData>;
+using MissRecord       = SbtRecord<MissData>;
+using ClosestHitRecord = SbtRecord<ClosestHitData>;
 
 int main()
 {
-    unsigned int W = 16, H = 9;
+    unsigned int W = 800, H = 600;
     auto mesh = DeviceMesh<>::cube();
     auto ptxFiles = mesh_test::get_ptx_files();
 
@@ -32,8 +37,17 @@ int main()
     Context context;
     Pipeline pipeline(context);
     pipeline.add_module("src/mesh_test.cu", ptxFiles["src/mesh_test.cu"]);
-    pipeline.add_raygen_program("__raygen__mesh_test", "src/mesh_test.cu");
-    pipeline.add_miss_program("__miss__mesh_test", "src/mesh_test.cu");
+    auto raygenProgram = pipeline.add_raygen_program("__raygen__mesh_test", "src/mesh_test.cu");
+    auto missProgram   = pipeline.add_miss_program("__miss__mesh_test", "src/mesh_test.cu");
+
+     // Creating closest hit program
+     auto closestHitDesc = zero<OptixProgramGroupDesc>();
+     closestHitDesc.kind = OPTIX_PROGRAM_GROUP_KIND_HITGROUP;
+     closestHitDesc.hitgroup.moduleCH = pipeline.module("src/mesh_test.cu");
+     closestHitDesc.hitgroup.entryFunctionNameCH = "__closesthit__mesh_test";
+     auto closestHitProgram = pipeline.add_program_group(closestHitDesc);
+    
+    // linking pipeline
     pipeline.link();
 
     // Building mesh acceleration structure
@@ -60,5 +74,47 @@ int main()
     AccelerationStruct handle(context);
     handle.build(buildInput, buildOptions);
     
+    // Building shader binding table
+    auto sbt = zero<OptixShaderBindingTable>();
+    RaygenRecord raygenRecord;
+    OPTIX_CHECK(optixSbtRecordPackHeader(raygenProgram, &raygenRecord));
+    sbt.raygenRecord   = reinterpret_cast<CUdeviceptr>(memcpy::host_to_device(raygenRecord));
+
+    MissRecord missRecord;
+    OPTIX_CHECK(optixSbtRecordPackHeader(missProgram, &missRecord));
+    sbt.missRecordBase = reinterpret_cast<CUdeviceptr>(memcpy::host_to_device(missRecord));
+    sbt.missRecordStrideInBytes = sizeof(MissRecord);
+    sbt.missRecordCount         = 1;
+
+    ClosestHitRecord chRecord;
+    OPTIX_CHECK(optixSbtRecordPackHeader(closestHitProgram, &chRecord));
+    sbt.hitgroupRecordBase          = reinterpret_cast<CUdeviceptr>(memcpy::host_to_device(chRecord));
+    sbt.hitgroupRecordStrideInBytes = sizeof(chRecord);
+    sbt.hitgroupRecordCount         = 1;
+
+    
+    // output buffer
+    DeviceVector<uchar3> imgData(W*H);
+
+    auto params = zero<Params>();
+    params.width     = W;
+    params.height    = H;
+    params.imageData = imgData.data();
+    params.cam       = samples::PinholeCamera::New({0.0f,0.0f,0.0f}, {5.0f,4.0f,3.0f});
+    params.topObject = handle;
+    
+    cout << "Launching" << endl << flush;
+    OPTIX_CHECK(optixLaunch(pipeline, 0,
+                            reinterpret_cast<CUdeviceptr>(memcpy::host_to_device(params)),
+                            sizeof(params), &sbt, W,H,1));
+    cudaDeviceSynchronize();
+    cout << "Done." << endl << flush;
+    HostVector<uchar3> output(imgData);
+    cudaDeviceSynchronize();
+
+    write_ppm("output.ppm", W, H, reinterpret_cast<const char*>(output.data()));
+
     return 0;
 }
+
+

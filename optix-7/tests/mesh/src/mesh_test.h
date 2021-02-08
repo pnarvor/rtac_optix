@@ -1,14 +1,17 @@
 #ifndef _RTAC_OPTIX_TESTS_MESH_TEST_H_
 #define _RTAC_OPTIX_TESTS_MESH_TEST_H_
 
+#include <optix.h>
+
 #include <rtac_optix/samples/PinholeCamera.h>
 
 struct Params
 {
     unsigned int width;
     unsigned int height;
-    uchar3*      imagedata;
+    uchar3*      imageData;
     rtac::optix::samples::PinholeCamera cam;
+    OptixTraversableHandle topObject;
 };
 
 struct RaygenData
@@ -17,6 +20,11 @@ struct RaygenData
 };
 
 struct MissData
+{
+    //nothing here for now
+};
+
+struct ClosestHitData
 {
     //nothing here for now
 };
