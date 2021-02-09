@@ -3,28 +3,6 @@
 
 namespace rtac { namespace optix {
 
-Context::ContextPtr Context::new_context(const OptixDeviceContextOptions& options,
-                                         CUcontext cudaContext,
-                                         bool diskCacheEnabled)
-{
-    auto context = new OptixDeviceContext;
-    
-    OPTIX_CHECK( optixDeviceContextCreate(cudaContext, &options, context) );
-
-    if(diskCacheEnabled)
-        OPTIX_CHECK(optixDeviceContextSetCacheEnabled(*context, 1));
-    else 
-        OPTIX_CHECK(optixDeviceContextSetCacheEnabled(*context, 0));
-    
-    // this allows to auto-delete the context once it is not referenced
-    // anymore (the shared_ptr is keeping track of references).
-    auto contextDeleter = [](OptixDeviceContext* ctx) {
-        OPTIX_CHECK( optixDeviceContextDestroy(*ctx) );
-        delete ctx;
-    };
-    return ContextPtr(context, contextDeleter);
-}
-
 OptixDeviceContextOptions Context::default_options()
 {
     OptixDeviceContextOptions res;
@@ -42,15 +20,49 @@ void Context::log_callback( unsigned int level, const char* tag, const char* mes
               << message << "\n";
 }
 
-Context::Context(bool diskCacheEnabled) :
-    options_(Context::default_options()),
-    context_(Context::new_context(options_, 0, diskCacheEnabled))
+Context::Context(const OptixDeviceContext& context) :
+    context_(context)
+{}
+
+Context::Ptr Context::Create(const OptixDeviceContextOptions& options,
+                             CUcontext cudaContext,
+                             bool diskCacheEnabled)
 {
+    OptixDeviceContext context;
+    OPTIX_CHECK( optixDeviceContextCreate(cudaContext, &options, &context) );
+
+    auto res = Ptr(new Context(context));
+    if(diskCacheEnabled)
+        res->enable_cache();
+    else
+        res->disable_cache();
+    return res;
+}
+
+Context::~Context()
+{
+    try {
+        OPTIX_CHECK( optixDeviceContextDestroy(context_) );
+    }
+    catch(const std::runtime_error& e) {
+        std::cerr << "Caught exception during rtac::optix::Context destruction : " 
+                  << e.what() << std::endl;
+    }
 }
 
 Context::operator OptixDeviceContext() const
 {
-    return *(context_.get());
+    return context_;
+}
+
+void Context::enable_cache()
+{
+    OPTIX_CHECK( optixDeviceContextSetCacheEnabled(context_, 1) );
+}
+
+void Context::disable_cache()
+{
+    OPTIX_CHECK( optixDeviceContextSetCacheEnabled(context_, 0) );
 }
 
 }; //namespace optix

@@ -19,7 +19,8 @@ class Context
 {
     public:
 
-    using ContextPtr = Handle<OptixDeviceContext>;
+    using Ptr      = Handle<Context>;
+    using ConstPtr = Handle<const Context>;
 
     static OptixDeviceContextOptions default_options();
     static void log_callback(unsigned int level, const char* tag,
@@ -27,18 +28,31 @@ class Context
 
     protected:
 
-    static ContextPtr new_context(const OptixDeviceContextOptions& options,
-                                  CUcontext cudaContext = 0,
-                                  bool diskCacheEnabled = true);
+    mutable OptixDeviceContext context_;
 
-    OptixDeviceContextOptions options_;
-    mutable ContextPtr        context_;
+    // The Context class may be shared across several entities.  Making the
+    // constructor protected and deleting the copy constructor and copy
+    // assignment allows to force the user to created a shared pointer through
+    // the Create static method to get a new context.
+    Context(const OptixDeviceContext& context);
 
     public:
 
-    Context(bool diskCacheEnabled = true);
+    Context(const Context& other)            = delete;
+    Context& operator=(const Context& other) = delete;
 
-    operator OptixDeviceContext() const;
+    static Ptr Create(const OptixDeviceContextOptions& options = default_options(),
+                      CUcontext cudaContext = 0,
+                      bool diskCacheEnabled = false);
+    ~Context();
+
+    // Implicitly castable to optixDeviceContext for seamless use in optix API.
+    // /!\ Use only in optix API calls except for optixDeviceContextDestroy,
+    // This breaks encapsulation.
+    operator OptixDeviceContext() const; 
+
+    void enable_cache();
+    void disable_cache();
 };
 
 }; //namespace optix

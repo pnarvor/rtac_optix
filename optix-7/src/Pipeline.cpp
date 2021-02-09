@@ -51,7 +51,7 @@ OptixProgramGroupOptions Pipeline::default_program_group_options()
     return res;
 }
 
-Pipeline::Pipeline(const Context& context) :
+Pipeline::Pipeline(const Context::ConstPtr& context) :
     context_(context),
     pipeline_(new OptixPipeline),
     compileOptions_(Pipeline::default_pipeline_compile_options()),
@@ -107,7 +107,7 @@ OptixModule Pipeline::add_module(const std::string& name, const std::string& ptx
     *module = nullptr;
 
     OPTIX_CHECK( 
-    optixModuleCreateFromPTX(context_,
+    optixModuleCreateFromPTX(*context_,
         &moduleOptions, &compileOptions_,
         ptxContent.c_str(), ptxContent.size(),
         nullptr, nullptr, // These are logging related, log will also
@@ -142,7 +142,7 @@ OptixProgramGroup Pipeline::add_program_group(const OptixProgramGroupDesc& descr
     auto opts = Pipeline::default_program_group_options();
 
     OPTIX_CHECK(
-    optixProgramGroupCreate(context_, &description, 1, &opts,
+    optixProgramGroupCreate(*context_, &description, 1, &opts,
         nullptr, nullptr, // These are logging related, log will also
                           // be written in context log, but with less
                           // tracking information (TODO Fix this).
@@ -155,7 +155,7 @@ OptixProgramGroup Pipeline::add_program_group(const OptixProgramGroupDesc& descr
 void Pipeline::link(bool autoStackSizes)
 {
     OPTIX_CHECK(
-    optixPipelineCreate(context_, &compileOptions_, &linkOptions_,
+    optixPipelineCreate(*context_, &compileOptions_, &linkOptions_,
         programs_.data(), programs_.size(), 
         nullptr, nullptr, // These are logging related, log will also
                           // be written in context log, but with less

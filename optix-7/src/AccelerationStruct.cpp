@@ -2,7 +2,7 @@
 
 namespace rtac { namespace optix {
 
-AccelerationStruct::AccelerationStruct(const Context& context) :
+AccelerationStruct::AccelerationStruct(const Context::ConstPtr& context) :
     context_(context),
     handle_(0),
     buffer_(new Buffer(0))
@@ -17,13 +17,13 @@ void AccelerationStruct::build(const OptixBuildInput& buildInput,
     // the build itself) and resizing buffers accordingly;
     OptixAccelBufferSizes bufferSizes; // should I keep that in attributes ?
     OPTIX_CHECK(optixAccelComputeMemoryUsage(
-        context_, &buildOptions, &buildInput, 1, &bufferSizes) );
+        *context_, &buildOptions, &buildInput, 1, &bufferSizes) );
 
     if(!(buildOptions.buildFlags & OPTIX_BUILD_FLAG_ALLOW_COMPACTION)) {
         // if compaction is not requested, building and exiting right away
         tempBuffer.resize(bufferSizes.tempSizeInBytes);
         buffer_->resize(bufferSizes.outputSizeInBytes);
-        OPTIX_CHECK(optixAccelBuild(context_, cudaStream,
+        OPTIX_CHECK(optixAccelBuild(*context_, cudaStream,
             &buildOptions, &buildInput, 1,
             reinterpret_cast<CUdeviceptr>(tempBuffer.data()), tempBuffer.size(),
             reinterpret_cast<CUdeviceptr>(buffer_->data()), buffer_->size(),
@@ -55,7 +55,7 @@ void AccelerationStruct::build(const OptixBuildInput& buildInput,
         propertyRequest.result = reinterpret_cast<CUdeviceptr>(
             tempBuffer.data() + offsets.back());
             
-        OPTIX_CHECK(optixAccelBuild(context_, cudaStream,
+        OPTIX_CHECK(optixAccelBuild(*context_, cudaStream,
             &buildOptions, &buildInput, 1,
             reinterpret_cast<CUdeviceptr>(tempBuffer.data()), offsets[0],
             reinterpret_cast<CUdeviceptr>(tempBuffer.data() + offsets[0]),
@@ -74,7 +74,7 @@ void AccelerationStruct::build(const OptixBuildInput& buildInput,
         //if(compactedSize < bufferSizes.outputSizeInBytes)
         {
             buffer_->resize(compactedSize);
-            OPTIX_CHECK(optixAccelCompact(context_, cudaStream, handle_,
+            OPTIX_CHECK(optixAccelCompact(*context_, cudaStream, handle_,
                 reinterpret_cast<CUdeviceptr>(buffer_->data()), buffer_->size(),
                 &handle_));
         }

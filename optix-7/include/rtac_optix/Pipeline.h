@@ -33,7 +33,7 @@ class Pipeline
 
     protected:
 
-    Context             context_;
+    Context::ConstPtr   context_;
     mutable PipelinePtr pipeline_;
     ModuleDict          modules_;
     Programs            programs_;
@@ -45,7 +45,7 @@ class Pipeline
 
     public:
 
-    Pipeline(const Context& context);
+    Pipeline(const Context::ConstPtr& context);
     ~Pipeline();
     operator OptixPipeline() const;
 

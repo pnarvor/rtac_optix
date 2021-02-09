@@ -34,7 +34,7 @@ int main()
     cudaFree(0); // no-op to initialize cuda
     OPTIX_CHECK(optixInit());
 
-    Context context;
+    auto context = Context::Create();
     Pipeline pipeline(context);
     pipeline.add_module("src/mesh_test.cu", ptxFiles["src/mesh_test.cu"]);
     auto raygenProgram = pipeline.add_raygen_program("__raygen__mesh_test", "src/mesh_test.cu");

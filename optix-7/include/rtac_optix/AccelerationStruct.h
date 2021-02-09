@@ -33,13 +33,13 @@ class AccelerationStruct
 
     protected:
     
-    Context                context_;
+    Context::ConstPtr      context_;
     OptixTraversableHandle handle_;
     Handle<Buffer>         buffer_; // contains data after build
 
     public:
 
-    AccelerationStruct(const Context& context);
+    AccelerationStruct(const Context::ConstPtr& context);
 
     void build(const OptixBuildInput& buildInput,
                const OptixAccelBuildOptions& buildOptions,
