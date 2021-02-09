@@ -5,8 +5,12 @@ namespace rtac { namespace optix {
 AccelerationStruct::AccelerationStruct(const Context::ConstPtr& context) :
     context_(context),
     handle_(0),
-    buffer_(new Buffer(0))
+    buffer_(0)
+{}
+
+AccelerationStruct::Ptr AccelerationStruct::Create(const Context::ConstPtr& context)
 {
+    return Ptr(new AccelerationStruct(context));
 }
 
 void AccelerationStruct::build(const OptixBuildInput& buildInput,
@@ -22,11 +26,11 @@ void AccelerationStruct::build(const OptixBuildInput& buildInput,
     if(!(buildOptions.buildFlags & OPTIX_BUILD_FLAG_ALLOW_COMPACTION)) {
         // if compaction is not requested, building and exiting right away
         tempBuffer.resize(bufferSizes.tempSizeInBytes);
-        buffer_->resize(bufferSizes.outputSizeInBytes);
+        buffer_.resize(bufferSizes.outputSizeInBytes);
         OPTIX_CHECK(optixAccelBuild(*context_, cudaStream,
             &buildOptions, &buildInput, 1,
             reinterpret_cast<CUdeviceptr>(tempBuffer.data()), tempBuffer.size(),
-            reinterpret_cast<CUdeviceptr>(buffer_->data()), buffer_->size(),
+            reinterpret_cast<CUdeviceptr>(buffer_.data()), buffer_.size(),
             &handle_, nullptr, 0));
     }
     else {
@@ -73,9 +77,9 @@ void AccelerationStruct::build(const OptixBuildInput& buildInput,
         // is not implemented yet. So the compaction executed in any case.
         //if(compactedSize < bufferSizes.outputSizeInBytes)
         {
-            buffer_->resize(compactedSize);
+            buffer_.resize(compactedSize);
             OPTIX_CHECK(optixAccelCompact(*context_, cudaStream, handle_,
-                reinterpret_cast<CUdeviceptr>(buffer_->data()), buffer_->size(),
+                reinterpret_cast<CUdeviceptr>(buffer_.data()), buffer_.size(),
                 &handle_));
         }
     }
@@ -93,16 +97,15 @@ void AccelerationStruct::build(const OptixBuildInput& buildInput,
     cudaStreamSynchronize(cudaStream);
 }
 
-CUdeviceptr AccelerationStruct::data()
-{
-    return reinterpret_cast<CUdeviceptr>(buffer_->data());
-}
-
-AccelerationStruct::operator OptixTraversableHandle()
+AccelerationStruct::operator OptixTraversableHandle() const
 {
     return handle_;
 }
 
+CUdeviceptr AccelerationStruct::data()
+{
+    return reinterpret_cast<CUdeviceptr>(buffer_.data());
+}
 
 }; //namespace optix
 }; //namespace rtac

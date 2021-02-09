@@ -35,20 +35,20 @@ int main()
     OPTIX_CHECK(optixInit());
 
     auto context = Context::Create();
-    Pipeline pipeline(context);
-    pipeline.add_module("src/mesh_test.cu", ptxFiles["src/mesh_test.cu"]);
-    auto raygenProgram = pipeline.add_raygen_program("__raygen__mesh_test", "src/mesh_test.cu");
-    auto missProgram   = pipeline.add_miss_program("__miss__mesh_test", "src/mesh_test.cu");
+    auto pipeline = Pipeline::Create(context);
+    pipeline->add_module("src/mesh_test.cu", ptxFiles["src/mesh_test.cu"]);
+    auto raygenProgram = pipeline->add_raygen_program("__raygen__mesh_test", "src/mesh_test.cu");
+    auto missProgram   = pipeline->add_miss_program("__miss__mesh_test", "src/mesh_test.cu");
 
      // Creating closest hit program
      auto closestHitDesc = zero<OptixProgramGroupDesc>();
      closestHitDesc.kind = OPTIX_PROGRAM_GROUP_KIND_HITGROUP;
-     closestHitDesc.hitgroup.moduleCH = pipeline.module("src/mesh_test.cu");
+     closestHitDesc.hitgroup.moduleCH = pipeline->module("src/mesh_test.cu");
      closestHitDesc.hitgroup.entryFunctionNameCH = "__closesthit__mesh_test";
-     auto closestHitProgram = pipeline.add_program_group(closestHitDesc);
+     auto closestHitProgram = pipeline->add_program_group(closestHitDesc);
     
     // linking pipeline
-    pipeline.link();
+    pipeline->link();
 
     // Building mesh acceleration structure
     auto buildOptions = zero<OptixAccelBuildOptions>();
@@ -71,8 +71,8 @@ int main()
     buildInput.triangleArray.flags               = inputFlags;
     buildInput.triangleArray.numSbtRecords       = 1;
 
-    AccelerationStruct handle(context);
-    handle.build(buildInput, buildOptions);
+    auto handle = AccelerationStruct::Create(context);
+    handle->build(buildInput, buildOptions);
     
     // Building shader binding table
     auto sbt = zero<OptixShaderBindingTable>();
@@ -101,9 +101,9 @@ int main()
     params.height    = H;
     params.imageData = imgData.data();
     params.cam       = samples::PinholeCamera::New({0.0f,0.0f,0.0f}, {5.0f,4.0f,3.0f});
-    params.topObject = handle;
+    params.topObject = *handle;
     
-    OPTIX_CHECK(optixLaunch(pipeline, 0,
+    OPTIX_CHECK(optixLaunch(*pipeline, 0,
                             reinterpret_cast<CUdeviceptr>(memcpy::host_to_device(params)),
                             sizeof(params), &sbt, W,H,1));
     cudaDeviceSynchronize();

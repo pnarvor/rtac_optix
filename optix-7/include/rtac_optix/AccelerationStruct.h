@@ -29,17 +29,22 @@ class AccelerationStruct
     
     public:
 
+    using Ptr      = Handle<AccelerationStruct>;
+    using ConstPtr = Handle<const AccelerationStruct>;
+
     using Buffer = rtac::cuda::DeviceVector<unsigned char>;
 
     protected:
     
     Context::ConstPtr      context_;
     OptixTraversableHandle handle_;
-    Handle<Buffer>         buffer_; // contains data after build
+    Buffer                 buffer_; // contains data after build
+
+    AccelerationStruct(const Context::ConstPtr& context);
 
     public:
 
-    AccelerationStruct(const Context::ConstPtr& context);
+    static Ptr Create(const Context::ConstPtr& context);
 
     void build(const OptixBuildInput& buildInput,
                const OptixAccelBuildOptions& buildOptions,
@@ -48,8 +53,11 @@ class AccelerationStruct
                const OptixAccelBuildOptions& buildOptions,
                CUstream cudaStream = 0);
     
+    // Implicitly castable to OptixPipeline for seamless use in optix API.
+    // This breaks encapsulation.
+    // /!\ Use only in optix API calls except for optixDeviceContextDestroy,
+    operator OptixTraversableHandle() const;
     CUdeviceptr data();
-    operator OptixTraversableHandle();
 };
 
 }; //namespace optix

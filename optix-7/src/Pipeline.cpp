@@ -51,32 +51,50 @@ OptixProgramGroupOptions Pipeline::default_program_group_options()
     return res;
 }
 
-Pipeline::Pipeline(const Context::ConstPtr& context) :
+Pipeline::Pipeline(const Context::ConstPtr&           context,
+                   const OptixPipelineCompileOptions& compileOptions,
+                   const OptixPipelineLinkOptions&    linkOptions) :
     context_(context),
-    pipeline_(new OptixPipeline),
-    compileOptions_(Pipeline::default_pipeline_compile_options()),
-    linkOptions_   (Pipeline::default_pipeline_link_options())
+    pipeline_(nullptr),
+    compileOptions_(compileOptions),
+    linkOptions_(linkOptions)
 {}
+
+Pipeline::Ptr Pipeline::Create(const Context::ConstPtr&           context,
+                               const OptixPipelineCompileOptions& compileOptions,
+                               const OptixPipelineLinkOptions&    linkOptions)
+{
+    return Ptr(new Pipeline(context, compileOptions, linkOptions));
+}
 
 Pipeline::~Pipeline()
 {
-    // Destroying created programs.
-    for(auto& program : programs_) {
-        optixProgramGroupDestroy(program);
+    try {
+        // Destroying created programs.
+        for(auto& program : programs_) {
+            OPTIX_CHECK( optixProgramGroupDestroy(program) );
+        }
+        // Destroying created modules.
+        for(auto& module : modules_) {
+            OPTIX_CHECK( optixModuleDestroy(module.second) );
+        }
+        //Destroying pipeline
+        if(pipeline_) {
+            OPTIX_CHECK( optixPipelineDestroy(pipeline_) );
+        }
     }
-
-    //Destroying pipeline
-    if(*pipeline_) {
-        optixPipelineDestroy(*pipeline_);
+    catch(const std::runtime_error& e) {
+        std::cerr << "Caught exception during rtac::optix::Pipeline destruction : " 
+                  << e.what() << std::endl;
     }
 }
 
 Pipeline::operator OptixPipeline() const
 {
-    if(!(*pipeline_)) {
+    if(!pipeline_) {
         throw std::runtime_error("Pipeline not initialized");
     }
-    return *(pipeline_.get());
+    return pipeline_;
 }
 
 OptixPipelineCompileOptions Pipeline::compile_options() const
@@ -93,18 +111,16 @@ OptixModule Pipeline::add_module(const std::string& name, const std::string& ptx
                                  const OptixModuleCompileOptions& moduleOptions,
                                  bool forceReplace)
 {
-    OptixModule* module;
+    OptixModule module = nullptr;
 
     // Checking if module already compiled.
     if(!forceReplace) {
         auto it = modules_.find(name);
         if(it != modules_.end()) {
             // A module with this name already exists. Ignoring compilation.
-            return *it->second;
+            return it->second;
         }
     }
-    module  = new OptixModule;
-    *module = nullptr;
 
     OPTIX_CHECK( 
     optixModuleCreateFromPTX(*context_,
@@ -113,19 +129,11 @@ OptixModule Pipeline::add_module(const std::string& name, const std::string& ptx
         nullptr, nullptr, // These are logging related, log will also
                           // be written in context log, but with less
                           // tracking information (TODO Fix this).
-        module
+        &module
         ) );
 
-    // this allows to auto-delete the module once it is not referenced
-    // anymore (the shared_ptr is keeping track of references).
-    auto moduleDeleter = [](OptixModule* module) {
-        if(*module != nullptr)
-            OPTIX_CHECK( optixModuleDestroy(*module) );
-        delete module;
-    };
-
-    modules_[name] = Handle<OptixModule>(module, moduleDeleter);
-    return *module;
+    modules_[name] = module;
+    return module;
 }
 
 OptixModule Pipeline::module(const std::string& name)
@@ -133,7 +141,7 @@ OptixModule Pipeline::module(const std::string& name)
     auto it = modules_.find(name);
     if(it == modules_.end())
         throw std::runtime_error("No module with name '" + name + "'");
-    return *it->second;
+    return it->second;
 }
 
 OptixProgramGroup Pipeline::add_program_group(const OptixProgramGroupDesc& description)
@@ -160,7 +168,7 @@ void Pipeline::link(bool autoStackSizes)
         nullptr, nullptr, // These are logging related, log will also
                           // be written in context log, but with less
                           // tracking information (TODO Fix this).
-        &(*pipeline_)));
+        &pipeline_));
     
     if(autoStackSizes)
         this->autoset_stack_sizes();
@@ -186,7 +194,7 @@ void Pipeline::autoset_stack_sizes()
         &directCallableStackSizeFromState,
         &continuationStackSize));
     OPTIX_CHECK(
-    optixPipelineSetStackSize( (*pipeline_.get()),
+    optixPipelineSetStackSize( pipeline_,
         directCallableStackSizeFromTraversal,
         directCallableStackSizeFromState, continuationStackSize,
         1  // maxTraversableDepth ?

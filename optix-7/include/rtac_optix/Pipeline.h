@@ -22,8 +22,10 @@ class Pipeline
 {
     public:
 
-    using PipelinePtr = Handle<OptixPipeline>;
-    using ModuleDict  = std::unordered_map<std::string, Handle<OptixModule>>;
+    using Ptr      = Handle<Pipeline>;
+    using ConstPtr = Handle<const Pipeline>;
+
+    using ModuleDict  = std::unordered_map<std::string, OptixModule>;
     using Programs    = std::vector<OptixProgramGroup>;
 
     static OptixPipelineCompileOptions default_pipeline_compile_options();
@@ -33,22 +35,31 @@ class Pipeline
 
     protected:
 
-    Context::ConstPtr   context_;
-    mutable PipelinePtr pipeline_;
-    ModuleDict          modules_;
-    Programs            programs_;
+    Context::ConstPtr     context_;
+    mutable OptixPipeline pipeline_;
+    ModuleDict            modules_;
+    Programs              programs_;
 
     OptixPipelineCompileOptions compileOptions_;
     OptixPipelineLinkOptions    linkOptions_;
 
     void autoset_stack_sizes();
 
+    Pipeline(const Context::ConstPtr&           context,
+             const OptixPipelineCompileOptions& compileOptions,
+             const OptixPipelineLinkOptions&    linkOptions);
+
     public:
 
-    Pipeline(const Context::ConstPtr& context);
+    static Ptr Create(const Context::ConstPtr& context,
+        const OptixPipelineCompileOptions& compileOptions = default_pipeline_compile_options(),
+        const OptixPipelineLinkOptions&    linkOptions    = default_pipeline_link_options());
     ~Pipeline();
-    operator OptixPipeline() const;
 
+    // Implicitly castable to OptixPipeline for seamless use in optix API.
+    // This breaks encapsulation.
+    // /!\ Use only in optix API calls except for optixDeviceContextDestroy,
+    operator OptixPipeline() const;
 
     OptixPipelineCompileOptions compile_options() const;
     OptixPipelineLinkOptions    link_options()    const;

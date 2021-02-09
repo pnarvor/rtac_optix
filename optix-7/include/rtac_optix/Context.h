@@ -46,9 +46,9 @@ class Context
                       bool diskCacheEnabled = false);
     ~Context();
 
-    // Implicitly castable to optixDeviceContext for seamless use in optix API.
-    // /!\ Use only in optix API calls except for optixDeviceContextDestroy,
+    // Implicitly castable to OptixDeviceContext for seamless use in optix API.
     // This breaks encapsulation.
+    // /!\ Use only in optix API calls except for optixDeviceContextDestroy,
     operator OptixDeviceContext() const; 
 
     void enable_cache();
