@@ -19,11 +19,12 @@ list(APPEND rtac_optix_PUBLIC_HEADERS
     include/rtac_optix/Context.h
     include/rtac_optix/Pipeline.h
     include/rtac_optix/AccelerationStruct.h
+    include/rtac_optix/ProgramGroup.h
 
     # These files were copied from the optix-7.2 SDK
     include/rtac_optix/optix_SDK/sutil/Preprocessor.h
     include/rtac_optix/optix_SDK/sutil/vec_math.h
-
+    
     include/rtac_optix/samples/PinholeCamera.h
 )
 list(APPEND rtac_optix_SOURCES
@@ -32,6 +33,7 @@ list(APPEND rtac_optix_SOURCES
     src/Context.cpp
     src/Pipeline.cpp
     src/AccelerationStruct.cpp
+    src/ProgramGroup.cpp
 )
 
 add_library(rtac_optix SHARED ${rtac_optix_SOURCES})

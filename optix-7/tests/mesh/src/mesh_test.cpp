@@ -77,17 +77,17 @@ int main()
     // Building shader binding table
     auto sbt = zero<OptixShaderBindingTable>();
     RaygenRecord raygenRecord;
-    OPTIX_CHECK(optixSbtRecordPackHeader(raygenProgram, &raygenRecord));
+    OPTIX_CHECK(optixSbtRecordPackHeader(*raygenProgram, &raygenRecord));
     sbt.raygenRecord   = reinterpret_cast<CUdeviceptr>(memcpy::host_to_device(raygenRecord));
 
     MissRecord missRecord;
-    OPTIX_CHECK(optixSbtRecordPackHeader(missProgram, &missRecord));
+    OPTIX_CHECK(optixSbtRecordPackHeader(*missProgram, &missRecord));
     sbt.missRecordBase = reinterpret_cast<CUdeviceptr>(memcpy::host_to_device(missRecord));
     sbt.missRecordStrideInBytes = sizeof(MissRecord);
     sbt.missRecordCount         = 1;
 
     ClosestHitRecord chRecord;
-    OPTIX_CHECK(optixSbtRecordPackHeader(closestHitProgram, &chRecord));
+    OPTIX_CHECK(optixSbtRecordPackHeader(*closestHitProgram, &chRecord));
     sbt.hitgroupRecordBase          = reinterpret_cast<CUdeviceptr>(memcpy::host_to_device(chRecord));
     sbt.hitgroupRecordStrideInBytes = sizeof(chRecord);
     sbt.hitgroupRecordCount         = 1;

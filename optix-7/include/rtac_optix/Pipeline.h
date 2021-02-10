@@ -15,6 +15,7 @@
 #include <rtac_optix/utils.h>
 #include <rtac_optix/Handle.h>
 #include <rtac_optix/Context.h>
+#include <rtac_optix/ProgramGroup.h>
 
 namespace rtac { namespace optix {
 
@@ -26,12 +27,11 @@ class Pipeline
     using ConstPtr = Handle<const Pipeline>;
 
     using ModuleDict  = std::unordered_map<std::string, OptixModule>;
-    using Programs    = std::vector<OptixProgramGroup>;
+    using Programs    = std::vector<ProgramGroup::Ptr>;
 
     static OptixPipelineCompileOptions default_pipeline_compile_options();
     static OptixPipelineLinkOptions    default_pipeline_link_options();
     static OptixModuleCompileOptions   default_module_compile_options();
-    static OptixProgramGroupOptions    default_program_group_options();
 
     protected:
 
@@ -69,7 +69,7 @@ class Pipeline
                            bool forceReplace = false);
     OptixModule module(const std::string& name);
 
-    OptixProgramGroup add_program_group(const OptixProgramGroupDesc& description);
+    ProgramGroup::Ptr add_program_group(const OptixProgramGroupDesc& description);
 
     void link(bool autoStackSizes = true);
 
@@ -78,9 +78,9 @@ class Pipeline
     OptixModule add_module(const std::string& name, const std::string& ptxContent,
                            bool forceReplace = false);
 
-    OptixProgramGroup add_raygen_program(const std::string& entryPoint,
+    ProgramGroup::Ptr add_raygen_program(const std::string& entryPoint,
                                          const std::string& moduleName);
-    OptixProgramGroup add_miss_program(const std::string& entryPoint,
+    ProgramGroup::Ptr add_miss_program(const std::string& entryPoint,
                                        const std::string& moduleName);
 };
 

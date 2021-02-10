@@ -44,13 +44,6 @@ OptixModuleCompileOptions Pipeline::default_module_compile_options()
     return res;
 }
 
-OptixProgramGroupOptions Pipeline::default_program_group_options()
-{
-    OptixProgramGroupOptions res;
-    std::memset(&res, 0, sizeof(res)); // unused by optix for now
-    return res;
-}
-
 Pipeline::Pipeline(const Context::ConstPtr&           context,
                    const OptixPipelineCompileOptions& compileOptions,
                    const OptixPipelineLinkOptions&    linkOptions) :
@@ -70,10 +63,6 @@ Pipeline::Ptr Pipeline::Create(const Context::ConstPtr&           context,
 Pipeline::~Pipeline()
 {
     try {
-        // Destroying created programs.
-        for(auto& program : programs_) {
-            OPTIX_CHECK( optixProgramGroupDestroy(program) );
-        }
         // Destroying created modules.
         for(auto& module : modules_) {
             OPTIX_CHECK( optixModuleDestroy(module.second) );
@@ -144,27 +133,24 @@ OptixModule Pipeline::module(const std::string& name)
     return it->second;
 }
 
-OptixProgramGroup Pipeline::add_program_group(const OptixProgramGroupDesc& description)
+ProgramGroup::Ptr Pipeline::add_program_group(const OptixProgramGroupDesc& description)
 {
-    OptixProgramGroup program;
-    auto opts = Pipeline::default_program_group_options();
-
-    OPTIX_CHECK(
-    optixProgramGroupCreate(*context_, &description, 1, &opts,
-        nullptr, nullptr, // These are logging related, log will also
-                          // be written in context log, but with less
-                          // tracking information (TODO Fix this).
-        &program));
-    
+    auto program = ProgramGroup::Create(context_, description);
     programs_.push_back(program);
     return program;
 }
 
 void Pipeline::link(bool autoStackSizes)
 {
+    std::vector<OptixProgramGroup> compiledPrograms(programs_.size());
+    for(int i = 0; i < programs_.size(); i++) {
+        // No-op if programs were already compiled
+        compiledPrograms[i] = programs_[i]->build();
+    }
+
     OPTIX_CHECK(
     optixPipelineCreate(*context_, &compileOptions_, &linkOptions_,
-        programs_.data(), programs_.size(), 
+        compiledPrograms.data(), compiledPrograms.size(), 
         nullptr, nullptr, // These are logging related, log will also
                           // be written in context log, but with less
                           // tracking information (TODO Fix this).
@@ -180,7 +166,7 @@ void Pipeline::autoset_stack_sizes()
     // Taken from the optix_triangle example in the OptiX-7.2 SDK
     OptixStackSizes stackSizes = {};
     for( auto& prog : programs_ ) {
-        OPTIX_CHECK(optixUtilAccumulateStackSizes(prog, &stackSizes));
+        OPTIX_CHECK(optixUtilAccumulateStackSizes(*prog, &stackSizes));
     }
     
     uint32_t directCallableStackSizeFromTraversal;
@@ -211,7 +197,7 @@ OptixModule Pipeline::add_module(const std::string& name, const std::string& ptx
                             forceReplace);
 }
 
-OptixProgramGroup Pipeline::add_raygen_program(const std::string& entryPoint,
+ProgramGroup::Ptr Pipeline::add_raygen_program(const std::string& entryPoint,
                                                const std::string& moduleName)
 {
     OptixProgramGroupDesc description    = {};
@@ -222,7 +208,7 @@ OptixProgramGroup Pipeline::add_raygen_program(const std::string& entryPoint,
     return this->add_program_group(description);
 }
 
-OptixProgramGroup Pipeline::add_miss_program(const std::string& entryPoint,
+ProgramGroup::Ptr Pipeline::add_miss_program(const std::string& entryPoint,
                                              const std::string& moduleName)
 {
     OptixProgramGroupDesc description    = {};
