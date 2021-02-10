@@ -48,7 +48,7 @@ int main()
      auto closestHitProgram = pipeline->add_program_group(closestHitDesc);
     
     // linking pipeline
-    pipeline->link();
+    //pipeline->link();
 
     // Building mesh acceleration structure
     auto buildOptions = zero<OptixAccelBuildOptions>();

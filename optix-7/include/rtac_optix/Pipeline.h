@@ -59,7 +59,7 @@ class Pipeline
     // Implicitly castable to OptixPipeline for seamless use in optix API.
     // This breaks encapsulation.
     // /!\ Use only in optix API calls except for optixDeviceContextDestroy,
-    operator OptixPipeline() const;
+    operator OptixPipeline();
 
     OptixPipelineCompileOptions compile_options() const;
     OptixPipelineLinkOptions    link_options()    const;

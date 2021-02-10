@@ -78,11 +78,9 @@ Pipeline::~Pipeline()
     }
 }
 
-Pipeline::operator OptixPipeline() const
+Pipeline::operator OptixPipeline()
 {
-    if(!pipeline_) {
-        throw std::runtime_error("Pipeline not initialized");
-    }
+    this->link();
     return pipeline_;
 }
 
@@ -100,6 +98,11 @@ OptixModule Pipeline::add_module(const std::string& name, const std::string& ptx
                                  const OptixModuleCompileOptions& moduleOptions,
                                  bool forceReplace)
 {
+    if(pipeline_) {
+        std::ostringstream oss;
+        oss << "Pipeline has already been linked. Cannot add more modules.";
+        throw std::runtime_error(oss.str());
+    }
     OptixModule module = nullptr;
 
     // Checking if module already compiled.
@@ -135,6 +138,11 @@ OptixModule Pipeline::module(const std::string& name)
 
 ProgramGroup::Ptr Pipeline::add_program_group(const OptixProgramGroupDesc& description)
 {
+    if(pipeline_) {
+        std::ostringstream oss;
+        oss << "Pipeline has already been linked. Cannot add more program groups.";
+        throw std::runtime_error(oss.str());
+    }
     auto program = ProgramGroup::Create(context_, description);
     programs_.push_back(program);
     return program;
@@ -142,6 +150,9 @@ ProgramGroup::Ptr Pipeline::add_program_group(const OptixProgramGroupDesc& descr
 
 void Pipeline::link(bool autoStackSizes)
 {
+    if(pipeline_)
+        return;
+
     std::vector<OptixProgramGroup> compiledPrograms(programs_.size());
     for(int i = 0; i < programs_.size(); i++) {
         // No-op if programs were already compiled
