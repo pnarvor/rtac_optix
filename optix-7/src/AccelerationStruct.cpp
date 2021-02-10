@@ -2,33 +2,52 @@
 
 namespace rtac { namespace optix {
 
-AccelerationStruct::AccelerationStruct(const Context::ConstPtr& context) :
+OptixBuildInput AccelerationStruct::default_build_input()
+{
+    return zero<OptixBuildInput>();
+}
+
+OptixAccelBuildOptions AccelerationStruct::default_build_options()
+{
+    auto options = zero<OptixAccelBuildOptions>();
+    options.buildFlags = OPTIX_BUILD_FLAG_NONE;
+    options.operation  = OPTIX_BUILD_OPERATION_BUILD;
+    return options;
+}
+
+AccelerationStruct::AccelerationStruct(const Context::ConstPtr& context,
+                                       const OptixBuildInput& buildInput,
+                                       const OptixAccelBuildOptions& buildOptions) :
     context_(context),
     handle_(0),
+    buildInput_(buildInput),
+    buildOptions_(buildOptions),
     buffer_(0)
 {}
 
-AccelerationStruct::Ptr AccelerationStruct::Create(const Context::ConstPtr& context)
+AccelerationStruct::Ptr AccelerationStruct::Create(const Context::ConstPtr& context,
+                                                   const OptixBuildInput& buildInput,
+                                                   const OptixAccelBuildOptions& buildOptions)
 {
-    return Ptr(new AccelerationStruct(context));
+    return Ptr(new AccelerationStruct(context, buildInput, buildOptions));
 }
 
-void AccelerationStruct::build(const OptixBuildInput& buildInput,
-                              const OptixAccelBuildOptions& buildOptions,
-                              Buffer& tempBuffer, CUstream cudaStream)
+void AccelerationStruct::build(Buffer& tempBuffer, CUstream cudaStream)
 {
+    if(handle_) return;
+
     // Computing memory usage needed(both for output and temporary usage for
     // the build itself) and resizing buffers accordingly;
     OptixAccelBufferSizes bufferSizes; // should I keep that in attributes ?
     OPTIX_CHECK(optixAccelComputeMemoryUsage(
-        *context_, &buildOptions, &buildInput, 1, &bufferSizes) );
+        *context_, &buildOptions_, &buildInput_, 1, &bufferSizes) );
 
-    if(!(buildOptions.buildFlags & OPTIX_BUILD_FLAG_ALLOW_COMPACTION)) {
+    if(!(buildOptions_.buildFlags & OPTIX_BUILD_FLAG_ALLOW_COMPACTION)) {
         // if compaction is not requested, building and exiting right away
         tempBuffer.resize(bufferSizes.tempSizeInBytes);
         buffer_.resize(bufferSizes.outputSizeInBytes);
         OPTIX_CHECK(optixAccelBuild(*context_, cudaStream,
-            &buildOptions, &buildInput, 1,
+            &buildOptions_, &buildInput_, 1,
             reinterpret_cast<CUdeviceptr>(tempBuffer.data()), tempBuffer.size(),
             reinterpret_cast<CUdeviceptr>(buffer_.data()), buffer_.size(),
             &handle_, nullptr, 0));
@@ -60,7 +79,7 @@ void AccelerationStruct::build(const OptixBuildInput& buildInput,
             tempBuffer.data() + offsets.back());
             
         OPTIX_CHECK(optixAccelBuild(*context_, cudaStream,
-            &buildOptions, &buildInput, 1,
+            &buildOptions_, &buildInput_, 1,
             reinterpret_cast<CUdeviceptr>(tempBuffer.data()), offsets[0],
             reinterpret_cast<CUdeviceptr>(tempBuffer.data() + offsets[0]),
             offsets[1] - offsets[0],
@@ -85,20 +104,19 @@ void AccelerationStruct::build(const OptixBuildInput& buildInput,
     }
 }
 
-void AccelerationStruct::build(const OptixBuildInput& buildInput,
-                              const OptixAccelBuildOptions& buildOptions,
-                              CUstream cudaStream)
+void AccelerationStruct::build(CUstream cudaStream)
 {
     Buffer tempBuffer;
-    this->build(buildInput, buildOptions, tempBuffer, cudaStream);
+    this->build(tempBuffer, cudaStream);
     // the build operation is asynchronous. A sync barrier is required here
     // because tempBuffer will go out of scope and the associated device memory
     // will be released. This must not happen before the end of the build.
     cudaStreamSynchronize(cudaStream);
 }
 
-AccelerationStruct::operator OptixTraversableHandle() const
+AccelerationStruct::operator OptixTraversableHandle()
 {
+    this->build();
     return handle_;
 }
 

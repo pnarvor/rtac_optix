@@ -71,8 +71,7 @@ int main()
     buildInput.triangleArray.flags               = inputFlags;
     buildInput.triangleArray.numSbtRecords       = 1;
 
-    auto handle = AccelerationStruct::Create(context);
-    handle->build(buildInput, buildOptions);
+    auto handle = AccelerationStruct::Create(context, buildInput, buildOptions);
     
     // Building shader binding table
     auto sbt = zero<OptixShaderBindingTable>();
