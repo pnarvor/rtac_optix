@@ -15,6 +15,7 @@ using namespace rtac::cuda;
 #include <rtac_optix/Context.h>
 #include <rtac_optix/Pipeline.h>
 #include <rtac_optix/AccelerationStruct.h>
+#include <rtac_optix/MeshAccelStruct.h>
 using namespace rtac::optix;
 
 #include <mesh_test/ptx_files.h>
@@ -28,7 +29,6 @@ using ClosestHitRecord = SbtRecord<ClosestHitData>;
 int main()
 {
     unsigned int W = 800, H = 600;
-    auto mesh = DeviceMesh<>::cube();
     auto ptxFiles = mesh_test::get_ptx_files();
 
     cudaFree(0); // no-op to initialize cuda
@@ -50,29 +50,39 @@ int main()
     // linking pipeline
     //pipeline->link();
 
-    // Building mesh acceleration structure
-    auto buildOptions = zero<OptixAccelBuildOptions>();
-    buildOptions.buildFlags = OPTIX_BUILD_FLAG_NONE;
-    buildOptions.operation  = OPTIX_BUILD_OPERATION_BUILD;
+    //// Building mesh acceleration structure
+    //auto mesh = DeviceMesh<>::cube();
 
-    auto buildInput = zero<OptixBuildInput>();
-    CUdeviceptr vertexData = reinterpret_cast<CUdeviceptr>(mesh.points().data());
-    CUdeviceptr faceData   = reinterpret_cast<CUdeviceptr>(mesh.faces().data());
-    const uint32_t inputFlags[1] = {OPTIX_GEOMETRY_FLAG_NONE};
-    buildInput.type = OPTIX_BUILD_INPUT_TYPE_TRIANGLES;
-    buildInput.triangleArray.numVertices         = mesh.num_points();
-    buildInput.triangleArray.vertexFormat        = OPTIX_VERTEX_FORMAT_FLOAT3;
-    buildInput.triangleArray.vertexStrideInBytes = sizeof(DeviceMesh<>::Point);
-    buildInput.triangleArray.vertexBuffers       = &vertexData;
-    buildInput.triangleArray.numIndexTriplets    = mesh.num_faces();
-    buildInput.triangleArray.indexFormat         = OPTIX_INDICES_FORMAT_UNSIGNED_INT3;
-    buildInput.triangleArray.indexStrideInBytes  = sizeof(DeviceMesh<>::Face);
-    buildInput.triangleArray.indexBuffer         = faceData;
-    buildInput.triangleArray.flags               = inputFlags;
-    buildInput.triangleArray.numSbtRecords       = 1;
+    //auto buildOptions = zero<OptixAccelBuildOptions>();
+    //buildOptions.buildFlags = OPTIX_BUILD_FLAG_NONE;
+    //buildOptions.operation  = OPTIX_BUILD_OPERATION_BUILD;
 
-    auto handle = AccelerationStruct::Create(context, buildInput, buildOptions);
-    
+    //auto buildInput = zero<OptixBuildInput>();
+    //CUdeviceptr vertexData = reinterpret_cast<CUdeviceptr>(mesh.points().data());
+    //CUdeviceptr faceData   = reinterpret_cast<CUdeviceptr>(mesh.faces().data());
+    //const uint32_t inputFlags[1] = {OPTIX_GEOMETRY_FLAG_NONE};
+    //buildInput.type = OPTIX_BUILD_INPUT_TYPE_TRIANGLES;
+    //buildInput.triangleArray.numVertices         = mesh.num_points();
+    //buildInput.triangleArray.vertexFormat        = OPTIX_VERTEX_FORMAT_FLOAT3;
+    //buildInput.triangleArray.vertexStrideInBytes = sizeof(DeviceMesh<>::Point);
+    //buildInput.triangleArray.vertexBuffers       = &vertexData;
+    //buildInput.triangleArray.numIndexTriplets    = mesh.num_faces();
+    //buildInput.triangleArray.indexFormat         = OPTIX_INDICES_FORMAT_UNSIGNED_INT3;
+    //buildInput.triangleArray.indexStrideInBytes  = sizeof(DeviceMesh<>::Face);
+    //buildInput.triangleArray.indexBuffer         = faceData;
+    //buildInput.triangleArray.flags               = inputFlags;
+    //buildInput.triangleArray.numSbtRecords       = 1;
+
+    //auto handle = AccelerationStruct::Create(context, buildInput, buildOptions);
+
+    auto mesh   = MeshAccelStruct::cube_data();
+    auto handle = MeshAccelStruct::Create(context, mesh);
+    handle->add_sbt_flags(OPTIX_GEOMETRY_FLAG_NONE);
+    std::vector<float> pose({1.0f,0.0f,0.0f,0.0f,
+                             0.0f,1.0f,0.0f,0.0f,
+                             0.0f,0.0f,1.0f,2.0f});
+    handle->set_pre_transform(pose);
+
     // Building shader binding table
     auto sbt = zero<OptixShaderBindingTable>();
     RaygenRecord raygenRecord;
