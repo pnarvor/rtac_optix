@@ -41,7 +41,7 @@ int main()
     auto missProgram   = pipeline->add_miss_program("__miss__mesh_test", "src/mesh_test.cu");
 
      // Creating closest hit program
-     auto closestHitDesc = zero<OptixProgramGroupDesc>();
+     auto closestHitDesc = rtac::optix::zero<OptixProgramGroupDesc>();
      closestHitDesc.kind = OPTIX_PROGRAM_GROUP_KIND_HITGROUP;
      closestHitDesc.hitgroup.moduleCH = pipeline->module("src/mesh_test.cu");
      closestHitDesc.hitgroup.entryFunctionNameCH = "__closesthit__mesh_test";
@@ -84,7 +84,7 @@ int main()
     handle->set_pre_transform(pose);
 
     // Building shader binding table
-    auto sbt = zero<OptixShaderBindingTable>();
+    auto sbt = rtac::optix::zero<OptixShaderBindingTable>();
     RaygenRecord raygenRecord;
     OPTIX_CHECK(optixSbtRecordPackHeader(*raygenProgram, &raygenRecord));
     sbt.raygenRecord   = reinterpret_cast<CUdeviceptr>(memcpy::host_to_device(raygenRecord));
@@ -105,7 +105,7 @@ int main()
     // output buffer
     DeviceVector<uchar3> imgData(W*H);
 
-    auto params = zero<Params>();
+    auto params = rtac::optix::zero<Params>();
     params.width     = W;
     params.height    = H;
     params.imageData = imgData.data();
