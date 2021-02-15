@@ -35,6 +35,9 @@
 # add_subdirectory(optix_hello)
 # add_subdirectory(optix_triangle)
 # add_subdirectory(pinhole)
-add_subdirectory(mesh)
+# add_subdirectory(mesh)
+add_subdirectory(sbt_test0)
+
+
 
 
