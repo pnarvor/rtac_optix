@@ -34,15 +34,21 @@ extern "C" __global__ void __miss__sbt_test()
 extern "C" __global__ void __closesthit__sbt_test()
 {
     auto recordData = reinterpret_cast<ClosestHitData*>(optixGetSbtDataPointer());
-    uchar4 color = tex2D<uchar4>(recordData->texObject, 0.6f,0.3f);
+    
+    // There is 3 uv coordinates for each triangle (on per vertex) so
+    // memory offset is 3*primitiveIndex;
+    float2* vertexUVs = recordData->uvCoords + 3*optixGetPrimitiveIndex();
+
+    float2 b = optixGetTriangleBarycentrics();
+    float2 uv = (1.0f - b.x - b.y) * vertexUVs[0]
+              +                b.x * vertexUVs[1]
+              +                b.y * vertexUVs[2];
+
+    uchar4 color = tex2D<uchar4>(recordData->texObject, uv.x, uv.y);
 
     optixSetPayload_0(color.x);
     optixSetPayload_1(color.y);
     optixSetPayload_2(color.z);
-
-    //optixSetPayload_0(0);
-    //optixSetPayload_1(0);
-    //optixSetPayload_2(255);
 }
 
 

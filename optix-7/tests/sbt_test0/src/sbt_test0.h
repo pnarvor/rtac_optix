@@ -27,6 +27,7 @@ struct MissData
 struct ClosestHitData
 {
     cudaTextureObject_t texObject;
+    float2*             uvCoords;
 };
 
 #endif //_DEF_RTAC_OPTIX_TESTS_SBT_TEST_0_H_

@@ -4,6 +4,10 @@ using namespace std;
 #include <rtac_base/files.h>
 using namespace rtac::files;
 
+#include <rtac_base/types/common.h>
+#include <rtac_base/types/Mesh.h>
+using namespace rtac::types;
+
 #include <rtac_base/cuda/utils.h>
 #include <rtac_base/cuda/DeviceVector.h>
 #include <rtac_base/cuda/Texture2D.h>
@@ -22,6 +26,44 @@ using namespace rtac::optix;
 using RaygenRecord     = SbtRecord<RaygenData>;
 using MissRecord       = SbtRecord<MissData>;
 using ClosestHitRecord = SbtRecord<ClosestHitData>;
+
+DeviceVector<float2> compute_cube_uv()
+{
+    auto cube = rtac::types::Mesh<Vector3<float>>::cube(0.5);
+
+    Vector3<float> x0({1.0f,0.0f,0.0f});
+    Vector3<float> y0({0.0f,1.0f,0.0f});
+    Vector3<float> z0({0.0f,0.0f,1.0f});
+    
+    std::vector<float2> uv;
+    for(auto& f : cube.faces()) {
+        auto p0 = cube.point(f.x);
+        auto p1 = cube.point(f.y);
+        auto p2 = cube.point(f.z);
+        
+        // a normal vector
+        auto n = ((p1 - p0).cross(p2 - p1)).array().abs();
+        // Ugly oneliner for index of biggest element out of 3
+        int imax = (n[0] > n[1]) ? ((n[0] > n[2]) ? 0 : 2) : (n[1] > n[2]) ? 1 : 2;
+        if(imax == 0) {
+            uv.push_back(float2({p0[1] + 0.5f, p0[2] + 0.5f}));
+            uv.push_back(float2({p1[1] + 0.5f, p1[2] + 0.5f}));
+            uv.push_back(float2({p2[1] + 0.5f, p2[2] + 0.5f}));
+        }
+        else if(imax ==1) {
+            uv.push_back(float2({p0[0] + 0.5f, p0[2] + 0.5f}));
+            uv.push_back(float2({p1[0] + 0.5f, p1[2] + 0.5f}));
+            uv.push_back(float2({p2[0] + 0.5f, p2[2] + 0.5f}));
+        }
+        else {
+            uv.push_back(float2({p0[0] + 0.5f, p0[1] + 0.5f}));
+            uv.push_back(float2({p1[0] + 0.5f, p1[1] + 0.5f}));
+            uv.push_back(float2({p2[0] + 0.5f, p2[1] + 0.5f}));
+        }
+    }
+
+    return DeviceVector<float2>(uv);
+}
 
 int main()
 {
@@ -55,6 +97,7 @@ int main()
     auto checkerboardTex = Texture2D<uchar4>::checkerboard(4,4,
                                                            uchar4({255,255,0,255}),
                                                            uchar4({0,0,255,255}));
+    auto uvBuffer = compute_cube_uv();
     
     // setting up sbt
     auto sbt = rtac::optix::zero<OptixShaderBindingTable>();
@@ -73,6 +116,7 @@ int main()
 
     ClosestHitRecord hitRecord;
     hitRecord.data.texObject = checkerboardTex;
+    hitRecord.data.uvCoords  = uvBuffer.data();
     OPTIX_CHECK( optixSbtRecordPackHeader(*hitProgram, &hitRecord) );
     sbt.hitgroupRecordBase = reinterpret_cast<CUdeviceptr>(
         rtac::cuda::memcpy::host_to_device(hitRecord));
