@@ -17,6 +17,7 @@ using namespace rtac::cuda;
 #include <rtac_optix/Context.h>
 #include <rtac_optix/Pipeline.h>
 #include <rtac_optix/MeshAccelStruct.h>
+#include <rtac_optix/InstanceAccelStruct.h>
 using namespace rtac::optix;
 
 #include <rtac_optix_7_sbt_test0/ptx_files.h>
@@ -91,8 +92,12 @@ int main()
     // types will trigger compilation / link.
     
     // Simple cube as scene
-    auto topObject = MeshAccelStruct::Create(context, MeshAccelStruct::cube_data());
-    topObject->add_sbt_flags(OPTIX_GEOMETRY_FLAG_NONE);
+    auto cubeMesh  = MeshAccelStruct::cube_data();
+    auto cube0 = MeshAccelStruct::Create(context, cubeMesh);
+    cube0->add_sbt_flags(OPTIX_GEOMETRY_FLAG_NONE);
+
+    auto topInstance = InstanceAccelStruct::Create(context);
+    auto cubeInstance = topInstance->add_instance(*cube0);
 
     auto checkerboardTex = Texture2D<uchar4>::checkerboard(4,4,
                                                            uchar4({255,255,0,255}),
@@ -130,12 +135,14 @@ int main()
     params.height    = H;
     params.imageData = imgData.data();
     params.cam       = samples::PinholeCamera::New({0.0f,0.0f,0.0f}, {5.0f,4.0f,3.0f});
-    params.sceneTreeHandle = *topObject;
+    params.sceneTreeHandle = *topInstance;
+
+    cout << "Launch" << endl;
 
     OPTIX_CHECK( optixLaunch(*pipeline, 0, 
                              reinterpret_cast<CUdeviceptr>(memcpy::host_to_device(params)),
                              sizeof(params), &sbt, W, H, 1) );
-    cudaDeviceSynchronize();
+    cudaDeviceSynchronize(); // optixLaunch is asynchrounous
 
     write_ppm("output.ppm", W, H, reinterpret_cast<const char*>(HostVector<uchar3>(imgData).data()));
 

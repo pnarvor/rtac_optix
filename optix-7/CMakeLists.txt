@@ -21,6 +21,8 @@ list(APPEND rtac_optix_PUBLIC_HEADERS
     include/rtac_optix/ProgramGroup.h
     include/rtac_optix/AccelerationStruct.h
     include/rtac_optix/MeshAccelStruct.h
+    include/rtac_optix/InstanceDescription.h
+    include/rtac_optix/InstanceAccelStruct.h
 
     # These files were copied from the optix-7.2 SDK
     include/rtac_optix/optix_SDK/sutil/Preprocessor.h
@@ -36,6 +38,8 @@ list(APPEND rtac_optix_SOURCES
     src/ProgramGroup.cpp
     src/AccelerationStruct.cpp
     src/MeshAccelStruct.cpp
+    src/InstanceDescription.cpp
+    src/InstanceAccelStruct.cpp
 )
 
 add_library(rtac_optix SHARED ${rtac_optix_SOURCES})
