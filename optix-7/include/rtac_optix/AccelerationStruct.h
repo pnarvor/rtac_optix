@@ -55,7 +55,7 @@ class AccelerationStruct
                        const OptixBuildInput& buildInput = default_build_input(),
                        const OptixAccelBuildOptions& buildOptions = default_build_options());
 
-    void build(Buffer& tempBuffer, CUstream cudaStream = 0);
+    virtual void build(Buffer& tempBuffer, CUstream cudaStream = 0);
     void build(CUstream cudaStream = 0);
     
     // Implicitly castable to OptixPipeline for seamless use in optix API.
