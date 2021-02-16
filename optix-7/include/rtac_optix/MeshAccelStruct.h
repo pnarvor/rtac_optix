@@ -25,7 +25,7 @@ class MeshAccelStruct : public AccelerationStruct
     public:
 
     using Ptr        = Handle<MeshAccelStruct>;
-    using ConstPtr   = Handle<MeshAccelStruct>;
+    using ConstPtr   = Handle<const MeshAccelStruct>;
     using DeviceMesh = rtac::cuda::DeviceMesh<float3, uint3>;
     template <typename T>
     using DeviceVector = rtac::cuda::DeviceVector<T>;
