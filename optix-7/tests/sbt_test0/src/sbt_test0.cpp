@@ -12,6 +12,7 @@ using namespace rtac::types;
 #include <rtac_base/cuda/DeviceVector.h>
 #include <rtac_base/cuda/Texture2D.h>
 using namespace rtac::cuda;
+using Texture = Texture2D<float4>;
 
 #include <rtac_optix/utils.h>
 #include <rtac_optix/Context.h>
@@ -91,17 +92,35 @@ int main()
     // implicit cast between rtac::optix type and corresponding OptiX native
     // types will trigger compilation / link.
     
-    // Simple cube as scene
-    auto cubeMesh  = MeshAccelStruct::cube_data();
-    auto cube0 = MeshAccelStruct::Create(context, cubeMesh);
-    cube0->add_sbt_flags(OPTIX_GEOMETRY_FLAG_NONE);
-
+    // Creating scene
     auto topInstance = InstanceAccelStruct::Create(context);
-    auto cubeInstance = topInstance->add_instance(*cube0);
+    
+    // cubes as scene objects (sharing the same geometry acceleration structure).
+    auto cubeMesh  = MeshAccelStruct::cube_data();
+    auto cube = MeshAccelStruct::Create(context, cubeMesh);
+    cube->add_sbt_flags(OPTIX_GEOMETRY_FLAG_NONE);
 
-    auto checkerboardTex = Texture2D<uchar4>::checkerboard(4,4,
-                                                           uchar4({255,255,0,255}),
-                                                           uchar4({0,0,255,255}));
+    auto cubeInstance0 = topInstance->add_instance(*cube);
+    auto cubeInstance1 = topInstance->add_instance(*cube);
+    // Moving the second cube.
+    cubeInstance1->set_transform({1.0f,0.0f,0.0f, -6.0f,
+                                  0.0f,1.0f,0.0f, -1.0f,
+                                  0.0f,0.0f,1.0f,  2.0f});
+    // The sbt offset will allow to select a texture to be rendered on the cube.
+    ///cubeInstance1->set_sbt_offset(sizeof(ClosestHitRecord)); // segfault.
+    cubeInstance1->set_sbt_offset(1); // OK. Offset is in index, not in bytes.
+
+    auto checkerboardTex0 = Texture::checkerboard(4,4,
+                                                  float4({1,1,0,1}),
+                                                  float4({0,0,1,1}),
+                                                  32);
+    checkerboardTex0.set_filter_mode(Texture::FilterLinear);
+    checkerboardTex0.set_wrap_mode(Texture::WrapClamp);
+    auto checkerboardTex1 = Texture::checkerboard(4,4,
+                                                  float4({1,1,0,1}),
+                                                  float4({1,0,0,1}),
+                                                  1);
+    checkerboardTex1.set_filter_mode(Texture::FilterLinear);
     auto uvBuffer = compute_cube_uv();
     
     // setting up sbt
@@ -118,18 +137,25 @@ int main()
         rtac::cuda::memcpy::host_to_device(missRecord));
     sbt.missRecordCount = 1;
     sbt.missRecordStrideInBytes = sizeof(MissRecord);
+    
+    // Preparing one hitrecord per texture (= different materials)
+    std::vector<ClosestHitRecord> hitRecordsHost(2);
 
-    ClosestHitRecord hitRecord;
-    hitRecord.data.texObject = checkerboardTex;
-    hitRecord.data.uvCoords  = uvBuffer.data();
-    OPTIX_CHECK( optixSbtRecordPackHeader(*hitProgram, &hitRecord) );
-    sbt.hitgroupRecordBase = reinterpret_cast<CUdeviceptr>(
-        rtac::cuda::memcpy::host_to_device(hitRecord));
-    sbt.hitgroupRecordCount = 1;
+    hitRecordsHost[0].data.texObject = checkerboardTex0;
+    hitRecordsHost[0].data.uvCoords  = uvBuffer.data();
+    OPTIX_CHECK( optixSbtRecordPackHeader(*hitProgram, &hitRecordsHost[0]) );
+
+    hitRecordsHost[1].data.texObject = checkerboardTex1;
+    hitRecordsHost[1].data.uvCoords  = uvBuffer.data();
+    OPTIX_CHECK( optixSbtRecordPackHeader(*hitProgram, &hitRecordsHost[1]) );
+
+    DeviceVector<ClosestHitRecord> hitRecords(hitRecordsHost);
+    sbt.hitgroupRecordBase = reinterpret_cast<CUdeviceptr>(hitRecords.data());
+    sbt.hitgroupRecordCount = 2;
     sbt.hitgroupRecordStrideInBytes = sizeof(ClosestHitRecord);
 
     DeviceVector<uchar3> imgData(W*H);
-
+    
     auto params = rtac::optix::zero<Params>();
     params.width     = W;
     params.height    = H;
@@ -137,14 +163,13 @@ int main()
     params.cam       = samples::PinholeCamera::New({0.0f,0.0f,0.0f}, {5.0f,4.0f,3.0f});
     params.sceneTreeHandle = *topInstance;
 
-    cout << "Launch" << endl;
-
     OPTIX_CHECK( optixLaunch(*pipeline, 0, 
                              reinterpret_cast<CUdeviceptr>(memcpy::host_to_device(params)),
                              sizeof(params), &sbt, W, H, 1) );
     cudaDeviceSynchronize(); // optixLaunch is asynchrounous
 
-    write_ppm("output.ppm", W, H, reinterpret_cast<const char*>(HostVector<uchar3>(imgData).data()));
+    write_ppm("output.ppm", W, H,
+              reinterpret_cast<const char*>(HostVector<uchar3>(imgData).data()));
 
     return 0;
 }

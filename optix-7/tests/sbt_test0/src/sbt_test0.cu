@@ -26,9 +26,9 @@ extern "C" __global__ void __raygen__sbt_test()
 
 extern "C" __global__ void __miss__sbt_test()
 {
-    optixSetPayload_0(255);
-    optixSetPayload_1(0);
-    optixSetPayload_2(0);
+    optixSetPayload_0(25);
+    optixSetPayload_1(25);
+    optixSetPayload_2(25);
 }
 
 extern "C" __global__ void __closesthit__sbt_test()
@@ -44,11 +44,11 @@ extern "C" __global__ void __closesthit__sbt_test()
               +                b.x * vertexUVs[1]
               +                b.y * vertexUVs[2];
 
-    uchar4 color = tex2D<uchar4>(recordData->texObject, uv.x, uv.y);
+    float4 color = tex2D<float4>(recordData->texObject, uv.x, uv.y);
 
-    optixSetPayload_0(color.x);
-    optixSetPayload_1(color.y);
-    optixSetPayload_2(color.z);
+    optixSetPayload_0((uint32_t)255*color.x);
+    optixSetPayload_1((uint32_t)255*color.y);
+    optixSetPayload_2((uint32_t)255*color.z);
 }
 
 

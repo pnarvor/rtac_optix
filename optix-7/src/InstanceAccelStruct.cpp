@@ -27,19 +27,12 @@ void InstanceAccelStruct::build(Buffer& buffer, CUstream cudaStream)
 {
     // The buildInput_ needs to be updated before the build with created
     // instances.
-
-    std::cout << "Building InstanceAccelStruct ("
-              << instances_.size() << " instances)" << std::endl;
-
     std::vector<OptixInstance> instances(instances_.size());
     for(int i = 0; i < instances.size(); i++) {
         instances[i] = *instances_[i];
-        std::cout << instances[i] << std::endl;
     }
     tmpInstanceData_ = instances; // This uploads instances on the device.
     
-    std::cout << "type : " << this->buildInput_.type << std::endl;
-    std::cout << OPTIX_BUILD_INPUT_TYPE_INSTANCES << std::endl;
     this->buildInput_.instanceArray.instances =
         reinterpret_cast<CUdeviceptr>(tmpInstanceData_.data());
     this->buildInput_.instanceArray.numInstances = tmpInstanceData_.size();
@@ -47,7 +40,6 @@ void InstanceAccelStruct::build(Buffer& buffer, CUstream cudaStream)
     this->AccelerationStruct::build(buffer, cudaStream);
 
     cudaDeviceSynchronize();
-    std::cout << "Built" << std::endl;
 }
 
 InstanceDescription::Ptr InstanceAccelStruct::add_instance(const OptixTraversableHandle& handle)
