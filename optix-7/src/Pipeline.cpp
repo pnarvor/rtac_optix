@@ -8,7 +8,8 @@ OptixPipelineCompileOptions Pipeline::default_pipeline_compile_options()
     std::memset(&res, 0, sizeof(res));
 
     res.usesMotionBlur        = false;
-    res.traversableGraphFlags = OPTIX_TRAVERSABLE_GRAPH_FLAG_ALLOW_SINGLE_GAS;
+    //res.traversableGraphFlags = OPTIX_TRAVERSABLE_GRAPH_FLAG_ALLOW_SINGLE_GAS;
+    res.traversableGraphFlags = OPTIX_TRAVERSABLE_GRAPH_FLAG_ALLOW_ANY;
     res.numPayloadValues      = 3;
     res.numAttributeValues    = 3;
     // compileOptions.exceptionFlags = OPTIX_EXCEPTION_FLAG_DEBUG
