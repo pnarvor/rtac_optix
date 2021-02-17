@@ -3,7 +3,7 @@
 
 #include <rtac_base/cuda/utils.h>
 
-#include <sutil/vec_math.h>
+#include <rtac_optix/samples/maths.h>
 
 namespace rtac { namespace optix { namespace samples {
 

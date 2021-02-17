@@ -19,6 +19,7 @@ using Texture = Texture2D<float4>;
 #include <rtac_optix/Pipeline.h>
 #include <rtac_optix/MeshAccelStruct.h>
 #include <rtac_optix/InstanceAccelStruct.h>
+#include <rtac_optix/CustomAccelStruct.h>
 using namespace rtac::optix;
 
 #include <rtac_optix_7_sbt_test0/ptx_files.h>
@@ -87,6 +88,14 @@ int main()
     hitDesc.hitgroup.moduleCH = pipeline->module("sbt_test0");
     hitDesc.hitgroup.entryFunctionNameCH = "__closesthit__sbt_test";
     auto hitProgram = pipeline->add_program_group(hitDesc);
+
+    auto sphereHitDesc = rtac::optix::zero<OptixProgramGroupDesc>();
+    sphereHitDesc.kind = OPTIX_PROGRAM_GROUP_KIND_HITGROUP;
+    sphereHitDesc.hitgroup.moduleIS = pipeline->module("sbt_test0");
+    sphereHitDesc.hitgroup.entryFunctionNameIS = "__intersection__sphere";
+    sphereHitDesc.hitgroup.moduleCH = pipeline->module("sbt_test0");
+    sphereHitDesc.hitgroup.entryFunctionNameCH = "__closesthit__sphere";
+    auto sphereHitProgram = pipeline->add_program_group(sphereHitDesc);
     // At this point the pipeline is not linked and the program are not
     // compiled yet. They will do so when used in an optix API call. (the
     // implicit cast between rtac::optix type and corresponding OptiX native
@@ -101,6 +110,9 @@ int main()
     cube->add_sbt_flags(OPTIX_GEOMETRY_FLAG_NONE);
 
     auto cubeInstance0 = topInstance->add_instance(*cube);
+    //cubeInstance0->set_transform({1.0f,0.0f,0.0f,  4.0f,
+    //                              0.0f,1.0f,0.0f, -2.0f,
+    //                              0.0f,0.0f,1.0f,  2.0f});
     auto cubeInstance1 = topInstance->add_instance(*cube);
     // Moving the second cube.
     cubeInstance1->set_transform({1.0f,0.0f,0.0f, -6.0f,
@@ -110,7 +122,17 @@ int main()
     ///cubeInstance1->set_sbt_offset(sizeof(ClosestHitRecord)); // segfault.
     cubeInstance1->set_sbt_offset(1); // OK. Offset is in index, not in bytes.
 
-    auto checkerboardTex0 = Texture::checkerboard(4,4,
+    
+    auto sphereAabb = CustomAccelStruct::Create(context);
+    sphereAabb->add_sbt_flags(OPTIX_GEOMETRY_FLAG_NONE);
+    auto sphereInstance0 = topInstance->add_instance(*sphereAabb);
+    sphereInstance0->set_sbt_offset(2); // OK. Offset is in index, not in bytes.
+    sphereInstance0->set_transform({1.0f,0.0f,0.0f,  4.0f,
+                                    0.0f,1.0f,0.0f, -2.0f,
+                                    0.0f,0.0f,1.0f,  2.0f});
+    
+    // Generating textures.
+    auto checkerboardTex0 = Texture::checkerboard(16,16,
                                                   float4({1,1,0,1}),
                                                   float4({0,0,1,1}),
                                                   32);
@@ -138,16 +160,20 @@ int main()
     sbt.missRecordCount = 1;
     sbt.missRecordStrideInBytes = sizeof(MissRecord);
     
-    // Preparing one hitrecord per texture (= different materials)
-    std::vector<ClosestHitRecord> hitRecordsHost(2);
-
-    hitRecordsHost[0].data.texObject = checkerboardTex0;
-    hitRecordsHost[0].data.uvCoords  = uvBuffer.data();
+    std::vector<ClosestHitRecord> hitRecordsHost(3);
+    // hitrecord for cube 0
+    hitRecordsHost[0].data.texObject     = checkerboardTex0;
+    hitRecordsHost[0].data.cube.uvCoords = uvBuffer.data();
     OPTIX_CHECK( optixSbtRecordPackHeader(*hitProgram, &hitRecordsHost[0]) );
-
-    hitRecordsHost[1].data.texObject = checkerboardTex1;
-    hitRecordsHost[1].data.uvCoords  = uvBuffer.data();
+    // hitrecord for cube 1
+    hitRecordsHost[1].data.texObject     = checkerboardTex1;
+    hitRecordsHost[1].data.cube.uvCoords = uvBuffer.data();
     OPTIX_CHECK( optixSbtRecordPackHeader(*hitProgram, &hitRecordsHost[1]) );
+    // hitrecord for sphere 0
+    hitRecordsHost[2].data.texObject     = checkerboardTex0;
+    //hitRecordsHost[2].data.texObject     = checkerboardTex1;
+    hitRecordsHost[2].data.sphere.radius = 1.0f;
+    OPTIX_CHECK( optixSbtRecordPackHeader(*sphereHitProgram, &hitRecordsHost[2]) );
 
     DeviceVector<ClosestHitRecord> hitRecords(hitRecordsHost);
     sbt.hitgroupRecordBase = reinterpret_cast<CUdeviceptr>(hitRecords.data());

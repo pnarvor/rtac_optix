@@ -1,5 +1,9 @@
 #include "sbt_test0.h"
 
+#include <rtac_optix/samples/maths.h>
+
+using namespace rtac::optix;
+
 extern "C" {
     __constant__ Params params;
 }
@@ -37,7 +41,7 @@ extern "C" __global__ void __closesthit__sbt_test()
     
     // There is 3 uv coordinates for each triangle (on per vertex) so
     // memory offset is 3*primitiveIndex;
-    float2* vertexUVs = recordData->uvCoords + 3*optixGetPrimitiveIndex();
+    float2* vertexUVs = recordData->cube.uvCoords + 3*optixGetPrimitiveIndex();
 
     float2 b = optixGetTriangleBarycentrics();
     float2 uv = (1.0f - b.x - b.y) * vertexUVs[0]
@@ -50,5 +54,61 @@ extern "C" __global__ void __closesthit__sbt_test()
     optixSetPayload_1((uint32_t)255*color.y);
     optixSetPayload_2((uint32_t)255*color.z);
 }
+
+extern "C" __global__ void __intersection__sphere()
+{
+    auto sphere = reinterpret_cast<const ClosestHitData*>(optixGetSbtDataPointer())->sphere;
+    
+    // Intersection will be calculated in object reference frame (sphere center
+    // at the origin, so only the radius is needed to calculate the intersection).
+    auto rayOrigin    = optixGetObjectRayOrigin();
+    auto rayDirection = optixGetObjectRayDirection();
+
+    float tmin, tmax;
+    if(samples::line_sphere_intersection(rayOrigin, rayDirection,
+                                         sphere.radius,
+                                         tmin, tmax) > 0) {
+        float rayTmin = optixGetRayTmin();
+        float rayTmax = optixGetRayTmax();
+        if(rayTmin < tmin && tmin < rayTmax) {
+            // Computing normal vector (since we are in object space, the
+            // normal vector is colinear to the intersection point position).
+            float3 n = normalize(rayOrigin + tmin * rayDirection);
+            optixReportIntersection(tmin,
+                                    OPTIX_PRIMITIVE_TYPE_CUSTOM,
+                                    float_as_int(n.x),
+                                    float_as_int(n.y),
+                                    float_as_int(n.z));
+        }
+        else if(rayTmin < tmax && tmax < rayTmax) {
+            // Computing normal vector (since we are in object space, the
+            // normal vector is colinear to the intersection point position).
+            float3 n = normalize(rayOrigin + tmax * rayDirection);
+            optixReportIntersection(tmax,
+                                    OPTIX_PRIMITIVE_TYPE_CUSTOM,
+                                    float_as_int(n.x),
+                                    float_as_int(n.y),
+                                    float_as_int(n.z));
+        }
+    }
+}
+
+extern "C" __global__ void __closesthit__sphere()
+{
+    auto recordData = reinterpret_cast<const ClosestHitData*>(optixGetSbtDataPointer());
+    
+    float3 n = make_float3(int_as_float(optixGetAttribute_0()),
+                           int_as_float(optixGetAttribute_1()),
+                           int_as_float(optixGetAttribute_2()));
+    
+    float4 color = tex2D<float4>(recordData->texObject,
+                                 0.5f*atan2f(n.y, n.x) / M_PIf,
+                                 0.5f*(n.z + 1.0f));
+
+    optixSetPayload_0((uint32_t)255*color.x);
+    optixSetPayload_1((uint32_t)255*color.y);
+    optixSetPayload_2((uint32_t)255*color.z);
+}
+
 
 

@@ -24,10 +24,24 @@ struct MissData
     // nothing here for now
 };
 
+struct CubeData
+{
+    float2* uvCoords;
+};
+
+struct SphereData
+{
+    float radius;
+};
+
 struct ClosestHitData
 {
     cudaTextureObject_t texObject;
-    float2*             uvCoords;
+    union {
+        CubeData   cube;
+        SphereData sphere;
+    };
 };
+
 
 #endif //_DEF_RTAC_OPTIX_TESTS_SBT_TEST_0_H_
