@@ -78,7 +78,8 @@ DeviceVector<float2> compute_cube_uv()
 
 int main()
 {
-    unsigned int W = 800, H = 600;
+    //unsigned int W = 800, H = 600;
+    unsigned int W = 1920, H = 1080;
     auto ptxFiles = rtac_optix_7_display_test0::get_ptx_files();
 
     rtac::cuda::init_cuda();
@@ -118,9 +119,9 @@ int main()
     cube->add_sbt_flags(OPTIX_GEOMETRY_FLAG_NONE);
 
     auto cubeInstance0 = topInstance->add_instance(*cube);
-    //cubeInstance0->set_transform({1.0f,0.0f,0.0f,  4.0f,
-    //                              0.0f,1.0f,0.0f, -2.0f,
-    //                              0.0f,0.0f,1.0f,  2.0f});
+    cubeInstance0->set_transform({1.0f,0.0f,0.0f,  4.0f,
+                                  0.0f,1.0f,0.0f, -2.0f,
+                                  0.0f,0.0f,1.0f,  2.0f});
     auto cubeInstance1 = topInstance->add_instance(*cube);
     // Moving the second cube.
     cubeInstance1->set_transform({1.0f,0.0f,0.0f, -6.0f,
@@ -135,9 +136,9 @@ int main()
     sphereAabb->add_sbt_flags(OPTIX_GEOMETRY_FLAG_NONE);
     auto sphereInstance0 = topInstance->add_instance(*sphereAabb);
     sphereInstance0->set_sbt_offset(2); // OK. Offset is in index, not in bytes.
-    sphereInstance0->set_transform({1.0f,0.0f,0.0f,  4.0f,
-                                    0.0f,1.0f,0.0f, -2.0f,
-                                    0.0f,0.0f,1.0f,  2.0f});
+    //sphereInstance0->set_transform({1.0f,0.0f,0.0f,  4.0f,
+    //                                0.0f,1.0f,0.0f, -2.0f,
+    //                                0.0f,0.0f,1.0f,  2.0f});
     
     // Generating textures.
     auto checkerboardTex0 = Texture::checkerboard(16,16,
@@ -145,7 +146,7 @@ int main()
                                                   float4({0,0,1,1}),
                                                   32);
     checkerboardTex0.set_filter_mode(Texture::FilterLinear);
-    checkerboardTex0.set_wrap_mode(Texture::WrapClamp);
+    //checkerboardTex0.set_wrap_mode(Texture::WrapClamp);
     auto checkerboardTex1 = Texture::checkerboard(4,4,
                                                   float4({1,1,0,1}),
                                                   float4({1,0,0,1}),
@@ -189,13 +190,16 @@ int main()
     sbt.hitgroupRecordStrideInBytes = sizeof(ClosestHitRecord);
 
     //DeviceVector<uchar3> renderData(W*H); // no 
+    
 
+    float3 camPos({5.0f,4.0f,3.0f});
+    float3 camTarget({0.0f,0.0f,0.0f});
     auto params = rtac::optix::zero<Params>();
     params.width     = W;
     params.height    = H;
     //params.imageData = renderData.data();
     params.imageData = nullptr;
-    params.cam       = samples::PinholeCamera::New({0.0f,0.0f,0.0f}, {5.0f,4.0f,3.0f});
+    params.cam       = samples::PinholeCamera::New(camTarget, camPos);
     params.sceneTreeHandle = *topInstance;
     
     // Preparing display
@@ -206,7 +210,20 @@ int main()
     GLVector<uchar3> imgData(W*H);
 
     FrameCounter counter;
+    Clock clock;
     while(!display.should_close()) {
+
+        {
+            // Updating camera position
+            float dtheta = 0.5*clock.interval();
+            float c = cos(dtheta), s = sin(dtheta);
+            float2 newPos({c*camPos.x - s*camPos.y,
+                           s*camPos.x + c*camPos.y});
+            camPos.x = newPos.x;
+            camPos.y = newPos.y;
+
+            params.cam.look_at(camTarget, camPos);
+        }
 
         {
             // ptr must stay in scope for the duration of the render, it must
@@ -220,7 +237,7 @@ int main()
                                      sizeof(params), &sbt, W, H, 1) );
             cudaDeviceSynchronize(); // optixLaunch is asynchrounous
         }
-        
+
         // Updating display
         //imgData = renderData;
         renderer->set_image({W,H}, imgData.gl_id(), GL_UNSIGNED_BYTE);
