@@ -211,6 +211,7 @@ int main()
 
     FrameCounter counter;
     Clock clock;
+    Clock clockRadius;
     while(!display.should_close()) {
 
         {
@@ -223,6 +224,9 @@ int main()
             camPos.y = newPos.y;
 
             params.cam.look_at(camTarget, camPos);
+            
+            hitRecordsHost[2].data.sphere.radius = 1.0f + 0.5f*sin(3.0f*clockRadius.now());
+            hitRecords = hitRecordsHost;
         }
 
         {
