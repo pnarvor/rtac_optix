@@ -30,17 +30,18 @@ class MeshAccelStruct : public AccelerationStruct
     template <typename T>
     using DeviceVector = rtac::cuda::DeviceVector<T>;
 
-    static OptixBuildInput        default_build_input();
-    static OptixAccelBuildOptions default_build_options();
+    static OptixBuildInput           default_build_input();
+    static OptixAccelBuildOptions    default_build_options();
+    static std::vector<unsigned int> default_geometry_flags();
 
     static Handle<DeviceMesh> cube_data(float scale = 1.0);
 
     protected:
 
     Handle<const DeviceMesh>  sourceMesh_;
-    std::vector<CUdeviceptr> vertexBuffers_; // need to be in an array for motion blur.
-    DeviceVector<float>       preTransform_; // Row-major homogeneous matrix without bottom line.
-    std::vector<unsigned int> sbtFlags_;     // one per sbt record = material ?
+    std::vector<CUdeviceptr>  vertexBuffers_; // need to be in an array for motion blur.
+    DeviceVector<float>       preTransform_;  // Row-major homogeneous matrix without bottom line.
+    std::vector<unsigned int> sbtFlags_;      // one per sbt record = material ?
 
     MeshAccelStruct(const Context::ConstPtr& context,
                     const Handle<const DeviceMesh>& mesh,

@@ -14,6 +14,11 @@ OptixAccelBuildOptions MeshAccelStruct::default_build_options()
     return AccelerationStruct::default_build_options();
 }
 
+std::vector<unsigned int> MeshAccelStruct::default_geometry_flags()
+{
+    return std::vector<unsigned int>({OPTIX_GEOMETRY_FLAG_NONE});
+}
+
 Handle<MeshAccelStruct::DeviceMesh> MeshAccelStruct::cube_data(float scale)
 {
     return Handle<DeviceMesh>(new DeviceMesh(rtac::types::Mesh<float3,uint3>::cube(scale)));
@@ -25,11 +30,15 @@ MeshAccelStruct::MeshAccelStruct(const Context::ConstPtr& context,
                                  const std::vector<unsigned int>& sbtFlags) :
     AccelerationStruct(context, default_build_input(), default_build_options()),
     sourceMesh_(NULL),
-    vertexBuffers_(1)
+    vertexBuffers_(1),
+    sbtFlags_(0)
 {
     this->set_mesh(mesh);
     this->set_pre_transform(preTransform);
-    this->set_sbt_flags(sbtFlags);
+    if(sbtFlags.size() > 0)
+        this->set_sbt_flags(sbtFlags);
+    else
+        this->set_sbt_flags(default_geometry_flags());
 }
 
 MeshAccelStruct::Ptr MeshAccelStruct::Create(const Context::ConstPtr& context,

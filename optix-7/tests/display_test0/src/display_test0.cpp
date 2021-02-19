@@ -116,12 +116,8 @@ int main()
     // cubes as scene objects (sharing the same geometry acceleration structure).
     auto cubeMesh  = MeshAccelStruct::cube_data();
     auto cube = MeshAccelStruct::Create(context, cubeMesh);
-    cube->add_sbt_flags(OPTIX_GEOMETRY_FLAG_NONE);
 
     auto cubeInstance0 = topInstance->add_instance(*cube);
-    cubeInstance0->set_transform({1.0f,0.0f,0.0f,  4.0f,
-                                  0.0f,1.0f,0.0f, -2.0f,
-                                  0.0f,0.0f,1.0f,  2.0f});
     auto cubeInstance1 = topInstance->add_instance(*cube);
     // Moving the second cube.
     cubeInstance1->set_transform({1.0f,0.0f,0.0f, -6.0f,
@@ -133,12 +129,11 @@ int main()
 
     
     auto sphereAabb = CustomAccelStruct::Create(context);
-    sphereAabb->add_sbt_flags(OPTIX_GEOMETRY_FLAG_NONE);
     auto sphereInstance0 = topInstance->add_instance(*sphereAabb);
     sphereInstance0->set_sbt_offset(2); // OK. Offset is in index, not in bytes.
-    //sphereInstance0->set_transform({1.0f,0.0f,0.0f,  4.0f,
-    //                                0.0f,1.0f,0.0f, -2.0f,
-    //                                0.0f,0.0f,1.0f,  2.0f});
+    sphereInstance0->set_transform({1.0f,0.0f,0.0f,  4.0f,
+                                    0.0f,1.0f,0.0f, -2.0f,
+                                    0.0f,0.0f,1.0f,  2.0f});
     
     // Generating textures.
     auto checkerboardTex0 = Texture::checkerboard(16,16,
@@ -189,8 +184,7 @@ int main()
     sbt.hitgroupRecordCount = 2;
     sbt.hitgroupRecordStrideInBytes = sizeof(ClosestHitRecord);
 
-    //DeviceVector<uchar3> renderData(W*H); // no 
-    
+    //DeviceVector<uchar3> renderData(W*H); // Not needed (direct rendering to GL buffer)
 
     float3 camPos({5.0f,4.0f,3.0f});
     float3 camTarget({0.0f,0.0f,0.0f});
@@ -231,7 +225,10 @@ int main()
 
         {
             // ptr must stay in scope for the duration of the render, it must
-            // not be a temporary.
+            // not be a temporary. However it must be destroyed before the use
+            // of OpenGL to make the data available.
+            // (This may work without unmapping the data, but the official
+            // behavior is undefined. Use at your own risk !)
             auto ptr = imgData.map_cuda(); 
             params.imageData = ptr;
 

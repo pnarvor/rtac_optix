@@ -15,11 +15,17 @@ OptixAccelBuildOptions CustomAccelStruct::default_build_options()
     return AccelerationStruct::default_build_options();
 }
 
+std::vector<unsigned int> CustomAccelStruct::default_geometry_flags()
+{
+    return std::vector<unsigned int>({OPTIX_GEOMETRY_FLAG_NONE});
+}
+
 CustomAccelStruct::CustomAccelStruct(const Context::ConstPtr& context) :
     AccelerationStruct(context, default_build_input(), default_build_options()),
     aabbBuffers_(1)
 {
     this->set_aabb({-1,-1,-1,1,1,1});
+    this->set_sbt_flags(default_geometry_flags());
 }
 
 CustomAccelStruct::Ptr CustomAccelStruct::Create(const Context::ConstPtr& context)
