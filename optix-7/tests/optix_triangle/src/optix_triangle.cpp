@@ -50,12 +50,7 @@ using namespace std;
 #include <optix_triangle/ptx_files.h>
 #include "optix_triangle.h"
 
-void CUDA_CHECK(const cudaError_t res)
-{
-    if( res != cudaSuccess ) {
-        throw std::runtime_error("Got cuda error");
-    }
-}
+#include <rtac_optix/utils.h>
 
 void OPTIX_CHECK_LOG(const OptixResult& res)
 {
@@ -96,7 +91,7 @@ int main( int argc, char* argv[] )
     CUDA_CHECK( cudaFree( 0 ) );
     // Initialize the OptiX API, loading all API entry points
     OPTIX_CHECK( optixInit() );
-    rtac::optix::Context context;
+    auto context = rtac::optix::Context::Create();
 
     //
     // accel handling
@@ -140,7 +135,7 @@ int main( int argc, char* argv[] )
 
         OptixAccelBufferSizes gas_buffer_sizes;
         OPTIX_CHECK( optixAccelComputeMemoryUsage(
-                    context,
+                    *context,
                     &accel_options,
                     &triangle_input,
                     1, // Number of build inputs
@@ -157,7 +152,7 @@ int main( int argc, char* argv[] )
                     ) );
 
         OPTIX_CHECK( optixAccelBuild(
-                    context,
+                    *context,
                     0,                  // CUDA stream
                     &accel_options,
                     &triangle_input,
@@ -178,18 +173,18 @@ int main( int argc, char* argv[] )
     }
 
     auto ptxFiles = optix_triangle::get_ptx_files(); 
-    rtac::optix::Pipeline pipeline0(context);
-    pipeline0.add_module("src/optix_triangle.cu", ptxFiles["src/optix_triangle.cu"]);
+    auto pipeline0 = rtac::optix::Pipeline::Create(context);
+    pipeline0->add_module("src/optix_triangle.cu", ptxFiles["src/optix_triangle.cu"]);
 
-    auto raygen_prog_group = pipeline0.add_raygen_program("__raygen__rg", "src/optix_triangle.cu");
-    auto miss_prog_group   = pipeline0.add_miss_program("__miss__ms", "src/optix_triangle.cu");
+    auto raygen_prog_group = pipeline0->add_raygen_program("__raygen__rg", "src/optix_triangle.cu");
+    auto miss_prog_group   = pipeline0->add_miss_program("__miss__ms", "src/optix_triangle.cu");
 
     OptixProgramGroupDesc hitgroup_prog_group_desc = {};
     hitgroup_prog_group_desc.kind                         = OPTIX_PROGRAM_GROUP_KIND_HITGROUP;
-    hitgroup_prog_group_desc.hitgroup.moduleCH            = pipeline0.module("src/optix_triangle.cu");
+    hitgroup_prog_group_desc.hitgroup.moduleCH            = pipeline0->module("src/optix_triangle.cu");
     hitgroup_prog_group_desc.hitgroup.entryFunctionNameCH = "__closesthit__ch";
-    auto hitgroup_prog_group = pipeline0.add_program_group(hitgroup_prog_group_desc);
-    pipeline0.link();
+    auto hitgroup_prog_group = pipeline0->add_program_group(hitgroup_prog_group_desc);
+    pipeline0->link();
 
     //
     // Set up shader binding table
@@ -200,7 +195,7 @@ int main( int argc, char* argv[] )
         const size_t raygen_record_size = sizeof( RayGenSbtRecord );
         CUDA_CHECK( cudaMalloc( reinterpret_cast<void**>( &raygen_record ), raygen_record_size ) );
         RayGenSbtRecord rg_sbt;
-        OPTIX_CHECK( optixSbtRecordPackHeader( raygen_prog_group, &rg_sbt ) );
+        OPTIX_CHECK( optixSbtRecordPackHeader( *raygen_prog_group, &rg_sbt ) );
         CUDA_CHECK( cudaMemcpy(
                     reinterpret_cast<void*>( raygen_record ),
                     &rg_sbt,
@@ -213,7 +208,7 @@ int main( int argc, char* argv[] )
         CUDA_CHECK( cudaMalloc( reinterpret_cast<void**>( &miss_record ), miss_record_size ) );
         MissSbtRecord ms_sbt;
         ms_sbt.data = { 0.3f, 0.1f, 0.2f };
-        OPTIX_CHECK( optixSbtRecordPackHeader( miss_prog_group, &ms_sbt ) );
+        OPTIX_CHECK( optixSbtRecordPackHeader( *miss_prog_group, &ms_sbt ) );
         CUDA_CHECK( cudaMemcpy(
                     reinterpret_cast<void*>( miss_record ),
                     &ms_sbt,
@@ -225,7 +220,7 @@ int main( int argc, char* argv[] )
         size_t      hitgroup_record_size = sizeof( HitGroupSbtRecord );
         CUDA_CHECK( cudaMalloc( reinterpret_cast<void**>( &hitgroup_record ), hitgroup_record_size ) );
         HitGroupSbtRecord hg_sbt;
-        OPTIX_CHECK( optixSbtRecordPackHeader( hitgroup_prog_group, &hg_sbt ) );
+        OPTIX_CHECK( optixSbtRecordPackHeader( *hitgroup_prog_group, &hg_sbt ) );
         CUDA_CHECK( cudaMemcpy(
                     reinterpret_cast<void*>( hitgroup_record ),
                     &hg_sbt,
@@ -270,7 +265,7 @@ int main( int argc, char* argv[] )
                     cudaMemcpyHostToDevice
                     ) );
 
-        OPTIX_CHECK( optixLaunch( pipeline0, stream, d_param, sizeof( Params ), &sbt, width, height, /*depth=*/1 ) );
+        OPTIX_CHECK( optixLaunch( *pipeline0, stream, d_param, sizeof( Params ), &sbt, width, height, /*depth=*/1 ) );
         cudaDeviceSynchronize();
         CUDA_CHECK(cudaGetLastError());
     }

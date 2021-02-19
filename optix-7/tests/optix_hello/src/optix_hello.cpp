@@ -51,6 +51,8 @@ using namespace std;
 
 #include <optix_hello/ptx_files.h>
 
+#include <rtac_optix/utils.h>
+
 template <typename T>
 struct SbtRecord
 {
@@ -61,20 +63,6 @@ struct SbtRecord
 typedef SbtRecord<RayGenData> RayGenSbtRecord;
 typedef SbtRecord<int>        MissSbtRecord;
 typedef SbtRecord<int>        HitGroupSbtRecord;
-
-void CUDA_CHECK(const cudaError_t res)
-{
-    if( res != cudaSuccess ) {
-        throw std::runtime_error("Got cuda error");
-    }
-}
-
-void OPTIX_CHECK(const OptixResult& res)
-{
-    if( res != OPTIX_SUCCESS ) {
-        throw std::runtime_error("Got optix error");
-    }
-}
 
 void OPTIX_CHECK_LOG(const OptixResult& res)
 {

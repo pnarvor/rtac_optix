@@ -34,24 +34,24 @@ int main()
     cudaFree(0);
     optixInit();
 
-    Context context(false);
-    Pipeline pipeline(context);
-    pipeline.add_module("src/pinhole_test.cu", ptxFiles["src/pinhole_test.cu"]);
-    auto raygenProgram = pipeline.add_raygen_program("__raygen__pinhole",
+    auto context = Context::Create();
+    auto pipeline = Pipeline::Create(context);
+    pipeline->add_module("src/pinhole_test.cu", ptxFiles["src/pinhole_test.cu"]);
+    auto raygenProgram = pipeline->add_raygen_program("__raygen__pinhole",
                                                      "src/pinhole_test.cu");
     // the missProgram is mandatory even without rays.
-    auto missProgram = pipeline.add_miss_program("__miss__pinhole",
+    auto missProgram = pipeline->add_miss_program("__miss__pinhole",
                                                  "src/pinhole_test.cu");
-    pipeline.link();
+    pipeline->link();
 
     // Shader binding table setup = setting program parameters
-    auto sbt = zero<OptixShaderBindingTable>();
+    auto sbt = rtac::optix::zero<OptixShaderBindingTable>();
     // Is setting the record mandatory when empty ?
     RaygenRecord raygenRecord; // no parameters
-    OPTIX_CHECK(optixSbtRecordPackHeader(raygenProgram, &raygenRecord));
+    OPTIX_CHECK(optixSbtRecordPackHeader(*raygenProgram, &raygenRecord));
     sbt.raygenRecord = reinterpret_cast<CUdeviceptr>(memcpy::host_to_device(raygenRecord));
     MissRecord missRecord; // no parameters
-    OPTIX_CHECK(optixSbtRecordPackHeader(missProgram, &missRecord));
+    OPTIX_CHECK(optixSbtRecordPackHeader(*missProgram, &missRecord));
     sbt.missRecordBase          = reinterpret_cast<CUdeviceptr>(memcpy::host_to_device(missRecord));
     sbt.missRecordCount         = 1;
     sbt.missRecordStrideInBytes = sizeof(MissRecord);
@@ -68,7 +68,7 @@ int main()
     CUstream stream;
     cudaStreamCreate(&stream);
 
-    OPTIX_CHECK(optixLaunch(pipeline, stream,
+    OPTIX_CHECK(optixLaunch(*pipeline, stream,
                             reinterpret_cast<CUdeviceptr>(memcpy::host_to_device(params)),
                             sizeof(params),
                             &sbt, W,H,1));
