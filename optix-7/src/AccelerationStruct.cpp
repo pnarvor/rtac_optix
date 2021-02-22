@@ -125,5 +125,15 @@ CUdeviceptr AccelerationStruct::data()
     return reinterpret_cast<CUdeviceptr>(buffer_.data());
 }
 
+OptixBuildInput& AccelerationStruct::build_input()
+{
+    return buildInput_;
+}
+
+const OptixBuildInput& AccelerationStruct::build_input() const
+{
+    return buildInput_;
+}
+
 }; //namespace optix
 }; //namespace rtac

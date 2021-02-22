@@ -63,6 +63,9 @@ class AccelerationStruct
     // /!\ Use only in optix API calls except for optixDeviceContextDestroy,
     operator OptixTraversableHandle();
     CUdeviceptr data();
+
+    OptixBuildInput& build_input();
+    const OptixBuildInput& build_input() const;
 };
 
 }; //namespace optix
