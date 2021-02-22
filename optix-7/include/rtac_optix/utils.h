@@ -8,6 +8,11 @@
 
 #include <cuda_runtime.h>
 #include <optix.h>
+// careful : because of OptiX function table optix_stubs.h must be included to
+// ensure proper linking.
+#include <optix_stubs.h>
+
+#include <rtac_base/cuda/utils.h>
 
 #define OPTIX_CHECK( call )                                             \
     do {                                                                \
@@ -23,6 +28,13 @@
 
 
 namespace rtac { namespace optix {
+
+inline void optix_init()
+{
+    CUDA_CHECK( cudaFree(0) ); // Will initialize CUDA if not already done. 
+                               // No-op if CUDA already initialized.
+    OPTIX_CHECK( optixInit() );
+}
 
 template <typename T>
 T zero()
