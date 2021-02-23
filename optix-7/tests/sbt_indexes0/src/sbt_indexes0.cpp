@@ -27,6 +27,10 @@ void print_output(unsigned int W, unsigned int H, const DeviceVector<T>& output)
 
 int main()
 {
+    cout << "RayType count    : " << RayBuilder::RayTypeCount            << endl;
+    cout << "RGBRay index     : " << RayBuilder::index<RGBRay<uchar3>>() << endl;
+    cout << "ShadowRay index  : " << RayBuilder::index<ShadowRay>()      << endl;
+
     optix_init();
     auto context  = Context::Create();
     auto pipeline = Pipeline::Create(context);
@@ -53,7 +57,7 @@ int main()
     auto topObject = InstanceAccelStruct::Create(context);
     auto inst0 = topObject->add_instance(*cube0);
     auto inst1 = topObject->add_instance(*cube0);
-    inst1->set_sbt_offset(200);
+    //inst1->set_sbt_offset(200);
     inst1->set_transform({1,0,0,-4,
                           0,1,0, 2,
                           0,0,1, 0});
@@ -74,9 +78,10 @@ int main()
     sbt.missRecordCount         = dMissRecords.size();
     sbt.missRecordStrideInBytes = sizeof(MissRecord);
     
-    std::vector<HitRecord> hitRecords(254);
+    //std::vector<HitRecord> hitRecords(255);
+    std::vector<HitRecord> hitRecords(127);
     for(int i = 0; i < hitRecords.size(); i++) {
-        hitRecords[i].data.value = i + 1;
+        hitRecords[i].data.value = hitRecords.size() - 1 - i;
         OPTIX_CHECK( optixSbtRecordPackHeader(*hitGroup, &hitRecords[i]) );
     }
     DeviceVector<HitRecord> dHitRecords(hitRecords);
@@ -84,9 +89,11 @@ int main()
     sbt.hitgroupRecordCount         = hitRecords.size();
     sbt.hitgroupRecordStrideInBytes = sizeof(HitRecord);
 
-    unsigned int W = 32, H = 24;
-    //unsigned int W = 800, H = 600;
-    DeviceVector<unsigned char> output(W*H);
+    //unsigned int W = 32, H = 24;
+    //DeviceVector<unsigned char> output(W*H);
+
+    unsigned int W = 800, H = 600;
+    DeviceVector<uchar3> output(W*H);
 
     auto params = rtac::optix::zero<Params>();
     params.width  = W;
@@ -102,10 +109,12 @@ int main()
                              &sbt, W, H, 1) );
     cudaDeviceSynchronize();
 
-    print_output(W,H,output);
+    //print_output(W,H,output);
 
-    HostVector<unsigned char> data(output);
-    rtac::files::write_pgm("output.pgm", W, H, (const char*)data.data());
+    //HostVector<unsigned char> data(output);
+    //rtac::files::write_pgm("output.pgm", W, H, (const char*)data.data());
+    HostVector<uchar3> data(output);
+    rtac::files::write_ppm("output.ppm", W, H, (const char*)data.data());
 
     return 0;
 }
