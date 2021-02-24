@@ -54,13 +54,22 @@ int main()
     cube0->build_input().triangleArray.sbtIndexOffsetBuffer = (CUdeviceptr)sbtIndexOffsets.data();
     cube0->build_input().triangleArray.sbtIndexOffsetSizeInBytes = sizeof(unsigned char);
 
-    auto topObject = InstanceAccelStruct::Create(context);
-    auto inst0 = topObject->add_instance(*cube0);
-    auto inst1 = topObject->add_instance(*cube0);
+    auto inst0 = Instance::Create(cube0);
+    auto inst1 = Instance::Create(cube0);
     //inst1->set_sbt_offset(200);
     inst1->set_transform({1,0,0,-4,
                           0,1,0, 2,
                           0,0,1, 0});
+    auto topObject = InstanceAccelStruct::Create(context);
+    topObject->add_instance(inst0);
+    topObject->add_instance(inst1);
+
+    auto inst2 = Instance::Create(topObject);
+    inst2->set_transform({1,0,0,0,
+                          0,1,0,0,
+                          0,0,1,3});
+    auto topTopObject = InstanceAccelStruct::Create(context);
+    topTopObject->add_instance(inst2);
 
     auto sbt = rtac::optix::zero<OptixShaderBindingTable>();
 
@@ -102,7 +111,8 @@ int main()
     params.cam    = samples::PinholeCamera::New(float3({0.0f,0.0f,0.0f}),
                                                 float3({5.0f,4.0f,3.0f}));
     //params.topObject = *cube0;
-    params.topObject = *topObject;
+    //params.topObject = *topObject;
+    params.topObject = *topTopObject;
     
     OPTIX_CHECK( optixLaunch(*pipeline, 0,
                              (CUdeviceptr)memcpy::host_to_device(params), sizeof(Params),

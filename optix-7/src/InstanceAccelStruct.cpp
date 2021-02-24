@@ -42,17 +42,18 @@ void InstanceAccelStruct::build(Buffer& buffer, CUstream cudaStream)
     cudaDeviceSynchronize();
 }
 
-InstanceDescription::Ptr InstanceAccelStruct::add_instance(const OptixTraversableHandle& handle)
+void InstanceAccelStruct::add_instance(const Instance::Ptr& instance)
 {
-    auto instance = InstanceDescription::Create(instances_.size(), handle);
     instances_.push_back(instance);
-    return instance;
 }
 
 unsigned int InstanceAccelStruct::sbt_width() const
 {
-    // To be reimplemented to be the sum of all Instances.
-    return 0;
+    unsigned int res = 0;
+    for(auto& instance : instances_) {
+        res += instance->sbt_width();
+    }
+    return res;
 }
 
 }; //namespace optix

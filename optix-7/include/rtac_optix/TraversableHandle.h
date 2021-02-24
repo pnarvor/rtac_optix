@@ -27,6 +27,9 @@ struct TraversableHandle
     
     public:
 
+    using Ptr      = Handle<TraversableHandle>;
+    using ConstPtr = Handle<const TraversableHandle>;
+    
     virtual operator OptixTraversableHandle() = 0;
 
     // This represent the width in sbt offsets that the 

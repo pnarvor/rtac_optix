@@ -18,7 +18,7 @@
 #include <rtac_optix/utils.h>
 #include <rtac_optix/Context.h>
 #include <rtac_optix/AccelerationStruct.h>
-#include <rtac_optix/InstanceDescription.h>
+#include <rtac_optix/Instance.h>
 
 namespace rtac { namespace optix {
 
@@ -30,7 +30,7 @@ class InstanceAccelStruct : public AccelerationStruct
     using ConstPtr = Handle<const InstanceAccelStruct>;
 
     using Buffer    = AccelerationStruct::Buffer;
-    using Instances = std::vector<InstanceDescription::ConstPtr>;
+    using Instances = std::vector<Instance::Ptr>;
 
     static OptixBuildInput        default_build_input();
     static OptixAccelBuildOptions default_build_options();
@@ -50,7 +50,7 @@ class InstanceAccelStruct : public AccelerationStruct
     static Ptr Create(const Context::ConstPtr& context);
     virtual void build(Buffer& tempBuffer, CUstream cudaStream = 0);
 
-    InstanceDescription::Ptr add_instance(const OptixTraversableHandle& handle = 0);
+    void add_instance(const Instance::Ptr& instance);
 
     virtual unsigned int sbt_width() const;
 };

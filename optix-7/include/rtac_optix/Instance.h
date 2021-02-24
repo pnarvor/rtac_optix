@@ -1,5 +1,5 @@
-#ifndef _DEF_RTAC_OPTIX_INSTANCE_DESCRIPTION_H_
-#define _DEF_RTAC_OPTIX_INSTANCE_DESCRIPTION_H_
+#ifndef _DEF_RTAC_OPTIX_INSTANCE_H_
+#define _DEF_RTAC_OPTIX_INSTANCE_H_
 
 #include <iostream>
 #include <cstring>
@@ -12,49 +12,50 @@
 
 #include <rtac_optix/Handle.h>
 #include <rtac_optix/utils.h>
+#include <rtac_optix/TraversableHandle.h>
+#include <rtac_optix/AccelerationStruct.h>
 
 namespace rtac { namespace optix {
 
-// Forward declaration of InstanceAccelStruct to make it the only type allowed
-// to instanciate a new InstanceDescription.
-class InstanceAccelStruct;
-
-class InstanceDescription
+class Instance : public TraversableHandle
 {
     public:
 
-    friend class InstanceAccelStruct;
-
-    using Ptr      = Handle<InstanceDescription>;
-    using ConstPtr = Handle<const InstanceDescription>;
+    using Ptr      = Handle<Instance>;
+    using ConstPtr = Handle<const Instance>;
 
     const static unsigned int DefaultFlags = OPTIX_INSTANCE_FLAG_NONE;
     const static float DefaultTransform[];
 
-    static OptixInstance default_instance();
+    static OptixInstance default_instance(unsigned int instanceId = 0);
 
     protected:
+    
+    OptixInstance           instance_;
+    AccelerationStruct::Ptr child_;
 
-    OptixInstance instance_;
-
-    InstanceDescription(unsigned int instanceId,
-                        const OptixTraversableHandle& handle = 0);
-
-    static Ptr Create(unsigned int instanceId,
-                      OptixTraversableHandle handle = 0);
+    Instance(const AccelerationStruct::Ptr& handle = nullptr,
+             unsigned int instanceId = 0);
 
     public:
 
-    void set_traversable_handle(const OptixTraversableHandle& handle);
+    static Ptr Create(const AccelerationStruct::Ptr& child = nullptr,
+                      unsigned int instanceId = 0); // what is instanceId for ?
+
+
+    void set_child(const AccelerationStruct::Ptr& handle);
     void set_sbt_offset(unsigned int offset);
     void set_visibility_mask(unsigned int mask);
     void set_transform(const std::array<float,12>& transform);
+
     void set_flags(unsigned int flags);
     void add_flags(unsigned int flag);
     void unset_flags(unsigned int flag);
 
     operator OptixInstance();
-    operator OptixInstance() const;
+
+    virtual operator OptixTraversableHandle();
+    virtual unsigned int sbt_width() const;
 };
 
 }; //namespace optix
@@ -64,4 +65,4 @@ std::ostream& operator<<(std::ostream& os, const OptixInstance& instance);
 
 
 
-#endif //_DEF_RTAC_OPTIX_INSTANCE_DESCRIPTION_H_
+#endif //_DEF_RTAC_OPTIX_INSTANCE_H_

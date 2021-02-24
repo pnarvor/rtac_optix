@@ -25,7 +25,7 @@ list(APPEND rtac_optix_PUBLIC_HEADERS
     include/rtac_optix/GeometryAccelStruct.h
     include/rtac_optix/MeshAccelStruct.h
     include/rtac_optix/CustomAccelStruct.h
-    include/rtac_optix/InstanceDescription.h
+    include/rtac_optix/Instance.h
     include/rtac_optix/InstanceAccelStruct.h
 
     # These files were copied from the optix-7.2 SDK
@@ -43,7 +43,7 @@ list(APPEND rtac_optix_SOURCES
     src/AccelerationStruct.cpp
     src/GeometryAccelStruct.cpp
     src/MeshAccelStruct.cpp
-    src/InstanceDescription.cpp
+    src/Instance.cpp
     src/InstanceAccelStruct.cpp
     src/CustomAccelStruct.cpp
 )

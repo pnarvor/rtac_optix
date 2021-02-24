@@ -1,80 +1,92 @@
-#include <rtac_optix/InstanceDescription.h>
+#include <rtac_optix/Instance.h>
 
 namespace rtac { namespace optix {
 
-const float InstanceDescription::DefaultTransform[] = { 1.0f,0.0f,0.0f,0.0f,
-                                                        0.0f,1.0f,0.0f,0.0f,
-                                                        0.0f,0.0f,1.0f,0.0f };
+const float Instance::DefaultTransform[] = { 1.0f,0.0f,0.0f,0.0f,
+                                             0.0f,1.0f,0.0f,0.0f,
+                                             0.0f,0.0f,1.0f,0.0f };
 
-OptixInstance InstanceDescription::default_instance()
+OptixInstance Instance::default_instance(unsigned int instanceId)
 {
     auto instance = zero<OptixInstance>();
     instance.visibilityMask = 255;
-    instance.flags          = InstanceDescription::DefaultFlags;
+    instance.flags          = Instance::DefaultFlags;
+    instance.instanceId     = instanceId;
     std::memcpy(&instance.transform,
-                &InstanceDescription::DefaultTransform,
+                &Instance::DefaultTransform,
                 12*sizeof(float));
     return instance;
 }
 
-InstanceDescription::InstanceDescription(unsigned int instanceId,
-                                         const OptixTraversableHandle& handle) :
-    instance_(default_instance())
+Instance::Instance(const AccelerationStruct::Ptr& child,
+                   unsigned int instanceId) :
+    instance_(default_instance(instanceId)),
+    child_(child)
+{}
+
+Instance::Ptr Instance::Create(const AccelerationStruct::Ptr& child,
+                               unsigned int instanceId)
 {
-    instance_.instanceId        = instanceId;
-    instance_.traversableHandle = handle;
+    return Ptr(new Instance(child, instanceId));
 }
 
-InstanceDescription::Ptr InstanceDescription::Create(unsigned int instanceId,
-                                                     OptixTraversableHandle handle)
+void Instance::set_child(const AccelerationStruct::Ptr& child)
 {
-    return Ptr(new InstanceDescription(instanceId, handle));
+    child_ = child;
 }
 
-void InstanceDescription::set_traversable_handle(const OptixTraversableHandle& handle)
-{
-    instance_.traversableHandle = handle;
-}
-
-void InstanceDescription::set_sbt_offset(unsigned int offset)
+void Instance::set_sbt_offset(unsigned int offset)
 {
     instance_.sbtOffset = offset;
 }
 
-void InstanceDescription::set_visibility_mask(unsigned int mask)
+void Instance::set_visibility_mask(unsigned int mask)
 {
     instance_.visibilityMask = mask;
 }
 
-void InstanceDescription::set_transform(const std::array<float,12>& transform)
+void Instance::set_transform(const std::array<float,12>& transform)
 {
     std::memcpy(&instance_.transform, transform.data(), 12*sizeof(float));
 }
 
-void InstanceDescription::set_flags(unsigned int flags)
+void Instance::set_flags(unsigned int flags)
 {
     instance_.flags = flags;
 }
 
-void InstanceDescription::add_flags(unsigned int flag)
+void Instance::add_flags(unsigned int flag)
 {
     instance_.flags |= flag;
 }
 
-void InstanceDescription::unset_flags(unsigned int flag)
+void Instance::unset_flags(unsigned int flag)
 {
     // invert all bits in flag then bitwise and will set flags to 0;
     instance_.flags &= ~flag; 
 }
 
-InstanceDescription::operator OptixInstance()
+Instance::operator OptixInstance()
 {
+    if(!child_)
+        instance_.traversableHandle = 0;
+    else
+        instance_.traversableHandle = *child_;
     return instance_;
 }
 
-InstanceDescription::operator OptixInstance() const
+Instance::operator OptixTraversableHandle()
 {
-    return instance_;
+    if(!child_)
+        return 0;
+    return *child_;
+}
+
+unsigned int Instance::sbt_width() const
+{
+    if(!child_)
+        return 0;
+    return child_->sbt_width();
 }
 
 }; //namespace optix
