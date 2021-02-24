@@ -49,5 +49,11 @@ InstanceDescription::Ptr InstanceAccelStruct::add_instance(const OptixTraversabl
     return instance;
 }
 
+unsigned int InstanceAccelStruct::sbt_width() const
+{
+    // To be reimplemented to be the sum of all Instances.
+    return 0;
+}
+
 }; //namespace optix
 }; //namespace rtac

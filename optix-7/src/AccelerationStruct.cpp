@@ -25,12 +25,12 @@ AccelerationStruct::AccelerationStruct(const Context::ConstPtr& context,
     buffer_(0)
 {}
 
-AccelerationStruct::Ptr AccelerationStruct::Create(const Context::ConstPtr& context,
-                                                   const OptixBuildInput& buildInput,
-                                                   const OptixAccelBuildOptions& buildOptions)
-{
-    return Ptr(new AccelerationStruct(context, buildInput, buildOptions));
-}
+//AccelerationStruct::Ptr AccelerationStruct::Create(const Context::ConstPtr& context,
+//                                                   const OptixBuildInput& buildInput,
+//                                                   const OptixAccelBuildOptions& buildOptions)
+//{
+//    return Ptr(new AccelerationStruct(context, buildInput, buildOptions));
+//}
 
 void AccelerationStruct::build(Buffer& tempBuffer, CUstream cudaStream)
 {

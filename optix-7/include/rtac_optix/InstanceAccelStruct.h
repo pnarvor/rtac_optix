@@ -51,6 +51,8 @@ class InstanceAccelStruct : public AccelerationStruct
     virtual void build(Buffer& tempBuffer, CUstream cudaStream = 0);
 
     InstanceDescription::Ptr add_instance(const OptixTraversableHandle& handle = 0);
+
+    virtual unsigned int sbt_width() const;
 };
 
 }; //namespace optix

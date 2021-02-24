@@ -44,6 +44,8 @@ class GeometryAccelStruct : public AccelerationStruct
     virtual void set_sbt_flags(const std::vector<unsigned int>& flags) = 0;
     virtual void add_sbt_flags(unsigned int flag) = 0;
     virtual void unset_sbt_flags() = 0;
+
+    virtual unsigned int sbt_width() const;
 };
 
 }; //namespace optix

@@ -19,12 +19,14 @@ list(APPEND rtac_optix_PUBLIC_HEADERS
     include/rtac_optix/Context.h
     include/rtac_optix/Pipeline.h
     include/rtac_optix/ProgramGroup.h
+
+    include/rtac_optix/TraversableHandle.h
     include/rtac_optix/AccelerationStruct.h
     include/rtac_optix/GeometryAccelStruct.h
     include/rtac_optix/MeshAccelStruct.h
+    include/rtac_optix/CustomAccelStruct.h
     include/rtac_optix/InstanceDescription.h
     include/rtac_optix/InstanceAccelStruct.h
-    include/rtac_optix/CustomAccelStruct.h
 
     # These files were copied from the optix-7.2 SDK
     include/rtac_optix/optix_SDK/sutil/Preprocessor.h

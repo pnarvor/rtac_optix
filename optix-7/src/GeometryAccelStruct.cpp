@@ -24,5 +24,10 @@ GeometryAccelStruct::GeometryAccelStruct(const Context::ConstPtr& context,
         AccelerationStruct(context, buildInput, options)
 {}
 
+unsigned int GeometryAccelStruct::sbt_width() const
+{
+    return sbtFlags_.size();
+}
+
 }; //namespace optix
 }; //namespace rtac
