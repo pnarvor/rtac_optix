@@ -16,11 +16,11 @@
 #include <rtac_optix/Handle.h>
 #include <rtac_optix/utils.h>
 #include <rtac_optix/Context.h>
-#include <rtac_optix/AccelerationStruct.h>
+#include <rtac_optix/GeometryAccelStruct.h>
 
 namespace rtac { namespace optix {
 
-class MeshAccelStruct : public AccelerationStruct
+class MeshAccelStruct : public GeometryAccelStruct
 {
     public:
 
@@ -56,12 +56,15 @@ class MeshAccelStruct : public AccelerationStruct
                       const std::vector<unsigned int>& sbtFlags = std::vector<unsigned int>());
 
     void set_mesh(const Handle<const DeviceMesh>& mesh);
-    void set_pre_transform(const DeviceVector<float>& preTransform);
-    void set_sbt_flags(const std::vector<unsigned int>& flags);
-    void add_sbt_flags(unsigned int flag);
 
+    void set_pre_transform(const DeviceVector<float>& preTransform);
     void unset_pre_transform();
-    void unset_sbt_flags();
+
+    virtual void set_sbt_flags(const std::vector<unsigned int>& flags);
+    virtual void add_sbt_flags(unsigned int flag);
+    virtual void unset_sbt_flags();
+
+    virtual unsigned int primitive_count() const;
 };
 
 }; //namespace optix

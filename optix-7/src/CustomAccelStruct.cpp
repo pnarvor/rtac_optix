@@ -12,7 +12,7 @@ OptixBuildInput CustomAccelStruct::default_build_input()
 
 OptixAccelBuildOptions CustomAccelStruct::default_build_options()
 {
-    return AccelerationStruct::default_build_options();
+    return GeometryAccelStruct::default_build_options();
 }
 
 std::vector<unsigned int> CustomAccelStruct::default_geometry_flags()
@@ -21,7 +21,7 @@ std::vector<unsigned int> CustomAccelStruct::default_geometry_flags()
 }
 
 CustomAccelStruct::CustomAccelStruct(const Context::ConstPtr& context) :
-    AccelerationStruct(context, default_build_input(), default_build_options()),
+    GeometryAccelStruct(context, default_build_input(), default_build_options()),
     aabbBuffers_(1)
 {
     this->set_aabb({-1,-1,-1,1,1,1});
@@ -61,7 +61,10 @@ void CustomAccelStruct::unset_sbt_flags()
     this->buildInput_.customPrimitiveArray.numSbtRecords = 0;
 }
 
-
+unsigned int CustomAccelStruct::primitive_count() const
+{
+    return this->buildInput_.customPrimitiveArray.numPrimitives;
+}
 
 }; //namespace optix
 }; //namespace rtac

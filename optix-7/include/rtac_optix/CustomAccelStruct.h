@@ -15,11 +15,11 @@
 #include <rtac_optix/Handle.h>
 #include <rtac_optix/utils.h>
 #include <rtac_optix/Context.h>
-#include <rtac_optix/AccelerationStruct.h>
+#include <rtac_optix/GeometryAccelStruct.h>
 
 namespace rtac { namespace optix {
 
-class CustomAccelStruct : public AccelerationStruct
+class CustomAccelStruct : public GeometryAccelStruct
 {
     public:
 
@@ -47,9 +47,11 @@ class CustomAccelStruct : public AccelerationStruct
 
     void set_aabb(const std::vector<float>& aabb);
 
-    void set_sbt_flags(const std::vector<unsigned int>& flags);
-    void add_sbt_flags(unsigned int flag);
-    void unset_sbt_flags();
+    virtual void set_sbt_flags(const std::vector<unsigned int>& flags);
+    virtual void add_sbt_flags(unsigned int flag);
+    virtual void unset_sbt_flags();
+
+    virtual unsigned int primitive_count() const;
 };
 
 }; //namespace optix

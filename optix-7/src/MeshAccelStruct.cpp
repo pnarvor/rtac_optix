@@ -4,14 +4,14 @@ namespace rtac { namespace optix {
 
 OptixBuildInput MeshAccelStruct::default_build_input()
 {
-    auto res = AccelerationStruct::default_build_input();
+    auto res = GeometryAccelStruct::default_build_input();
     res.type = OPTIX_BUILD_INPUT_TYPE_TRIANGLES;
     return res;
 }
 
 OptixAccelBuildOptions MeshAccelStruct::default_build_options()
 {
-    return AccelerationStruct::default_build_options();
+    return GeometryAccelStruct::default_build_options();
 }
 
 std::vector<unsigned int> MeshAccelStruct::default_geometry_flags()
@@ -28,7 +28,7 @@ MeshAccelStruct::MeshAccelStruct(const Context::ConstPtr& context,
                                  const Handle<const DeviceMesh>& mesh,
                                  const DeviceVector<float>& preTransform,
                                  const std::vector<unsigned int>& sbtFlags) :
-    AccelerationStruct(context, default_build_input(), default_build_options()),
+    GeometryAccelStruct(context, default_build_input(), default_build_options()),
     sourceMesh_(NULL),
     vertexBuffers_(1),
     sbtFlags_(0)
@@ -101,6 +101,12 @@ void MeshAccelStruct::set_pre_transform(const DeviceVector<float>& preTransform)
     this->buildInput_.triangleArray.transformFormat = OPTIX_TRANSFORM_FORMAT_MATRIX_FLOAT12;
 }
 
+void MeshAccelStruct::unset_pre_transform()
+{
+    this->buildInput_.triangleArray.preTransform    = 0;
+    this->buildInput_.triangleArray.transformFormat = OPTIX_TRANSFORM_FORMAT_NONE;
+}
+
 void MeshAccelStruct::set_sbt_flags(const std::vector<unsigned int>& flags)
 {
     sbtFlags_ = flags;
@@ -115,17 +121,24 @@ void MeshAccelStruct::add_sbt_flags(unsigned int flag)
     this->buildInput_.triangleArray.numSbtRecords = sbtFlags_.size();
 }
 
-void MeshAccelStruct::unset_pre_transform()
-{
-    this->buildInput_.triangleArray.preTransform    = 0;
-    this->buildInput_.triangleArray.transformFormat = OPTIX_TRANSFORM_FORMAT_NONE;
-}
-
 void MeshAccelStruct::unset_sbt_flags()
 {
     sbtFlags_.clear();
     this->buildInput_.triangleArray.flags = nullptr;
     this->buildInput_.triangleArray.numSbtRecords = 0;
+}
+
+unsigned int MeshAccelStruct::primitive_count() const
+{
+    // If we have an index buffer set, returning its size. If the index buffer
+    // is empty, triangles vertices are assumed to be packed into
+    // vertex buffers.
+    if(this->buildInput_.triangleArray.numIndexTriplets != 0) {
+        return this->buildInput_.triangleArray.numIndexTriplets;
+    }
+    else {
+        return this->buildInput_.triangleArray.numVertices / 3;
+    }
 }
 
 }; //namespace optix

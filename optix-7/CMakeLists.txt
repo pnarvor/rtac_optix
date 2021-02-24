@@ -20,6 +20,7 @@ list(APPEND rtac_optix_PUBLIC_HEADERS
     include/rtac_optix/Pipeline.h
     include/rtac_optix/ProgramGroup.h
     include/rtac_optix/AccelerationStruct.h
+    include/rtac_optix/GeometryAccelStruct.h
     include/rtac_optix/MeshAccelStruct.h
     include/rtac_optix/InstanceDescription.h
     include/rtac_optix/InstanceAccelStruct.h
@@ -38,6 +39,7 @@ list(APPEND rtac_optix_SOURCES
     src/Pipeline.cpp
     src/ProgramGroup.cpp
     src/AccelerationStruct.cpp
+    src/GeometryAccelStruct.cpp
     src/MeshAccelStruct.cpp
     src/InstanceDescription.cpp
     src/InstanceAccelStruct.cpp
