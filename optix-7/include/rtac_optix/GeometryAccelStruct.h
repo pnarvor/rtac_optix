@@ -30,8 +30,8 @@ class GeometryAccelStruct : public AccelerationStruct
 
     protected:
 
-    std::vector<const CUdeviceptr*> geomData_;
-    std::vector<unsigned int>       sbtFlags_;
+    std::vector<CUdeviceptr>  geomData_;
+    std::vector<unsigned int> sbtFlags_;
 
     GeometryAccelStruct(const Context::ConstPtr& context,
                         const OptixBuildInput& buildInput = default_build_input(),

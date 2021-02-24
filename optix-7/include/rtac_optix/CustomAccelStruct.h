@@ -36,8 +36,6 @@ class CustomAccelStruct : public GeometryAccelStruct
     
     // Axis Aligned Bounding Box.
     DeviceVector<float>       aabb_;
-    std::vector<CUdeviceptr>  aabbBuffers_; // need to be in an array for motion blur.
-    std::vector<unsigned int> sbtFlags_;   // one per sbt record = material ?
 
     CustomAccelStruct(const Context::ConstPtr& context);
 

@@ -39,9 +39,7 @@ class MeshAccelStruct : public GeometryAccelStruct
     protected:
 
     Handle<const DeviceMesh>  sourceMesh_;
-    std::vector<CUdeviceptr>  vertexBuffers_; // need to be in an array for motion blur.
     DeviceVector<float>       preTransform_;  // Row-major homogeneous matrix without bottom line.
-    std::vector<unsigned int> sbtFlags_;      // one per sbt record = material ?
 
     MeshAccelStruct(const Context::ConstPtr& context,
                     const Handle<const DeviceMesh>& mesh,

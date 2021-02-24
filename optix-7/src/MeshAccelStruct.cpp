@@ -29,9 +29,7 @@ MeshAccelStruct::MeshAccelStruct(const Context::ConstPtr& context,
                                  const DeviceVector<float>& preTransform,
                                  const std::vector<unsigned int>& sbtFlags) :
     GeometryAccelStruct(context, default_build_input(), default_build_options()),
-    sourceMesh_(NULL),
-    vertexBuffers_(1),
-    sbtFlags_(0)
+    sourceMesh_(NULL)
 {
     this->set_mesh(mesh);
     this->set_pre_transform(preTransform);
@@ -59,12 +57,14 @@ void MeshAccelStruct::set_mesh(const Handle<const DeviceMesh>& mesh)
 
     // Keeping vertex data pointer in a vector is mandatory because the buildInput
     // expect an array of vertex buffers for motion blur calculations.
-    vertexBuffers_[0] = reinterpret_cast<CUdeviceptr>(mesh->points().data());
+    if(this->geomData_.size() == 0)
+        this->geomData_.resize(1);
+    this->geomData_[0] = reinterpret_cast<CUdeviceptr>(mesh->points().data());
 
     this->buildInput_.triangleArray.numVertices         = mesh->num_points();
     this->buildInput_.triangleArray.vertexFormat        = OPTIX_VERTEX_FORMAT_FLOAT3;
     this->buildInput_.triangleArray.vertexStrideInBytes = sizeof(DeviceMesh::Point);
-    this->buildInput_.triangleArray.vertexBuffers       = vertexBuffers_.data();
+    this->buildInput_.triangleArray.vertexBuffers       = geomData_.data();
         
 
     if(mesh->num_faces() > 0) {
