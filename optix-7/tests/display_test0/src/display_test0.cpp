@@ -20,9 +20,10 @@ using Texture = Texture2D<float4>;
 #include <rtac_optix/utils.h>
 #include <rtac_optix/Context.h>
 #include <rtac_optix/Pipeline.h>
-#include <rtac_optix/MeshAccelStruct.h>
+#include <rtac_optix/Instance.h>
 #include <rtac_optix/InstanceAccelStruct.h>
-#include <rtac_optix/CustomAccelStruct.h>
+#include <rtac_optix/MeshGeometry.h>
+#include <rtac_optix/CustomGeometry.h>
 using namespace rtac::optix;
 
 #include <rtac_display/Display.h>
@@ -111,14 +112,13 @@ int main()
     // types will trigger compilation / link.
     
     // Creating scene
-    auto topInstance = InstanceAccelStruct::Create(context);
     
     // cubes as scene objects (sharing the same geometry acceleration structure).
-    auto cubeMesh  = MeshAccelStruct::cube_data();
-    auto cube = MeshAccelStruct::Create(context, cubeMesh);
+    auto cubeMesh  = MeshGeometry::cube_data();
+    auto cube = MeshGeometry::Create(context, cubeMesh);
 
-    auto cubeInstance0 = topInstance->add_instance(*cube);
-    auto cubeInstance1 = topInstance->add_instance(*cube);
+    auto cubeInstance0 = Instance::Create(cube);
+    auto cubeInstance1 = Instance::Create(cube);
     // Moving the second cube.
     cubeInstance1->set_transform({1.0f,0.0f,0.0f, -6.0f,
                                   0.0f,1.0f,0.0f, -1.0f,
@@ -128,13 +128,18 @@ int main()
     cubeInstance1->set_sbt_offset(1); // OK. Offset is in index, not in bytes.
 
     
-    auto sphereAabb = CustomAccelStruct::Create(context);
-    auto sphereInstance0 = topInstance->add_instance(*sphereAabb);
+    auto sphereAabb = CustomGeometry::Create(context);
+    auto sphereInstance0 = Instance::Create(sphereAabb);
     sphereInstance0->set_sbt_offset(2); // OK. Offset is in index, not in bytes.
     sphereInstance0->set_transform({1.0f,0.0f,0.0f,  4.0f,
                                     0.0f,1.0f,0.0f, -2.0f,
                                     0.0f,0.0f,1.0f,  2.0f});
     
+    auto topInstance = InstanceAccelStruct::Create(context);
+    topInstance->add_instance(cubeInstance0);
+    topInstance->add_instance(cubeInstance1);
+    topInstance->add_instance(sphereInstance0);
+
     // Generating textures.
     auto checkerboardTex0 = Texture::checkerboard(16,16,
                                                   float4({1,1,0,1}),

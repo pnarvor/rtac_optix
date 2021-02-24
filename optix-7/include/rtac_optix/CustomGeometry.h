@@ -35,7 +35,7 @@ class CustomGeometry : public GeometryAccelStruct
     protected:
     
     // Axis Aligned Bounding Box.
-    DeviceVector<float>       aabb_;
+    DeviceVector<float> aabb_;
 
     CustomGeometry(const Context::ConstPtr& context);
 

@@ -15,7 +15,7 @@ using namespace rtac::cuda;
 #include <rtac_optix/Context.h>
 #include <rtac_optix/Pipeline.h>
 #include <rtac_optix/AccelerationStruct.h>
-#include <rtac_optix/MeshAccelStruct.h>
+#include <rtac_optix/MeshGeometry.h>
 using namespace rtac::optix;
 
 #include <mesh_test/ptx_files.h>
@@ -75,9 +75,9 @@ int main()
 
     //auto handle = AccelerationStruct::Create(context, buildInput, buildOptions);
 
-    auto mesh   = MeshAccelStruct::cube_data();
-    auto handle = MeshAccelStruct::Create(context, mesh);
-    handle->add_sbt_flags(OPTIX_GEOMETRY_FLAG_NONE);
+    auto mesh   = MeshGeometry::cube_data();
+    auto handle = MeshGeometry::Create(context, mesh);
+    //handle->add_sbt_flags(OPTIX_GEOMETRY_FLAG_NONE);
     std::vector<float> pose({1.0f,0.0f,0.0f,0.0f,
                              0.0f,1.0f,0.0f,0.0f,
                              0.0f,0.0f,1.0f,2.0f});

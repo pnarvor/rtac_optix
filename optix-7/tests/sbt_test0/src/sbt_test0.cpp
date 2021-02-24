@@ -17,9 +17,10 @@ using Texture = Texture2D<float4>;
 #include <rtac_optix/utils.h>
 #include <rtac_optix/Context.h>
 #include <rtac_optix/Pipeline.h>
-#include <rtac_optix/MeshAccelStruct.h>
+#include <rtac_optix/Instance.h>
 #include <rtac_optix/InstanceAccelStruct.h>
-#include <rtac_optix/CustomAccelStruct.h>
+#include <rtac_optix/MeshGeometry.h>
+#include <rtac_optix/CustomGeometry.h>
 using namespace rtac::optix;
 
 #include <rtac_optix_7_sbt_test0/ptx_files.h>
@@ -101,19 +102,16 @@ int main()
     // implicit cast between rtac::optix type and corresponding OptiX native
     // types will trigger compilation / link.
     
-    // Creating scene
-    auto topInstance = InstanceAccelStruct::Create(context);
-    
     // cubes as scene objects (sharing the same geometry acceleration structure).
-    auto cubeMesh  = MeshAccelStruct::cube_data();
-    auto cube = MeshAccelStruct::Create(context, cubeMesh);
-    cube->add_sbt_flags(OPTIX_GEOMETRY_FLAG_NONE);
+    auto cubeMesh  = MeshGeometry::cube_data();
+    auto cube = MeshGeometry::Create(context, cubeMesh);
+    //cube->add_sbt_flags(OPTIX_GEOMETRY_FLAG_NONE);
 
-    auto cubeInstance0 = topInstance->add_instance(*cube);
+    auto cubeInstance0 = Instance::Create(cube);
     //cubeInstance0->set_transform({1.0f,0.0f,0.0f,  4.0f,
     //                              0.0f,1.0f,0.0f, -2.0f,
     //                              0.0f,0.0f,1.0f,  2.0f});
-    auto cubeInstance1 = topInstance->add_instance(*cube);
+    auto cubeInstance1 = Instance::Create(cube);
     // Moving the second cube.
     cubeInstance1->set_transform({1.0f,0.0f,0.0f, -6.0f,
                                   0.0f,1.0f,0.0f, -1.0f,
@@ -123,13 +121,19 @@ int main()
     cubeInstance1->set_sbt_offset(1); // OK. Offset is in index, not in bytes.
 
     
-    auto sphereAabb = CustomAccelStruct::Create(context);
-    sphereAabb->add_sbt_flags(OPTIX_GEOMETRY_FLAG_NONE);
-    auto sphereInstance0 = topInstance->add_instance(*sphereAabb);
+    auto sphereAabb = CustomGeometry::Create(context);
+    //sphereAabb->add_sbt_flags(OPTIX_GEOMETRY_FLAG_NONE); // this is not working
+    auto sphereInstance0 = Instance::Create(sphereAabb);
     sphereInstance0->set_sbt_offset(2); // OK. Offset is in index, not in bytes.
     sphereInstance0->set_transform({1.0f,0.0f,0.0f,  4.0f,
                                     0.0f,1.0f,0.0f, -2.0f,
                                     0.0f,0.0f,1.0f,  2.0f});
+    
+    // Creating scene
+    auto topInstance = InstanceAccelStruct::Create(context);
+    topInstance->add_instance(cubeInstance0);
+    topInstance->add_instance(cubeInstance1);
+    topInstance->add_instance(sphereInstance0);
     
     // Generating textures.
     auto checkerboardTex0 = Texture::checkerboard(16,16,
@@ -181,7 +185,7 @@ int main()
     sbt.hitgroupRecordStrideInBytes = sizeof(ClosestHitRecord);
 
     DeviceVector<uchar3> imgData(W*H);
-    
+
     auto params = rtac::optix::zero<Params>();
     params.width     = W;
     params.height    = H;

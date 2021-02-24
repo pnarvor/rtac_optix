@@ -43,21 +43,21 @@ void CustomGeometry::set_aabb(const std::vector<float>& aabb)
 
 void CustomGeometry::set_sbt_flags(const std::vector<unsigned int>& flags)
 {
-    sbtFlags_ = flags;
-    this->buildInput_.customPrimitiveArray.flags = sbtFlags_.data();
-    this->buildInput_.customPrimitiveArray.numSbtRecords = sbtFlags_.size();
+    this->sbtFlags_ = flags;
+    this->buildInput_.customPrimitiveArray.flags = this->sbtFlags_.data();
+    this->buildInput_.customPrimitiveArray.numSbtRecords = this->sbtFlags_.size();
 }
 
 void CustomGeometry::add_sbt_flags(unsigned int flag)
 {
-    sbtFlags_.push_back(flag);
-    this->buildInput_.customPrimitiveArray.flags = sbtFlags_.data();
-    this->buildInput_.customPrimitiveArray.numSbtRecords = sbtFlags_.size();
+    this->sbtFlags_.push_back(flag);
+    this->buildInput_.customPrimitiveArray.flags = this->sbtFlags_.data();
+    this->buildInput_.customPrimitiveArray.numSbtRecords = this->sbtFlags_.size();
 }
 
 void CustomGeometry::unset_sbt_flags()
 {
-    sbtFlags_.clear();
+    this->sbtFlags_.clear();
     this->buildInput_.customPrimitiveArray.flags = nullptr;
     this->buildInput_.customPrimitiveArray.numSbtRecords = 0;
 }

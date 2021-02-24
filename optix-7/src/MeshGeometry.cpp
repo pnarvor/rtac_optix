@@ -109,21 +109,21 @@ void MeshGeometry::unset_pre_transform()
 
 void MeshGeometry::set_sbt_flags(const std::vector<unsigned int>& flags)
 {
-    sbtFlags_ = flags;
-    this->buildInput_.triangleArray.flags = sbtFlags_.data();
-    this->buildInput_.triangleArray.numSbtRecords = sbtFlags_.size();
+    this->sbtFlags_ = flags;
+    this->buildInput_.triangleArray.flags = this->sbtFlags_.data();
+    this->buildInput_.triangleArray.numSbtRecords = this->sbtFlags_.size();
 }
 
 void MeshGeometry::add_sbt_flags(unsigned int flag)
 {
-    sbtFlags_.push_back(flag);
-    this->buildInput_.triangleArray.flags = sbtFlags_.data();
-    this->buildInput_.triangleArray.numSbtRecords = sbtFlags_.size();
+    this->sbtFlags_.push_back(flag);
+    this->buildInput_.triangleArray.flags = this->sbtFlags_.data();
+    this->buildInput_.triangleArray.numSbtRecords = this->sbtFlags_.size();
 }
 
 void MeshGeometry::unset_sbt_flags()
 {
-    sbtFlags_.clear();
+    this->sbtFlags_.clear();
     this->buildInput_.triangleArray.flags = nullptr;
     this->buildInput_.triangleArray.numSbtRecords = 0;
 }
