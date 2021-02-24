@@ -10,7 +10,7 @@ using namespace rtac::cuda;
 
 #include <rtac_optix/utils.h>
 #include <rtac_optix/Pipeline.h>
-#include <rtac_optix/MeshAccelStruct.h>
+#include <rtac_optix/MeshGeometry.h>
 #include <rtac_optix/InstanceAccelStruct.h>
 using namespace rtac::optix;
 
@@ -44,8 +44,8 @@ int main()
     hitGroupDesc.hitgroup.entryFunctionNameCH = "__closesthit__sbt_indexes0";
     auto hitGroup = pipeline->add_program_group(hitGroupDesc);
 
-    auto cubeMesh = MeshAccelStruct::cube_data();
-    auto cube0 = MeshAccelStruct::Create(context, cubeMesh);
+    auto cubeMesh = MeshGeometry::cube_data();
+    auto cube0    = MeshGeometry::Create(context, cubeMesh);
 
     // building a per-triangle material (=array of sbt index offsets)
     cube0->set_sbt_flags(std::vector<unsigned int>(3, OPTIX_GEOMETRY_FLAG_NONE));

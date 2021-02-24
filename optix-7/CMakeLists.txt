@@ -21,12 +21,12 @@ list(APPEND rtac_optix_PUBLIC_HEADERS
     include/rtac_optix/ProgramGroup.h
 
     include/rtac_optix/TraversableHandle.h
-    include/rtac_optix/AccelerationStruct.h
-    include/rtac_optix/GeometryAccelStruct.h
-    include/rtac_optix/MeshAccelStruct.h
-    include/rtac_optix/CustomAccelStruct.h
     include/rtac_optix/Instance.h
+    include/rtac_optix/AccelerationStruct.h
     include/rtac_optix/InstanceAccelStruct.h
+    include/rtac_optix/GeometryAccelStruct.h
+    include/rtac_optix/MeshGeometry.h
+    include/rtac_optix/CustomGeometry.h
 
     # These files were copied from the optix-7.2 SDK
     include/rtac_optix/optix_SDK/sutil/Preprocessor.h
@@ -40,12 +40,13 @@ list(APPEND rtac_optix_SOURCES
     src/Context.cpp
     src/Pipeline.cpp
     src/ProgramGroup.cpp
-    src/AccelerationStruct.cpp
-    src/GeometryAccelStruct.cpp
-    src/MeshAccelStruct.cpp
+
     src/Instance.cpp
+    src/AccelerationStruct.cpp
     src/InstanceAccelStruct.cpp
-    src/CustomAccelStruct.cpp
+    src/GeometryAccelStruct.cpp
+    src/MeshGeometry.cpp
+    src/CustomGeometry.cpp
 )
 
 add_library(rtac_optix SHARED ${rtac_optix_SOURCES})

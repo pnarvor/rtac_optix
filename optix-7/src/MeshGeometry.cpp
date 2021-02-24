@@ -1,33 +1,33 @@
-#include <rtac_optix/MeshAccelStruct.h>
+#include <rtac_optix/MeshGeometry.h>
 
 namespace rtac { namespace optix {
 
-OptixBuildInput MeshAccelStruct::default_build_input()
+OptixBuildInput MeshGeometry::default_build_input()
 {
     auto res = GeometryAccelStruct::default_build_input();
     res.type = OPTIX_BUILD_INPUT_TYPE_TRIANGLES;
     return res;
 }
 
-OptixAccelBuildOptions MeshAccelStruct::default_build_options()
+OptixAccelBuildOptions MeshGeometry::default_build_options()
 {
     return GeometryAccelStruct::default_build_options();
 }
 
-std::vector<unsigned int> MeshAccelStruct::default_geometry_flags()
+std::vector<unsigned int> MeshGeometry::default_geometry_flags()
 {
     return std::vector<unsigned int>({OPTIX_GEOMETRY_FLAG_NONE});
 }
 
-Handle<MeshAccelStruct::DeviceMesh> MeshAccelStruct::cube_data(float scale)
+Handle<MeshGeometry::DeviceMesh> MeshGeometry::cube_data(float scale)
 {
     return Handle<DeviceMesh>(new DeviceMesh(rtac::types::Mesh<float3,uint3>::cube(scale)));
 }
 
-MeshAccelStruct::MeshAccelStruct(const Context::ConstPtr& context,
-                                 const Handle<const DeviceMesh>& mesh,
-                                 const DeviceVector<float>& preTransform,
-                                 const std::vector<unsigned int>& sbtFlags) :
+MeshGeometry::MeshGeometry(const Context::ConstPtr& context,
+                           const Handle<const DeviceMesh>& mesh,
+                           const DeviceVector<float>& preTransform,
+                           const std::vector<unsigned int>& sbtFlags) :
     GeometryAccelStruct(context, default_build_input(), default_build_options()),
     sourceMesh_(NULL)
 {
@@ -39,15 +39,15 @@ MeshAccelStruct::MeshAccelStruct(const Context::ConstPtr& context,
         this->set_sbt_flags(default_geometry_flags());
 }
 
-MeshAccelStruct::Ptr MeshAccelStruct::Create(const Context::ConstPtr& context,
+MeshGeometry::Ptr MeshGeometry::Create(const Context::ConstPtr& context,
                                              const Handle<const DeviceMesh>& mesh,
                                              const DeviceVector<float>& preTransform,
                                              const std::vector<unsigned int>& sbtFlags)
 {
-    return Ptr(new MeshAccelStruct(context, mesh, preTransform, sbtFlags));
+    return Ptr(new MeshGeometry(context, mesh, preTransform, sbtFlags));
 }
 
-void MeshAccelStruct::set_mesh(const Handle<const DeviceMesh>& mesh)
+void MeshGeometry::set_mesh(const Handle<const DeviceMesh>& mesh)
 {
     if(mesh->num_points() == 0)
         return;
@@ -83,7 +83,7 @@ void MeshAccelStruct::set_mesh(const Handle<const DeviceMesh>& mesh)
     }
 }
 
-void MeshAccelStruct::set_pre_transform(const DeviceVector<float>& preTransform)
+void MeshGeometry::set_pre_transform(const DeviceVector<float>& preTransform)
 {
     if(preTransform.size() == 0) {
         this->unset_pre_transform();
@@ -91,7 +91,7 @@ void MeshAccelStruct::set_pre_transform(const DeviceVector<float>& preTransform)
     }
     if(preTransform.size() != 12) {
         std::ostringstream oss;
-        oss << "MeshAccelStruct : preTransform mush be a 12 sized vector "
+        oss << "MeshGeometry : preTransform mush be a 12 sized vector "
             << "(3 first rows of a row major homogeneous matrix).";
         throw std::runtime_error(oss.str());
     }
@@ -101,34 +101,34 @@ void MeshAccelStruct::set_pre_transform(const DeviceVector<float>& preTransform)
     this->buildInput_.triangleArray.transformFormat = OPTIX_TRANSFORM_FORMAT_MATRIX_FLOAT12;
 }
 
-void MeshAccelStruct::unset_pre_transform()
+void MeshGeometry::unset_pre_transform()
 {
     this->buildInput_.triangleArray.preTransform    = 0;
     this->buildInput_.triangleArray.transformFormat = OPTIX_TRANSFORM_FORMAT_NONE;
 }
 
-void MeshAccelStruct::set_sbt_flags(const std::vector<unsigned int>& flags)
+void MeshGeometry::set_sbt_flags(const std::vector<unsigned int>& flags)
 {
     sbtFlags_ = flags;
     this->buildInput_.triangleArray.flags = sbtFlags_.data();
     this->buildInput_.triangleArray.numSbtRecords = sbtFlags_.size();
 }
 
-void MeshAccelStruct::add_sbt_flags(unsigned int flag)
+void MeshGeometry::add_sbt_flags(unsigned int flag)
 {
     sbtFlags_.push_back(flag);
     this->buildInput_.triangleArray.flags = sbtFlags_.data();
     this->buildInput_.triangleArray.numSbtRecords = sbtFlags_.size();
 }
 
-void MeshAccelStruct::unset_sbt_flags()
+void MeshGeometry::unset_sbt_flags()
 {
     sbtFlags_.clear();
     this->buildInput_.triangleArray.flags = nullptr;
     this->buildInput_.triangleArray.numSbtRecords = 0;
 }
 
-unsigned int MeshAccelStruct::primitive_count() const
+unsigned int MeshGeometry::primitive_count() const
 {
     // If we have an index buffer set, returning its size. If the index buffer
     // is empty, triangles vertices are assumed to be packed into

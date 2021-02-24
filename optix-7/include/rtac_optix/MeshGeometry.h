@@ -1,5 +1,5 @@
-#ifndef _DEF_RTAC_OPTIX_MESH_ACCELERATION_STRUCT_H_
-#define _DEF_RTAC_OPTIX_MESH_ACCELERATION_STRUCT_H_
+#ifndef _DEF_RTAC_OPTIX_MESH_GEOMETRY_H_
+#define _DEF_RTAC_OPTIX_MESH_GEOMETRY_H_
 
 #include <iostream>
 #include <iomanip>
@@ -20,12 +20,12 @@
 
 namespace rtac { namespace optix {
 
-class MeshAccelStruct : public GeometryAccelStruct
+class MeshGeometry : public GeometryAccelStruct
 {
     public:
 
-    using Ptr        = Handle<MeshAccelStruct>;
-    using ConstPtr   = Handle<const MeshAccelStruct>;
+    using Ptr        = Handle<MeshGeometry>;
+    using ConstPtr   = Handle<const MeshGeometry>;
     using DeviceMesh = rtac::cuda::DeviceMesh<float3, uint3>;
     template <typename T>
     using DeviceVector = rtac::cuda::DeviceVector<T>;
@@ -41,10 +41,10 @@ class MeshAccelStruct : public GeometryAccelStruct
     Handle<const DeviceMesh>  sourceMesh_;
     DeviceVector<float>       preTransform_;  // Row-major homogeneous matrix without bottom line.
 
-    MeshAccelStruct(const Context::ConstPtr& context,
-                    const Handle<const DeviceMesh>& mesh,
-                    const DeviceVector<float>& preTransform = DeviceVector<float>(0),
-                    const std::vector<unsigned int>& sbtFlags = std::vector<unsigned int>());
+    MeshGeometry(const Context::ConstPtr& context,
+                 const Handle<const DeviceMesh>& mesh,
+                 const DeviceVector<float>& preTransform = DeviceVector<float>(0),
+                 const std::vector<unsigned int>& sbtFlags = std::vector<unsigned int>());
 
     public:
 
@@ -68,4 +68,4 @@ class MeshAccelStruct : public GeometryAccelStruct
 }; //namespace optix
 }; //namespace rtac
 
-#endif //_DEF_RTAC_OPTIX_MESH_ACCELERATION_STRUCT_H_
+#endif //_DEF_RTAC_OPTIX_MESH_GEOMETRY_H_

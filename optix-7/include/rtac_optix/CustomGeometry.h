@@ -1,5 +1,5 @@
-#ifndef _DEF_RTAC_OPTIX_CUSTOM_ACCEL_STRUCT_H_
-#define _DEF_RTAC_OPTIX_CUSTOM_ACCEL_STRUCT_H_
+#ifndef _DEF_RTAC_OPTIX_CUSTOM_GEOMETRY_H_
+#define _DEF_RTAC_OPTIX_CUSTOM_GEOMETRY_H_
 
 #include <iostream>
 #include <iomanip>
@@ -19,12 +19,12 @@
 
 namespace rtac { namespace optix {
 
-class CustomAccelStruct : public GeometryAccelStruct
+class CustomGeometry : public GeometryAccelStruct
 {
     public:
 
-    using Ptr      = Handle<CustomAccelStruct>;
-    using ConstPtr = Handle<const CustomAccelStruct>;
+    using Ptr      = Handle<CustomGeometry>;
+    using ConstPtr = Handle<const CustomGeometry>;
     template <typename T>
     using DeviceVector = rtac::cuda::DeviceVector<T>;
 
@@ -37,7 +37,7 @@ class CustomAccelStruct : public GeometryAccelStruct
     // Axis Aligned Bounding Box.
     DeviceVector<float>       aabb_;
 
-    CustomAccelStruct(const Context::ConstPtr& context);
+    CustomGeometry(const Context::ConstPtr& context);
 
     public:
 
@@ -55,4 +55,4 @@ class CustomAccelStruct : public GeometryAccelStruct
 }; //namespace optix
 }; //namespace rtac
 
-#endif //_DEF_RTAC_OPTIX_CUSTOM_ACCEL_STRUCT_H_
+#endif //_DEF_RTAC_OPTIX_CUSTOM_GEOMETRY_H_
