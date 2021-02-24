@@ -13,16 +13,18 @@ OptixAccelBuildOptions GeometryAccelStruct::default_build_options()
     return AccelerationStruct::default_build_options();
 }
 
-std::vector<unsigned int> GeometryAccelStruct::default_geometry_flags()
-{
-    return std::vector<unsigned int>({OPTIX_GEOMETRY_FLAG_NONE});
-}
+//std::vector<unsigned int> GeometryAccelStruct::default_geometry_flags()
+//{
+//    return std::vector<unsigned int>({OPTIX_GEOMETRY_FLAG_NONE});
+//}
 
 GeometryAccelStruct::GeometryAccelStruct(const Context::ConstPtr& context,
                                          const OptixBuildInput& buildInput,
                                          const OptixAccelBuildOptions& options) :
-        AccelerationStruct(context, buildInput, options)
-{}
+    AccelerationStruct(context, buildInput, options)
+{
+    //this->set_sbt_flags(default_geometry_flags());
+}
 
 void GeometryAccelStruct::update_sbt_flags()
 {

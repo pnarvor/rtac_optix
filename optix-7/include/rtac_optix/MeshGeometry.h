@@ -32,7 +32,6 @@ class MeshGeometry : public GeometryAccelStruct
 
     static OptixBuildInput           default_build_input();
     static OptixAccelBuildOptions    default_build_options();
-    static std::vector<unsigned int> default_geometry_flags();
 
     static Handle<DeviceMesh> cube_data(float scale = 1.0);
 
@@ -43,15 +42,13 @@ class MeshGeometry : public GeometryAccelStruct
 
     MeshGeometry(const Context::ConstPtr& context,
                  const Handle<const DeviceMesh>& mesh,
-                 const DeviceVector<float>& preTransform = DeviceVector<float>(0),
-                 const std::vector<unsigned int>& sbtFlags = std::vector<unsigned int>());
+                 const DeviceVector<float>& preTransform = DeviceVector<float>(0));
 
     public:
 
     static Ptr Create(const Context::ConstPtr& context,
                       const Handle<const DeviceMesh>& mesh,
-                      const DeviceVector<float>& preTransform = DeviceVector<float>(0),
-                      const std::vector<unsigned int>& sbtFlags = std::vector<unsigned int>());
+                      const DeviceVector<float>& preTransform = DeviceVector<float>(0));
 
     void set_mesh(const Handle<const DeviceMesh>& mesh);
 

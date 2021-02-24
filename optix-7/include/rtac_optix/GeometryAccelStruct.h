@@ -27,7 +27,7 @@ class GeometryAccelStruct : public AccelerationStruct
 
     static OptixBuildInput           default_build_input();
     static OptixAccelBuildOptions    default_build_options();
-    static std::vector<unsigned int> default_geometry_flags();
+    //static std::vector<unsigned int> default_geometry_flags();
     
     private:
 

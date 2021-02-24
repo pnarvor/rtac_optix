@@ -14,11 +14,6 @@ OptixAccelBuildOptions MeshGeometry::default_build_options()
     return GeometryAccelStruct::default_build_options();
 }
 
-std::vector<unsigned int> MeshGeometry::default_geometry_flags()
-{
-    return std::vector<unsigned int>({OPTIX_GEOMETRY_FLAG_NONE});
-}
-
 Handle<MeshGeometry::DeviceMesh> MeshGeometry::cube_data(float scale)
 {
     return Handle<DeviceMesh>(new DeviceMesh(rtac::types::Mesh<float3,uint3>::cube(scale)));
@@ -26,25 +21,19 @@ Handle<MeshGeometry::DeviceMesh> MeshGeometry::cube_data(float scale)
 
 MeshGeometry::MeshGeometry(const Context::ConstPtr& context,
                            const Handle<const DeviceMesh>& mesh,
-                           const DeviceVector<float>& preTransform,
-                           const std::vector<unsigned int>& sbtFlags) :
+                           const DeviceVector<float>& preTransform) :
     GeometryAccelStruct(context, default_build_input(), default_build_options()),
     sourceMesh_(NULL)
 {
     this->set_mesh(mesh);
     this->set_pre_transform(preTransform);
-    if(sbtFlags.size() > 0)
-        this->set_sbt_flags(sbtFlags);
-    else
-        this->set_sbt_flags(default_geometry_flags());
 }
 
 MeshGeometry::Ptr MeshGeometry::Create(const Context::ConstPtr& context,
                                              const Handle<const DeviceMesh>& mesh,
-                                             const DeviceVector<float>& preTransform,
-                                             const std::vector<unsigned int>& sbtFlags)
+                                             const DeviceVector<float>& preTransform)
 {
-    return Ptr(new MeshGeometry(context, mesh, preTransform, sbtFlags));
+    return Ptr(new MeshGeometry(context, mesh, preTransform));
 }
 
 void MeshGeometry::set_mesh(const Handle<const DeviceMesh>& mesh)

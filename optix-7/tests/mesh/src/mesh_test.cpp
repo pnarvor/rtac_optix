@@ -77,7 +77,7 @@ int main()
 
     auto mesh   = MeshGeometry::cube_data();
     auto handle = MeshGeometry::Create(context, mesh);
-    //handle->add_sbt_flags(OPTIX_GEOMETRY_FLAG_NONE);
+    handle->add_sbt_flags(OPTIX_GEOMETRY_FLAG_NONE);
     std::vector<float> pose({1.0f,0.0f,0.0f,0.0f,
                              0.0f,1.0f,0.0f,0.0f,
                              0.0f,0.0f,1.0f,2.0f});

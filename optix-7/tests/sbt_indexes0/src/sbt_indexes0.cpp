@@ -46,6 +46,7 @@ int main()
 
     auto cubeMesh = MeshGeometry::cube_data();
     auto cube0    = MeshGeometry::Create(context, cubeMesh);
+    cube0->add_sbt_flags({OPTIX_GEOMETRY_FLAG_NONE});
 
     // building a per-triangle material (=array of sbt index offsets)
     cube0->set_sbt_flags(std::vector<unsigned int>(3, OPTIX_GEOMETRY_FLAG_NONE));
