@@ -23,10 +23,15 @@ class GeometryAccelStruct : public AccelerationStruct
 
     using Ptr      = Handle<GeometryAccelStruct>;
     using ConstPtr = Handle<const GeometryAccelStruct>;
+    using Buffer   = AccelerationStruct::Buffer;
 
     static OptixBuildInput           default_build_input();
     static OptixAccelBuildOptions    default_build_options();
     static std::vector<unsigned int> default_geometry_flags();
+    
+    private:
+
+    void update_sbt_flags();
 
     protected:
 
@@ -39,11 +44,13 @@ class GeometryAccelStruct : public AccelerationStruct
 
     public:
     
-    virtual unsigned int primitive_count() const = 0;
+    virtual void build(Buffer& tempBuffer, CUstream cudaStream = 0);
 
-    virtual void set_sbt_flags(const std::vector<unsigned int>& flags) = 0;
-    virtual void add_sbt_flags(unsigned int flag) = 0;
-    virtual void unset_sbt_flags() = 0;
+    void set_sbt_flags(const std::vector<unsigned int>& flags);
+    void add_sbt_flags(unsigned int flag);
+    void unset_sbt_flags();
+
+    virtual unsigned int primitive_count() const = 0;
 
     virtual unsigned int sbt_width() const;
 };

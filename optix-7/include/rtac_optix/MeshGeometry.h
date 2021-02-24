@@ -58,10 +58,6 @@ class MeshGeometry : public GeometryAccelStruct
     void set_pre_transform(const DeviceVector<float>& preTransform);
     void unset_pre_transform();
 
-    virtual void set_sbt_flags(const std::vector<unsigned int>& flags);
-    virtual void add_sbt_flags(unsigned int flag);
-    virtual void unset_sbt_flags();
-
     virtual unsigned int primitive_count() const;
 };
 

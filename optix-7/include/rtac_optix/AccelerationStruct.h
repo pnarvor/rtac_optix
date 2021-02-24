@@ -53,10 +53,6 @@ class AccelerationStruct : public TraversableHandle
 
     public:
 
-    //static Ptr Create(const Context::ConstPtr& context,
-    //                   const OptixBuildInput& buildInput = default_build_input(),
-    //                   const OptixAccelBuildOptions& buildOptions = default_build_options());
-
     virtual void build(Buffer& tempBuffer, CUstream cudaStream = 0);
     void build(CUstream cudaStream = 0);
     

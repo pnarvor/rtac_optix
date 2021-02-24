@@ -107,27 +107,6 @@ void MeshGeometry::unset_pre_transform()
     this->buildInput_.triangleArray.transformFormat = OPTIX_TRANSFORM_FORMAT_NONE;
 }
 
-void MeshGeometry::set_sbt_flags(const std::vector<unsigned int>& flags)
-{
-    this->sbtFlags_ = flags;
-    this->buildInput_.triangleArray.flags = this->sbtFlags_.data();
-    this->buildInput_.triangleArray.numSbtRecords = this->sbtFlags_.size();
-}
-
-void MeshGeometry::add_sbt_flags(unsigned int flag)
-{
-    this->sbtFlags_.push_back(flag);
-    this->buildInput_.triangleArray.flags = this->sbtFlags_.data();
-    this->buildInput_.triangleArray.numSbtRecords = this->sbtFlags_.size();
-}
-
-void MeshGeometry::unset_sbt_flags()
-{
-    this->sbtFlags_.clear();
-    this->buildInput_.triangleArray.flags = nullptr;
-    this->buildInput_.triangleArray.numSbtRecords = 0;
-}
-
 unsigned int MeshGeometry::primitive_count() const
 {
     // If we have an index buffer set, returning its size. If the index buffer
