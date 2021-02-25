@@ -28,6 +28,8 @@ list(APPEND rtac_optix_PUBLIC_HEADERS
     include/rtac_optix/MeshGeometry.h
     include/rtac_optix/CustomGeometry.h
 
+    include/rtac_optix/Material.h
+
     # These files were copied from the optix-7.2 SDK
     include/rtac_optix/optix_SDK/sutil/Preprocessor.h
     include/rtac_optix/optix_SDK/sutil/vec_math.h
@@ -47,6 +49,8 @@ list(APPEND rtac_optix_SOURCES
     src/GeometryAccelStruct.cpp
     src/MeshGeometry.cpp
     src/CustomGeometry.cpp
+
+    src/Material.cpp
 )
 
 add_library(rtac_optix SHARED ${rtac_optix_SOURCES})
