@@ -29,6 +29,7 @@ list(APPEND rtac_optix_PUBLIC_HEADERS
     include/rtac_optix/CustomGeometry.h
 
     include/rtac_optix/Material.h
+    include/rtac_optix/ObjectInstance.h
 
     # These files were copied from the optix-7.2 SDK
     include/rtac_optix/optix_SDK/sutil/Preprocessor.h
@@ -51,6 +52,7 @@ list(APPEND rtac_optix_SOURCES
     src/CustomGeometry.cpp
 
     src/Material.cpp
+    src/ObjectInstance.cpp
 )
 
 add_library(rtac_optix SHARED ${rtac_optix_SOURCES})
