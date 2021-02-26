@@ -7,6 +7,8 @@
 #include <optix_stubs.h>
 
 #include <rtac_optix/Raytype.h>
+#include <rtac_optix/RaytypeFactory.h>
+
 #include <rtac_optix/samples/PinholeCamera.h>
 
 struct Params {
@@ -27,6 +29,9 @@ struct HitData {
     RGBPayload color;
 };
 
-using RGBRay = rtac::optix::Raytype<RGBPayload,0,1,0>;
+//using RGBRay = rtac::optix::Raytype<RGBPayload,0,1,0>;
+using Raytypes = rtac::optix::RaytypeFactory<RGBPayload>;
+using RGBRay   = Raytypes::Raytype<0>;
+
 
 #endif //_DEF_RTAC_OPTIX_TESTS_MATERIALS_TESTS_H_

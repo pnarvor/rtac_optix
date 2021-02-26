@@ -1,12 +1,14 @@
 #ifndef _DEF_RTAC_OPTIX_RAYTYPE_FACTORY_H_
 #define _DEF_RTAC_OPTIX_RAYTYPE_FACTORY_H_
 
+#include <tuple>
+
 #include <optix.h>
 // careful : because of OptiX function table optix_stubs.h must be included to
 // ensure proper linking.
 #include <optix_stubs.h>
 
-#include <std::tuple>
+#include <rtac_optix/Raytype.h>
 
 namespace rtac { namespace optix {
 
@@ -24,8 +26,13 @@ class RaytypeFactory
     
     public:
 
-    using PayloadTypes = std::tuple<RayPayloadT...>;
-
+    using PayloadTypes = std::tuple<RayPayloadTs...>;
+    static constexpr uint8_t RaytypeCount = sizeof...(RayPayloadTs);
+    
+    // This allows to associate a unique index to each Payload/Raytype.
+    template <uint8_t Index, uint8_t MissSbtOffset = Index>
+    using Raytype = Raytype<typename std::tuple_element<Index, PayloadTypes>::type,
+                            Index, RaytypeCount, MissSbtOffset>;
 };
 
 }; //namespace optix
