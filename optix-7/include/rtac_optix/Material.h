@@ -25,9 +25,10 @@ class MaterialBase
 
     protected:
 
-    unsigned int      rayTypeIndex_;
-    ProgramGroup::Ptr hitPrograms_; // Must have been instanciated with a Pipeline.
-    bool              needsUpdate_;
+    unsigned int              rayTypeIndex_;
+    // putting these mutable for now. To be fixed.
+    mutable ProgramGroup::Ptr hitPrograms_; // Must have been instanciated with a Pipeline.
+    mutable bool              needsUpdate_;
     
     // have to be instanciated by a Material<> type
     MaterialBase(unsigned int rayTypeIndex, const ProgramGroup::Ptr& hitPrograms);
@@ -45,7 +46,7 @@ class MaterialBase
 };
 
 template <typename RayT, class ParamsT>
-class Material
+class Material : public MaterialBase
 {
     public:
 
@@ -58,7 +59,7 @@ class Material
     
     protected:
 
-    SbtRecordType sbtRecord_;
+    mutable SbtRecordType sbtRecord_;
 
     Material(const ProgramGroup::Ptr& hitPrograms, const ParamsType& params);
 
@@ -78,8 +79,7 @@ Material<RayT,ParamsT>::Material(const ProgramGroup::Ptr& hitPrograms,
                                  const ParamsType& params) :
     MaterialBase(RayT::Index, hitPrograms),
     sbtRecord_(params)
-{
-}
+{}
 
 template <typename RayT, class ParamsT>
 typename Material<RayT,ParamsT>::Ptr Material<RayT,ParamsT>::Create(
