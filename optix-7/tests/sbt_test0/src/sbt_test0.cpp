@@ -105,7 +105,7 @@ int main()
     // cubes as scene objects (sharing the same geometry acceleration structure).
     auto cubeMesh  = MeshGeometry::cube_data();
     auto cube = MeshGeometry::Create(context, cubeMesh);
-    cube->add_sbt_flags(OPTIX_GEOMETRY_FLAG_NONE);
+    cube->material_hit_setup({OPTIX_GEOMETRY_FLAG_NONE});
 
     auto cubeInstance0 = Instance::Create(cube);
     //cubeInstance0->set_transform({1.0f,0.0f,0.0f,  4.0f,
@@ -122,7 +122,7 @@ int main()
 
     
     auto sphereAabb = CustomGeometry::Create(context);
-    sphereAabb->add_sbt_flags(OPTIX_GEOMETRY_FLAG_NONE);
+    sphereAabb->material_hit_setup({OPTIX_GEOMETRY_FLAG_NONE});
     auto sphereInstance0 = Instance::Create(sphereAabb);
     sphereInstance0->set_sbt_offset(2); // OK. Offset is in index, not in bytes.
     sphereInstance0->set_transform({1.0f,0.0f,0.0f,  4.0f,

@@ -3,8 +3,8 @@
 
 #include <optix.h>
 
-#include <rtac_optix/RayPayload.h>
-#include <rtac_optix/RayFactory.h>
+#include <rtac_optix/Raytype.h>
+#include <rtac_optix/RaytypeFactory.h>
 
 #include <rtac_optix/samples/PinholeCamera.h>
 
@@ -27,26 +27,16 @@ struct HitData {
 };
 
 // RayTypes tests
-template <typename T>
 struct RGBPayload {
     uchar3 color;
 };
-template <typename T>
-struct RGBRay : public rtac::optix::RayPayload<RGBPayload<T>> {
-    using PayloadType = rtac::optix::RayPayload<RGBPayload<T>>;
-
-    //RGBRay() : PayloadType() {}
-    //RGBRay(const RGBPayload<T>& payload) : PayloadType(payload) {}
-};
-
 struct ShadowPayload {
     bool hit;
 };
-struct ShadowRay : public rtac::optix::RayPayload<ShadowPayload> {
-    using PayloadType = rtac::optix::RayPayload<ShadowPayload>;
-};
+using Raytypes = rtac::optix::RaytypeFactory<RGBPayload, ShadowPayload>;
 
-using RayBuilder = rtac::optix::RayFactoryBase<RGBRay<uchar3>, ShadowRay>;
+using RGBRay    = Raytypes::Raytype<0>;
+using ShadowRay = Raytypes::Raytype<1>;
 
 
 

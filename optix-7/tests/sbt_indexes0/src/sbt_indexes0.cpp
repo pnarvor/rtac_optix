@@ -27,9 +27,9 @@ void print_output(unsigned int W, unsigned int H, const DeviceVector<T>& output)
 
 int main()
 {
-    cout << "RayType count    : " << RayBuilder::RayTypeCount            << endl;
-    cout << "RGBRay index     : " << RayBuilder::index<RGBRay<uchar3>>() << endl;
-    cout << "ShadowRay index  : " << RayBuilder::index<ShadowRay>()      << endl;
+    cout << "RayType count    : " << Raytypes::RaytypeCount << endl;
+    cout << "RGBRay index     : " << RGBRay::Index          << endl;
+    cout << "ShadowRay index  : " << ShadowRay::Index       << endl;
 
     optix_init();
     auto context  = Context::Create();
@@ -46,14 +46,13 @@ int main()
 
     auto cubeMesh = MeshGeometry::cube_data();
     auto cube0    = MeshGeometry::Create(context, cubeMesh);
-    cube0->add_sbt_flags({OPTIX_GEOMETRY_FLAG_NONE});
+    cube0->material_hit_setup({{OPTIX_GEOMETRY_FLAG_NONE}});
 
     // building a per-triangle material (=array of sbt index offsets)
-    cube0->set_sbt_flags(std::vector<unsigned int>(3, OPTIX_GEOMETRY_FLAG_NONE));
-    DeviceVector<unsigned char> sbtIndexOffsets(
-        std::vector<unsigned char>({0,2,0,2,0,2,0,2,0,2,0,2}));
-    cube0->build_input().triangleArray.sbtIndexOffsetBuffer = (CUdeviceptr)sbtIndexOffsets.data();
-    cube0->build_input().triangleArray.sbtIndexOffsetSizeInBytes = sizeof(unsigned char);
+    Handle<DeviceVector<unsigned char>> sbtIndexOffsets(new DeviceVector<unsigned char>(
+        std::vector<unsigned char>({0,2,0,2,0,2,0,2,0,2,0,2})));
+    cube0->material_hit_setup(std::vector<unsigned int>(3, OPTIX_GEOMETRY_FLAG_NONE),
+                              sbtIndexOffsets);
 
     auto inst0 = Instance::Create(cube0);
     auto inst1 = Instance::Create(cube0);
