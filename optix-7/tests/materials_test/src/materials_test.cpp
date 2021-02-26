@@ -44,8 +44,8 @@ int main()
     cubeGeom->material_hit_setup({OPTIX_GEOMETRY_FLAG_NONE,OPTIX_GEOMETRY_FLAG_NONE},
                                  matIdx);
 
-    auto yellow = Material<RayType<0>, HitData>::Create(hitGroup, HitData({uchar3({255,255,0})}));
-    auto blue   = Material<RayType<0>, HitData>::Create(hitGroup, HitData({uchar3({0,0,255})}));
+    auto yellow = Material<RGBRay, HitData>::Create(hitGroup, HitData({uchar3({255,255,0})}));
+    auto blue   = Material<RGBRay, HitData>::Create(hitGroup, HitData({uchar3({0,0,255})}));
 
     auto cube0 = ObjectInstance::Create(cubeGeom);
     cube0->set_material(yellow, 0);

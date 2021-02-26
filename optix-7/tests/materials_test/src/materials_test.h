@@ -6,6 +6,7 @@
 // ensure proper linking.
 #include <optix_stubs.h>
 
+#include <rtac_optix/Raytype.h>
 #include <rtac_optix/samples/PinholeCamera.h>
 
 struct Params {
@@ -17,16 +18,15 @@ struct Params {
 };
 
 struct RaygenData {};
-struct MissData   {};
 
+using RGBPayload = uchar3;
+struct MissData {
+    RGBPayload color;
+};
 struct HitData {
-    uchar3 color;
+    RGBPayload color;
 };
 
-template <unsigned int IndexV>
-struct RayType
-{
-    static constexpr unsigned int Index = IndexV;
-};
+using RGBRay = rtac::optix::Raytype<RGBPayload,0,1,0>;
 
 #endif //_DEF_RTAC_OPTIX_TESTS_MATERIALS_TESTS_H_
