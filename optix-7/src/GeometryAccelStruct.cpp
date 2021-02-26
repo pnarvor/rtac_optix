@@ -13,37 +13,51 @@ OptixAccelBuildOptions GeometryAccelStruct::default_build_options()
     return AccelerationStruct::default_build_options();
 }
 
-//std::vector<unsigned int> GeometryAccelStruct::default_geometry_flags()
-//{
-//    return std::vector<unsigned int>({OPTIX_GEOMETRY_FLAG_NONE});
-//}
+std::vector<unsigned int> GeometryAccelStruct::default_hit_flags()
+{
+    return std::vector<unsigned int>({OPTIX_GEOMETRY_FLAG_NONE});
+}
 
 GeometryAccelStruct::GeometryAccelStruct(const Context::ConstPtr& context,
                                          const OptixBuildInput& buildInput,
                                          const OptixAccelBuildOptions& options) :
     AccelerationStruct(context, buildInput, options)
 {
-    //this->set_sbt_flags(default_geometry_flags());
+    this->material_hit_setup(default_hit_flags());
 }
 
-void GeometryAccelStruct::update_sbt_flags()
+void GeometryAccelStruct::update_hit_setup()
 {
     switch(this->buildInput_.type)
     {
         case OPTIX_BUILD_INPUT_TYPE_TRIANGLES:
-            if(sbtFlags_.size() > 0) {
-                this->buildInput_.triangleArray.flags         = sbtFlags_.data();
-                this->buildInput_.triangleArray.numSbtRecords = sbtFlags_.size();
+            if(materialHitFlags_.size() > 0) {
+                this->buildInput_.triangleArray.flags         = materialHitFlags_.data();
+                this->buildInput_.triangleArray.numSbtRecords = materialHitFlags_.size();
             }
             else {
                 this->buildInput_.triangleArray.flags         = nullptr;
                 this->buildInput_.triangleArray.numSbtRecords = 0;
             }
+            if(materialIndexes_) {
+                if(materialIndexes_->size() != this->primitive_count()) {
+                    std::ostringstream oss;
+                    oss << "GeometryAccelStruct::material_hit_setup : "
+                        << "Invalid number of material indexes, must be the same than "
+                        << "the number of primitives (got " << materialIndexes_->size()
+                        << ", expected " << this->primitive_count() << ")";
+                    throw std::runtime_error(oss.str());
+                }
+                this->buildInput_.triangleArray.sbtIndexOffsetBuffer =
+                    (CUdeviceptr)materialIndexes_->data();
+                this->buildInput_.triangleArray.sbtIndexOffsetSizeInBytes   = 1;
+                this->buildInput_.triangleArray.sbtIndexOffsetStrideInBytes = 1;
+            }
             break;
         case OPTIX_BUILD_INPUT_TYPE_CUSTOM_PRIMITIVES:
-            if(sbtFlags_.size() > 0) {
-                this->buildInput_.customPrimitiveArray.flags         = sbtFlags_.data();
-                this->buildInput_.customPrimitiveArray.numSbtRecords = sbtFlags_.size();
+            if(materialHitFlags_.size() > 0) {
+                this->buildInput_.customPrimitiveArray.flags         = materialHitFlags_.data();
+                this->buildInput_.customPrimitiveArray.numSbtRecords = materialHitFlags_.size();
             }
             else {
                 this->buildInput_.customPrimitiveArray.flags         = nullptr;
@@ -66,28 +80,57 @@ void GeometryAccelStruct::update_sbt_flags()
 
 void GeometryAccelStruct::build(Buffer& tempBuffer, CUstream cudaStream)
 {
-    this->update_sbt_flags();
+    this->update_hit_setup();
     AccelerationStruct::build(tempBuffer, cudaStream);
 }
 
-void GeometryAccelStruct::set_sbt_flags(const std::vector<unsigned int>& flags)
+void GeometryAccelStruct::material_hit_setup(
+    const std::vector<unsigned int>& hitFlags,
+    const Handle<MaterialIndexBuffer>& materialIndexes)
 {
-    sbtFlags_ = flags;
+    if(hitFlags.size() == 0) {
+        materialHitFlags_.resize(0);
+    }
+    else if(hitFlags.size() == 1) {
+        if(materialIndexes) {
+            std::cerr << "Warning, GeomAccelStruct : You provided a materialIndexes "
+                      << "buffer but requested only one material type. "
+                      << "The indexes will be ignored";
+        }
+        materialHitFlags_ = hitFlags;
+    }
+    else if(hitFlags.size() > 1) {
+        if(!materialIndexes) {
+            std::ostringstream oss;
+            oss << "GeometryAccelStruct::material_hit_setup : "
+                << "several materials hit flags where provided (implying your"
+                << "geometry has several materials), but no material index "
+                << "buffer was provided (buffer size must be number of "
+                << "primitives in the geometry, buffers value must be a "
+                << "material index).";
+            throw std::runtime_error(oss.str());
+        }
+        if(materialIndexes->size() != this->primitive_count()) {
+            std::ostringstream oss;
+            oss << "GeometryAccelStruct::material_hit_setup : "
+                << "Invalid number of material indexes, must be the same than "
+                << "the number of primitives (got " << materialIndexes->size()
+                << ", expected " << this->primitive_count() << ")";
+            throw std::runtime_error(oss.str());
+        }
+        materialHitFlags_ = hitFlags;
+        materialIndexes_  = materialIndexes;
+    }
 }
 
-void GeometryAccelStruct::add_sbt_flags(unsigned int flag)
+void GeometryAccelStruct::clear_hit_setup()
 {
-    sbtFlags_.push_back(flag);
-}
-
-void GeometryAccelStruct::unset_sbt_flags()
-{
-    sbtFlags_.clear();
+    materialHitFlags_.resize(0);
 }
 
 unsigned int GeometryAccelStruct::sbt_width() const
 {
-    return sbtFlags_.size();
+    return materialHitFlags_.size();
 }
 
 }; //namespace optix

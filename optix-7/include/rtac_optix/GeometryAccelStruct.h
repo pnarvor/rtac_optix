@@ -8,6 +8,8 @@
 // ensure proper linking.
 #include <optix_stubs.h>
 
+#include <rtac_base/cuda/DeviceVector.h>
+
 #include <rtac_optix/Handle.h>
 #include <rtac_optix/Context.h>
 #include <rtac_optix/AccelerationStruct.h>
@@ -21,22 +23,25 @@ class GeometryAccelStruct : public AccelerationStruct
 
     public:
 
-    using Ptr      = Handle<GeometryAccelStruct>;
-    using ConstPtr = Handle<const GeometryAccelStruct>;
-    using Buffer   = AccelerationStruct::Buffer;
+    using Ptr                 = Handle<GeometryAccelStruct>;
+    using ConstPtr            = Handle<const GeometryAccelStruct>;
+    using Buffer              = AccelerationStruct::Buffer;
+    using MaterialIndexBuffer = rtac::cuda::DeviceVector<unsigned char>;
 
     static OptixBuildInput           default_build_input();
     static OptixAccelBuildOptions    default_build_options();
-    //static std::vector<unsigned int> default_geometry_flags();
+    static std::vector<unsigned int> default_hit_flags();
     
     private:
 
-    void update_sbt_flags();
+    void update_hit_setup();
 
     protected:
 
-    std::vector<CUdeviceptr>  geomData_;
-    std::vector<unsigned int> sbtFlags_;
+    std::vector<CUdeviceptr>    geomData_;
+    std::vector<unsigned int>   materialHitFlags_;
+    Handle<MaterialIndexBuffer> materialIndexes_;
+
 
     GeometryAccelStruct(const Context::ConstPtr& context,
                         const OptixBuildInput& buildInput = default_build_input(),
@@ -45,14 +50,14 @@ class GeometryAccelStruct : public AccelerationStruct
     public:
     
     virtual void build(Buffer& tempBuffer, CUstream cudaStream = 0);
-
-    void set_sbt_flags(const std::vector<unsigned int>& flags);
-    void add_sbt_flags(unsigned int flag);
-    void unset_sbt_flags();
-
-    virtual unsigned int primitive_count() const = 0;
+    
+    void material_hit_setup(const std::vector<unsigned int>& hitFlags,
+                            const Handle<MaterialIndexBuffer>& materialIndexes = nullptr);
+    void clear_hit_setup();
 
     virtual unsigned int sbt_width() const;
+
+    virtual unsigned int primitive_count() const = 0;
 };
 
 }; //namespace optix
