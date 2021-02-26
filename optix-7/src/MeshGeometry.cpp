@@ -30,10 +30,17 @@ MeshGeometry::MeshGeometry(const Context::ConstPtr& context,
 }
 
 MeshGeometry::Ptr MeshGeometry::Create(const Context::ConstPtr& context,
-                                             const Handle<const DeviceMesh>& mesh,
-                                             const DeviceVector<float>& preTransform)
+                                       const Handle<const DeviceMesh>& mesh,
+                                       const DeviceVector<float>& preTransform)
 {
     return Ptr(new MeshGeometry(context, mesh, preTransform));
+}
+
+MeshGeometry::Ptr MeshGeometry::CreateCube(const Context::ConstPtr& context,
+                                           float scale,
+                                           const DeviceVector<float>& preTransform)
+{
+    return Create(context, cube_data(scale), preTransform);
 }
 
 void MeshGeometry::set_mesh(const Handle<const DeviceMesh>& mesh)
