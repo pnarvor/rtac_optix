@@ -89,6 +89,21 @@ unsigned int Instance::sbt_width() const
     return child_->sbt_width();
 }
 
+unsigned int Instance::material_count() const
+{
+    return 0;
+}
+
+MaterialBase::ConstPtr Instance::material(unsigned int index) const
+{
+    throw std::runtime_error("Base class Instance::material getter called.");
+}
+
+MaterialBase::Ptr Instance::material(unsigned int index)
+{
+    throw std::runtime_error("Base class Instance::material getter called.");
+}
+
 }; //namespace optix
 }; //namespace rtac
 

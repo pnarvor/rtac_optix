@@ -14,6 +14,7 @@
 #include <rtac_optix/utils.h>
 #include <rtac_optix/TraversableHandle.h>
 #include <rtac_optix/AccelerationStruct.h>
+#include <rtac_optix/Material.h>
 
 namespace rtac { namespace optix {
 
@@ -56,6 +57,13 @@ class Instance : public TraversableHandle
 
     virtual operator OptixTraversableHandle();
     virtual unsigned int sbt_width() const;
+    
+    // These are not used in this class but are here to allows access to
+    // ObjectInstance material when the scene graph is used.
+    virtual unsigned int material_count() const; // This will always return 0;
+    // There two will always throw an exception.
+    virtual MaterialBase::ConstPtr material(unsigned int index) const; 
+    virtual MaterialBase::Ptr      material(unsigned int index);
 };
 
 }; //namespace optix

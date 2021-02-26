@@ -42,9 +42,9 @@ class ObjectInstance : public Instance
     // num_materials if given by the GeometryAccelStruct (several Instances can
     // share the same GeometryAccelStruct, so it is the responsibility of
     // GeometryAccelStruct to set the number of materials).
-    unsigned int material_count() const;
-    MaterialBase::ConstPtr material(unsigned int index) const;
-    MaterialBase::Ptr      material(unsigned int index);
+    virtual unsigned int material_count() const;
+    virtual MaterialBase::ConstPtr material(unsigned int index) const;
+    virtual MaterialBase::Ptr      material(unsigned int index);
     void set_material(const MaterialBase::Ptr& material,
                       unsigned int index = 0);
     void unset_material(unsigned int index);
