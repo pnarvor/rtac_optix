@@ -35,12 +35,12 @@ class Instance : public TraversableHandle
     OptixInstance           instance_;
     AccelerationStruct::Ptr child_;
 
-    Instance(const AccelerationStruct::Ptr& handle = nullptr,
+    Instance(const AccelerationStruct::Ptr& handle,
              unsigned int instanceId = 0);
 
     public:
 
-    static Ptr Create(const AccelerationStruct::Ptr& child = nullptr,
+    static Ptr Create(const AccelerationStruct::Ptr& child,
                       unsigned int instanceId = 0); // what is instanceId for ?
 
     void set_sbt_offset(unsigned int offset);
@@ -52,7 +52,8 @@ class Instance : public TraversableHandle
     void unset_flags(unsigned int flag);
 
     operator OptixInstance();
-
+    
+    OptixBuildInputType build_type() const;
     virtual operator OptixTraversableHandle();
     virtual unsigned int sbt_width() const;
 };

@@ -41,7 +41,7 @@ class MaterialBase
     ProgramGroup::Ptr      hit_programs();
     ProgramGroup::ConstPtr hit_programs() const;
     
-    // Declaring this function to make the class abstract.
+    virtual unsigned int record_size() const = 0;
     virtual void fill_sbt_record(void* dst) const = 0;
 };
 
@@ -71,7 +71,8 @@ class Material : public MaterialBase
     ParamsType& params();
     const ParamsType& params() const;
 
-    void fill_sbt_record(void* dst) const;
+    virtual unsigned int record_size() const;
+    virtual void fill_sbt_record(void* dst) const;
 };
 
 template <typename RayT, class ParamsT>
@@ -99,6 +100,12 @@ template <typename RayT, class ParamsT>
 const ParamsT& Material<RayT,ParamsT>::params() const
 {
     return sbtRecord_.data;
+}
+
+template <typename RayT, class ParamsT>
+unsigned int Material<RayT,ParamsT>::record_size() const
+{
+    return sizeof(SbtRecordType);
 }
 
 template <typename RayT, class ParamsT>

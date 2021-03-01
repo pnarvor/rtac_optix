@@ -75,6 +75,14 @@ Instance::operator OptixInstance()
     return instance_;
 }
 
+OptixBuildInputType Instance::build_type() const
+{
+    if(!child_) {
+        throw std::runtime_error("Instance : child is nullptr");
+    }
+    return child_->build_input().type;
+}
+
 Instance::operator OptixTraversableHandle()
 {
     if(!child_)
