@@ -22,17 +22,17 @@ Instance::Instance(const AccelerationStruct::Ptr& child,
                    unsigned int instanceId) :
     instance_(default_instance(instanceId)),
     child_(child)
-{}
+{
+    if(!child) {
+        throw std::runtime_error("Instance::Instance : the child of an instance "
+            "should not be nullptr. It cannot be modified afterwards.");
+    }
+}
 
 Instance::Ptr Instance::Create(const AccelerationStruct::Ptr& child,
                                unsigned int instanceId)
 {
     return Ptr(new Instance(child, instanceId));
-}
-
-void Instance::set_child(const AccelerationStruct::Ptr& child)
-{
-    child_ = child;
 }
 
 void Instance::set_sbt_offset(unsigned int offset)
@@ -87,21 +87,6 @@ unsigned int Instance::sbt_width() const
     if(!child_)
         return 0;
     return child_->sbt_width();
-}
-
-unsigned int Instance::material_count() const
-{
-    return 0;
-}
-
-MaterialBase::ConstPtr Instance::material(unsigned int index) const
-{
-    throw std::runtime_error("Base class Instance::material getter called.");
-}
-
-MaterialBase::Ptr Instance::material(unsigned int index)
-{
-    throw std::runtime_error("Base class Instance::material getter called.");
 }
 
 }; //namespace optix

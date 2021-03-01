@@ -43,8 +43,6 @@ class Instance : public TraversableHandle
     static Ptr Create(const AccelerationStruct::Ptr& child = nullptr,
                       unsigned int instanceId = 0); // what is instanceId for ?
 
-
-    void set_child(const AccelerationStruct::Ptr& handle);
     void set_sbt_offset(unsigned int offset);
     void set_visibility_mask(unsigned int mask);
     void set_transform(const std::array<float,12>& transform);
@@ -57,13 +55,6 @@ class Instance : public TraversableHandle
 
     virtual operator OptixTraversableHandle();
     virtual unsigned int sbt_width() const;
-    
-    // These are not used in this class but are here to allows access to
-    // ObjectInstance material when the scene graph is used.
-    virtual unsigned int material_count() const; // This will always return 0;
-    // There two will always throw an exception.
-    virtual MaterialBase::ConstPtr material(unsigned int index) const; 
-    virtual MaterialBase::Ptr      material(unsigned int index);
 };
 
 }; //namespace optix
