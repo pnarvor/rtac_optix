@@ -30,6 +30,7 @@ list(APPEND rtac_optix_PUBLIC_HEADERS
 
     include/rtac_optix/Material.h
     include/rtac_optix/ObjectInstance.h
+    include/rtac_optix/GroupInstance.h
 
     # These files were copied from the optix-7.2 SDK
     include/rtac_optix/optix_SDK/sutil/Preprocessor.h
@@ -53,6 +54,7 @@ list(APPEND rtac_optix_SOURCES
 
     src/Material.cpp
     src/ObjectInstance.cpp
+    src/GroupInstance.cpp
 )
 
 add_library(rtac_optix SHARED ${rtac_optix_SOURCES})

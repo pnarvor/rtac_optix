@@ -12,7 +12,6 @@ struct Params {
     uchar3* output;
     PinholeCamera cam;
     OptixTraversableHandle topObject;
-    float3 light;
 };
 
 using RgbPayload = uchar3;

@@ -12,7 +12,8 @@ using namespace rtac;
 #include <rtac_optix/Pipeline.h>
 #include <rtac_optix/MeshGeometry.h>
 #include <rtac_optix/ObjectInstance.h>
-#include <rtac_optix/InstanceAccelStruct.h>
+//#include <rtac_optix/InstanceAccelStruct.h>
+#include <rtac_optix/GroupInstance.h>
 using namespace rtac::optix;
 
 #include <rtac_optix_7_autosbt_test/ptx_files.h>
@@ -21,7 +22,7 @@ using namespace rtac::optix;
 
 int main()
 {
-    static_assert(false, "Build a scene with lights and shadows");
+    //static_assert(false, "Build a scene with lights and shadows");
     auto ptxFiles = rtac_optix_7_autosbt_test::get_ptx_files();
 
     optix_init();
@@ -64,7 +65,9 @@ int main()
                           0,4,0,0,
                           0,0,4,-4});
     cube1->set_sbt_offset(1);
-    auto topObject = InstanceAccelStruct::Create(context);
+
+    //auto topObject = InstanceAccelStruct::Create(context);
+    auto topObject = GroupInstance::Create(context);
     topObject->add_instance(cube0);
     topObject->add_instance(cube1);
     
@@ -97,7 +100,7 @@ int main()
     params.output = output.data();
     params.cam = PinholeCamera::New({0,0,0}, {5,4,3});
     params.topObject = *topObject;
-    params.light = {4,2,10};
+    //params.light = {4,2,10};
 
     OPTIX_CHECK( optixLaunch(*pipeline, 0, 
                              (CUdeviceptr)cuda::memcpy::host_to_device(params), sizeof(params),
