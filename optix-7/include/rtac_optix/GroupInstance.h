@@ -22,10 +22,14 @@ class GroupInstance : public Instance
 {
     public:
 
-    using Ptr      = Handle<GroupInstance>;
-    using ConstPtr = Handle<const GroupInstance>;
+    using Ptr       = Handle<GroupInstance>;
+    using ConstPtr  = Handle<const GroupInstance>;
+    using Instances = InstanceAccelStruct::Instances;
 
     protected:
+
+    InstanceAccelStruct::Ptr      instanceAS();
+    InstanceAccelStruct::ConstPtr instanceAS() const;
 
     GroupInstance(const Context::ConstPtr& context);
 
@@ -34,6 +38,8 @@ class GroupInstance : public Instance
     static Ptr Create(const Context::ConstPtr& context);
 
     void add_instance(const Instance::Ptr& instance);
+    Instances& instances();
+    const Instances& instances() const;
 };
 
 }; //namespace optix

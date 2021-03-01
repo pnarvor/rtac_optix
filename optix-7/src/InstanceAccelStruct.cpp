@@ -47,6 +47,16 @@ void InstanceAccelStruct::add_instance(const Instance::Ptr& instance)
     instances_.push_back(instance);
 }
 
+InstanceAccelStruct::Instances& InstanceAccelStruct::instances()
+{
+    return instances_;
+}
+
+const InstanceAccelStruct::Instances& InstanceAccelStruct::instances() const
+{
+    return instances_;
+}
+
 unsigned int InstanceAccelStruct::sbt_width() const
 {
     unsigned int res = 0;

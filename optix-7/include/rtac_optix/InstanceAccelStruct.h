@@ -51,6 +51,8 @@ class InstanceAccelStruct : public AccelerationStruct
     virtual void build(Buffer& tempBuffer, CUstream cudaStream = 0);
 
     void add_instance(const Instance::Ptr& instance);
+    Instances& instances();
+    const Instances& instances() const;
 
     virtual unsigned int sbt_width() const;
 };
