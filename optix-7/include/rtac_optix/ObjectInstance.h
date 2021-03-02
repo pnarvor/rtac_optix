@@ -2,6 +2,7 @@
 #define _DEF_RTAC_OPTIX_OBJECT_INSTANCE_H_
 
 #include <iostream>
+#include <vector>
 
 #include <optix.h>
 // careful : because of OptiX function table optix_stubs.h must be included to
@@ -25,7 +26,7 @@ class ObjectInstance : public Instance
 
     using Ptr       = Handle<ObjectInstance>;
     using ConstPtr  = Handle<const ObjectInstance>;
-    using Materials = std::vector<MaterialBase::Ptr>;
+    using Materials = std::vector<std::pair<unsigned int, MaterialBase::Ptr>>;
     
     protected:
 
@@ -43,11 +44,14 @@ class ObjectInstance : public Instance
     // share the same GeometryAccelStruct, so it is the responsibility of
     // GeometryAccelStruct to set the number of materials).
     unsigned int material_count() const;
-    MaterialBase::ConstPtr material(unsigned int index) const;
-    MaterialBase::Ptr      material(unsigned int index);
-    void set_material(const MaterialBase::Ptr& material,
+    //MaterialBase::ConstPtr material(unsigned int index) const;
+    //MaterialBase::Ptr      material(unsigned int index);
+    //void set_material(const MaterialBase::Ptr& material,
+    //                  unsigned int index = 0);
+    //void unset_material(unsigned int index);
+    void add_material(const MaterialBase::Ptr& material,
                       unsigned int index = 0);
-    void unset_material(unsigned int index);
+    Materials& materials(); // bad. Do this better
 };
 
 }; //namespace optix

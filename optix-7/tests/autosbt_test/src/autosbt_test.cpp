@@ -83,12 +83,14 @@ int main()
     std::cout << "record size : " << majenta->record_size() << endl;
     
     auto cube0 = ObjectInstance::Create(cubeGeom);
-    cube0->set_material(yellow);
+    cube0->add_material(yellow);
     cube0->set_transform({1,0,0,0,
                           0,1,0,0,
                           0,0,1,1});
     auto cube1 = ObjectInstance::Create(cubeGeom);
-    cube1->set_material(cyan);
+    //cube1->add_material(yellow);
+    //cube1->add_material(cyan);
+    cube1->add_material(majenta);
     cube1->set_transform({4,0,0,0,
                           0,4,0,0,
                           0,0,4,-4});
