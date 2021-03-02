@@ -19,6 +19,9 @@ class ShaderBindingTable
 {
     public:
 
+    using Ptr      = Handle<ShaderBindingTable<RaytypeCountV>>;
+    using ConstPtr = Handle<const ShaderBindingTable<RaytypeCountV>>;
+
     static constexpr unsigned int RaytypeCount = RaytypeCountV;
     using Buffer = cuda::DeviceVector<uint8_t>;
 
@@ -29,6 +32,12 @@ class ShaderBindingTable
                                                       std::vector<unsigned int>>;
     
     OptixShaderBindingTable sbt_;
+    
+    MaterialBase::Ptr raygenData_;
+    Buffer            raygenRecord_;
+
+    MaterialBase::Ptr exceptionData_;
+    Buffer            exceptionRecord_;
 
     MissRecords missRecordsData_;
     Buffer      missRecords_;
@@ -41,16 +50,22 @@ class ShaderBindingTable
     
     void add_material_record_index(const MaterialBase::Ptr& material, unsigned int index);
 
+    void fill_raygen_record();
+    void fill_exception_record();
     void fill_miss_records();
     void fill_hit_records();
 
     public:
 
     ShaderBindingTable();
+    static Ptr Create();
 
+    const OptixShaderBindingTable* sbt();
     operator OptixShaderBindingTable();
     
-    void set_miss_record(const MaterialBase::Ptr& record);
+    void set_raygen_record(const MaterialBase::Ptr& record);
+    void set_exception_record(const MaterialBase::Ptr& record);
+    void add_miss_record(const MaterialBase::Ptr& record);
     void add_object(const ObjectInstance::Ptr& object);
 };
 
@@ -64,6 +79,12 @@ ShaderBindingTable<RaytypeCountV>::ShaderBindingTable() :
 {}
 
 template <unsigned int RaytypeCountV>
+typename ShaderBindingTable<RaytypeCountV>::Ptr ShaderBindingTable<RaytypeCountV>::Create()
+{
+    return Ptr(new ShaderBindingTable<RaytypeCountV>());
+}
+
+template <unsigned int RaytypeCountV>
 void ShaderBindingTable<RaytypeCountV>::add_material_record_index(
     const MaterialBase::Ptr& material, unsigned int index)
 {
@@ -75,15 +96,60 @@ void ShaderBindingTable<RaytypeCountV>::add_material_record_index(
 }
 
 template <unsigned int RaytypeCountV>
-ShaderBindingTable<RaytypeCountV>::operator OptixShaderBindingTable()
+const OptixShaderBindingTable* ShaderBindingTable<RaytypeCountV>::sbt()
 {
+    this->fill_raygen_record();
+    this->fill_exception_record();
     this->fill_miss_records();
     this->fill_hit_records();
-    return sbt_;
+    return &sbt_;
 }
 
 template <unsigned int RaytypeCountV>
-void ShaderBindingTable<RaytypeCountV>::set_miss_record(const MaterialBase::Ptr& record)
+ShaderBindingTable<RaytypeCountV>::operator OptixShaderBindingTable()
+{
+    return *(this->sbt());
+}
+
+template <unsigned int RaytypeCountV>
+void ShaderBindingTable<RaytypeCountV>::set_raygen_record(const MaterialBase::Ptr& record)
+{
+    raygenData_ = record;
+}
+
+template <unsigned int RaytypeCountV>
+void ShaderBindingTable<RaytypeCountV>::fill_raygen_record()
+{
+    if(!raygenData_) {
+        throw std::runtime_error(
+            "Not raygen record set. Cannot instanciate ShaderBindingTable");
+    }
+    std::vector<uint8_t> tmp(raygenData_->record_size());
+    raygenData_->fill_sbt_record(tmp.data());
+    raygenRecord_ = tmp;
+    sbt_.raygenRecord = (CUdeviceptr)raygenRecord_.data();
+}
+
+template <unsigned int RaytypeCountV>
+void ShaderBindingTable<RaytypeCountV>::set_exception_record(const MaterialBase::Ptr& record)
+{
+    exceptionData_ = record;
+}
+
+template <unsigned int RaytypeCountV>
+void ShaderBindingTable<RaytypeCountV>::fill_exception_record()
+{
+    if(!exceptionData_)
+        return;
+
+    std::vector<uint8_t> tmp(exceptionData_->record_size());
+    exceptionData_->fill_sbt_record(tmp.data());
+    exceptionRecord_ = tmp;
+    sbt_.exceptionRecord = (CUdeviceptr)exceptionRecord_.data();
+}
+
+template <unsigned int RaytypeCountV>
+void ShaderBindingTable<RaytypeCountV>::add_miss_record(const MaterialBase::Ptr& record)
 {
     if(record->raytype_index() >= RaytypeCount) {
         throw std::runtime_error("In valid miss record raytype index.");
@@ -99,6 +165,9 @@ void ShaderBindingTable<RaytypeCountV>::fill_miss_records()
         if(mat)
             recordSize = std::max(recordSize, mat->record_size());
     }
+
+    if(!recordSize)
+        return;
 
     std::vector<uint8_t> tmp(RaytypeCount * recordSize, 0);
     uint8_t* data = tmp.data();

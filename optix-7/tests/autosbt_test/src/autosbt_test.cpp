@@ -94,30 +94,20 @@ int main()
     cube1->set_transform({4,0,0,0,
                           0,4,0,0,
                           0,0,4,-4});
-    //cube1->set_sbt_offset(1);
-    auto group1 = GroupInstance::Create(context);
-    group1->add_instance(cube1);
 
     auto topObject = GroupInstance::Create(context);
     topObject->add_instance(cube0);
-    //topObject->add_instance(cube1);
-    topObject->add_instance(group1);
+    topObject->add_instance(cube1);
 
     //visit_graph(topObject);
-    ShaderBindingTable<2> sbtFiller;
-    sbtFiller.add_object(cube0);
-    sbtFiller.add_object(cube1);
+    ShaderBindingTable<2> sbt;
 
-    sbtFiller.set_miss_record(Material<RgbRay, RgbMissData>::Create(
+    sbt.set_raygen_record(Material<RgbRay, SbtRecord<void>>::Create(
+        raygen, SbtRecord<void>()));
+    sbt.add_miss_record(Material<RgbRay, RgbMissData>::Create(
         rgbMiss, RgbMissData({uchar3({50,50,50})})));
-    
-    //auto sbt = zero<OptixShaderBindingTable>();
-    //sbtFiller.fill_sbt(sbt);
-    OptixShaderBindingTable sbt = sbtFiller;
-
-    SbtRecord<uint8_t> raygenRecord;
-    OPTIX_CHECK( optixSbtRecordPackHeader(*raygen, &raygenRecord) );
-    sbt.raygenRecord = (CUdeviceptr)cuda::memcpy::host_to_device(raygenRecord);
+    sbt.add_object(cube0);
+    sbt.add_object(cube1);
 
     int W = 1024, H = 768;
     cuda::DeviceVector<uchar3> output(W*H);
@@ -132,7 +122,7 @@ int main()
 
     OPTIX_CHECK( optixLaunch(*pipeline, 0, 
                              (CUdeviceptr)cuda::memcpy::host_to_device(params), sizeof(params),
-                             &sbt, W, H, 1) );
+                             sbt.sbt(), W, H, 1) );
     cudaDeviceSynchronize();
     CUDA_CHECK_LAST();
 

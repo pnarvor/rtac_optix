@@ -80,6 +80,12 @@ struct SbtRecord
     SbtRecord(const T& d) : data(d) {}
 };
 
+template <>
+struct SbtRecord <void>
+{
+    __align__( OPTIX_SBT_RECORD_ALIGNMENT ) char header[OPTIX_SBT_RECORD_HEADER_SIZE];
+};
+
 }; //namespace optix
 }; //namespace rtac
 
