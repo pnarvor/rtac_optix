@@ -74,23 +74,22 @@ int main()
     pipeline->link();
     
     auto cubeGeom = MeshGeometry::CreateCube(context);
-    cubeGeom->material_hit_setup({OPTIX_GEOMETRY_FLAG_NONE});
+    cubeGeom->material_hit_setup({OPTIX_GEOMETRY_FLAG_NONE, OPTIX_GEOMETRY_FLAG_NONE},
+                                 std::vector<uint8_t>({0,1,0,1,0,1,0,1,0,1,0,1}));
     
     auto yellow = Material<RgbRay, RgbHitData>::Create(hitRgb, RgbHitData({uchar3({255,255,0})}));
     auto cyan   = Material<RgbRay, RgbHitData>::Create(hitRgb, RgbHitData({uchar3({0,255,255})}));
     auto majenta= Material<RgbRay, RgbHitData>::Create(hitRgb, RgbHitData({uchar3({255,0,255})}));
 
-    std::cout << "record size : " << majenta->record_size() << endl;
-    
     auto cube0 = ObjectInstance::Create(cubeGeom);
-    cube0->add_material(yellow);
+    cube0->add_material(yellow,  0);
+    cube0->add_material(majenta, 1);
     cube0->set_transform({1,0,0,0,
                           0,1,0,0,
                           0,0,1,1});
     auto cube1 = ObjectInstance::Create(cubeGeom);
-    //cube1->add_material(yellow);
-    cube1->add_material(cyan);
-    //cube1->add_material(majenta);
+    cube1->add_material(cyan,    0);
+    cube1->add_material(majenta, 1);
     cube1->set_transform({4,0,0,0,
                           0,4,0,0,
                           0,0,4,-4});

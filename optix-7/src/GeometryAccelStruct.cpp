@@ -123,6 +123,14 @@ void GeometryAccelStruct::material_hit_setup(
     }
 }
 
+void GeometryAccelStruct::material_hit_setup(
+    const std::vector<unsigned int>& hitFlags,
+    const std::vector<uint8_t>& materialIndexes)
+{
+    this->material_hit_setup(hitFlags,
+        Handle<MaterialIndexBuffer>(new MaterialIndexBuffer(materialIndexes)));
+}
+
 void GeometryAccelStruct::clear_hit_setup()
 {
     materialHitFlags_.resize(0);

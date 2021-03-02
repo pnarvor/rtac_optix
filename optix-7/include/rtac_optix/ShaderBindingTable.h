@@ -192,7 +192,6 @@ void ShaderBindingTable<RaytypeCountV>::add_object(const ObjectInstance::Ptr& ob
 
     objects_.push_back(object);
     object->set_sbt_offset(hitRecordsCount_ * RaytypeCount);
-    std::cout << "Object sbt offset : " <<  hitRecordsCount_ * RaytypeCount << std::endl;
     for(auto mat : object->materials()) {
         if(mat.second)
             this->add_material_record_index(mat.second, hitRecordsCount_ + mat.first);
@@ -206,7 +205,6 @@ void ShaderBindingTable<RaytypeCountV>::fill_hit_records()
     std::vector<uint8_t> recordsData(RaytypeCountV * hitRecordsCount_ * hitRecordsSize_, 0);
     for(auto& item : materials_) {
         for(auto offset : item.second) {
-            std::cout << "Filling sbt " << offset*hitRecordsSize_ << std::endl;
             item.first->fill_sbt_record(recordsData.data() + offset*hitRecordsSize_);
         }
     }

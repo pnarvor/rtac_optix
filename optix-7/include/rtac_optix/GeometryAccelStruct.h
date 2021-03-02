@@ -26,7 +26,7 @@ class GeometryAccelStruct : public AccelerationStruct
     using Ptr                 = Handle<GeometryAccelStruct>;
     using ConstPtr            = Handle<const GeometryAccelStruct>;
     using Buffer              = AccelerationStruct::Buffer;
-    using MaterialIndexBuffer = rtac::cuda::DeviceVector<unsigned char>;
+    using MaterialIndexBuffer = rtac::cuda::DeviceVector<uint8_t>;
 
     static OptixBuildInput           default_build_input();
     static OptixAccelBuildOptions    default_build_options();
@@ -53,6 +53,8 @@ class GeometryAccelStruct : public AccelerationStruct
     
     void material_hit_setup(const std::vector<unsigned int>& hitFlags,
                             const Handle<MaterialIndexBuffer>& materialIndexes = nullptr);
+    void material_hit_setup(const std::vector<unsigned int>& hitFlags,
+                            const std::vector<uint8_t>& materialIndexes);
     void clear_hit_setup();
 
     virtual unsigned int sbt_width() const;

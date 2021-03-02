@@ -14,7 +14,6 @@
 #include <rtac_optix/utils.h>
 #include <rtac_optix/TraversableHandle.h>
 #include <rtac_optix/AccelerationStruct.h>
-#include <rtac_optix/Material.h>
 
 namespace rtac { namespace optix {
 
