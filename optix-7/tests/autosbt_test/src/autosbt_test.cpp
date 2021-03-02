@@ -89,8 +89,8 @@ int main()
                           0,0,1,1});
     auto cube1 = ObjectInstance::Create(cubeGeom);
     //cube1->add_material(yellow);
-    //cube1->add_material(cyan);
-    cube1->add_material(majenta);
+    cube1->add_material(cyan);
+    //cube1->add_material(majenta);
     cube1->set_transform({4,0,0,0,
                           0,4,0,0,
                           0,0,4,-4});
@@ -107,34 +107,18 @@ int main()
     ShaderBindingTable<2> sbtFiller;
     sbtFiller.add_object(cube0);
     sbtFiller.add_object(cube1);
+
+    sbtFiller.set_miss_record(Material<RgbRay, RgbMissData>::Create(
+        rgbMiss, RgbMissData({uchar3({50,50,50})})));
     
-    auto sbt = zero<OptixShaderBindingTable>();
+    //auto sbt = zero<OptixShaderBindingTable>();
+    //sbtFiller.fill_sbt(sbt);
+    OptixShaderBindingTable sbt = sbtFiller;
+
     SbtRecord<uint8_t> raygenRecord;
     OPTIX_CHECK( optixSbtRecordPackHeader(*raygen, &raygenRecord) );
     sbt.raygenRecord = (CUdeviceptr)cuda::memcpy::host_to_device(raygenRecord);
 
-    std::vector<SbtRecord<RgbMissData>> rgbMissRecords(1);
-    rgbMissRecords[0].data = RgbMissData({0,0,0});
-    OPTIX_CHECK( optixSbtRecordPackHeader(*rgbMiss, &rgbMissRecords[0]) );
-    cuda::DeviceVector<SbtRecord<RgbMissData>> drgbMissRecords(rgbMissRecords);
-    sbt.missRecordBase = (CUdeviceptr)drgbMissRecords.data();
-    sbt.missRecordCount         = 1;
-    sbt.missRecordStrideInBytes = sizeof(SbtRecord<RgbMissData>);
-
-    //std::vector<SbtRecord<RgbHitData>> rgbHitRecords(2);
-    //std::memset(rgbHitRecords.data(), 0, rgbHitRecords.size() * sizeof(SbtRecord<RgbHitData>));
-    ////std::vector<SbtRecord<RgbHitData>> rgbHitRecords(3);
-    //yellow->fill_sbt_record(&rgbHitRecords[0]);
-    //cyan->fill_sbt_record(&rgbHitRecords[1]);
-    ////majenta->fill_sbt_record(&rgbHitRecords[2]);
-    //cuda::DeviceVector<SbtRecord<RgbHitData>> drgbHitRecords(rgbHitRecords);
-    //sbt.hitgroupRecordBase = (CUdeviceptr)drgbHitRecords.data();
-    //sbt.hitgroupRecordCount         = rgbHitRecords.size();
-    //sbt.hitgroupRecordStrideInBytes = sizeof(SbtRecord<RgbHitData>);
-    sbtFiller.fill_sbt(sbt);
-
-    CUDA_CHECK_LAST();
-    
     int W = 1024, H = 768;
     cuda::DeviceVector<uchar3> output(W*H);
 

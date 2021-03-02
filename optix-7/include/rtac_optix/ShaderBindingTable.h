@@ -4,6 +4,7 @@
 #include <iostream>
 #include <vector>
 #include <unordered_map>
+#include <algorithm>
 
 #include <rtac_base/cuda/DeviceVector.h>
 
@@ -22,37 +23,45 @@ class ShaderBindingTable
     using Buffer = cuda::DeviceVector<uint8_t>;
 
     protected:
-
+    
+    using MissRecords            = std::vector<MaterialBase::Ptr>;
     using MaterialRecordsIndexes = std::unordered_map<MaterialBase::Ptr,
                                                       std::vector<unsigned int>>;
     
+    OptixShaderBindingTable sbt_;
+
+    MissRecords missRecordsData_;
+    Buffer      missRecords_;
+
     std::vector<ObjectInstance::Ptr> objects_; // Instances which contains materials
-    MaterialRecordsIndexes  materials_;
-    unsigned int            hitRecordsCount_;
-    unsigned int            hitRecordsSize_;
-    Buffer                  hitRecordsData_;
+    MaterialRecordsIndexes           materials_;
+    unsigned int                     hitRecordsCount_;
+    unsigned int                     hitRecordsSize_;
+    Buffer                           hitRecords_;
     
-    //void compute_offsets(const Instance::Ptr& instance);
     void add_material_record_index(const MaterialBase::Ptr& material, unsigned int index);
+
+    void fill_miss_records();
+    void fill_hit_records();
 
     public:
 
     ShaderBindingTable();
 
+    operator OptixShaderBindingTable();
+    
+    void set_miss_record(const MaterialBase::Ptr& record);
     void add_object(const ObjectInstance::Ptr& object);
-
-    void fill_sbt(OptixShaderBindingTable& sbt);
 };
 
 template <unsigned int RaytypeCountV>
-//ShaderBindingTable<RaytypeCountV>::ShaderBindingTable(const Instance::Ptr& topObject) :
 ShaderBindingTable<RaytypeCountV>::ShaderBindingTable() :
+    sbt_(zero<OptixShaderBindingTable>()),
+    missRecordsData_(RaytypeCount, nullptr),
     objects_(0),
     hitRecordsCount_(0),
     hitRecordsSize_(0)
-{
-    //this->compute_offsets(topObject);
-}
+{}
 
 template <unsigned int RaytypeCountV>
 void ShaderBindingTable<RaytypeCountV>::add_material_record_index(
@@ -63,6 +72,45 @@ void ShaderBindingTable<RaytypeCountV>::add_material_record_index(
     }
     materials_[material].push_back(RaytypeCount*index + material->raytype_index());
     hitRecordsSize_ = std::max(hitRecordsSize_, material->record_size());
+}
+
+template <unsigned int RaytypeCountV>
+ShaderBindingTable<RaytypeCountV>::operator OptixShaderBindingTable()
+{
+    this->fill_miss_records();
+    this->fill_hit_records();
+    return sbt_;
+}
+
+template <unsigned int RaytypeCountV>
+void ShaderBindingTable<RaytypeCountV>::set_miss_record(const MaterialBase::Ptr& record)
+{
+    if(record->raytype_index() >= RaytypeCount) {
+        throw std::runtime_error("In valid miss record raytype index.");
+    }
+    missRecordsData_[record->raytype_index()] = record;
+}
+
+template <unsigned int RaytypeCountV>
+void ShaderBindingTable<RaytypeCountV>::fill_miss_records()
+{
+    unsigned int recordSize = 0;
+    for(auto mat : missRecordsData_) {
+        if(mat)
+            recordSize = std::max(recordSize, mat->record_size());
+    }
+
+    std::vector<uint8_t> tmp(RaytypeCount * recordSize, 0);
+    uint8_t* data = tmp.data();
+    for(auto mat : missRecordsData_) {
+        if(mat)
+            mat->fill_sbt_record(data);
+        data += recordSize;
+    }
+    missRecords_ = tmp;
+    sbt_.missRecordBase          = (CUdeviceptr)missRecords_.data();
+    sbt_.missRecordStrideInBytes = recordSize;
+    sbt_.missRecordCount         = RaytypeCount;
 }
 
 template <unsigned int RaytypeCountV>
@@ -84,7 +132,7 @@ void ShaderBindingTable<RaytypeCountV>::add_object(const ObjectInstance::Ptr& ob
 }
 
 template <unsigned int RaytypeCountV>
-void ShaderBindingTable<RaytypeCountV>::fill_sbt(OptixShaderBindingTable& sbt)
+void ShaderBindingTable<RaytypeCountV>::fill_hit_records()
 {
     std::vector<uint8_t> recordsData(RaytypeCountV * hitRecordsCount_ * hitRecordsSize_, 0);
     for(auto& item : materials_) {
@@ -93,16 +141,11 @@ void ShaderBindingTable<RaytypeCountV>::fill_sbt(OptixShaderBindingTable& sbt)
             item.first->fill_sbt_record(recordsData.data() + offset*hitRecordsSize_);
         }
     }
-    hitRecordsData_ = recordsData;
+    hitRecords_ = recordsData;
 
-    std::cout << RaytypeCount     << std::endl;
-    std::cout << hitRecordsCount_ << std::endl;
-    std::cout << hitRecordsSize_  << std::endl;
-
-
-    sbt.hitgroupRecordBase          = (CUdeviceptr)hitRecordsData_.data();
-    sbt.hitgroupRecordStrideInBytes = hitRecordsSize_;
-    sbt.hitgroupRecordCount         = RaytypeCountV * hitRecordsCount_;
+    sbt_.hitgroupRecordBase          = (CUdeviceptr)hitRecords_.data();
+    sbt_.hitgroupRecordStrideInBytes = hitRecordsSize_;
+    sbt_.hitgroupRecordCount         = RaytypeCountV * hitRecordsCount_;
 }
 
 }; //namespace optix
