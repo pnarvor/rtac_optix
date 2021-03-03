@@ -79,10 +79,9 @@ int main()
     //visit_graph(topObject);
     auto sbt = ShaderBindingTable<2>::Create();
 
-    auto raygenRecord = ShaderBinding<void>::Create(raygen);
-
-    sbt->set_raygen_record(Material<RgbRay, SbtRecord<void>>::Create(
-        raygen, SbtRecord<void>()));
+    sbt->set_raygen_record(ShaderBinding<void>::Create(raygen));
+    //sbt->set_raygen_record(Material<RgbRay, SbtRecord<void>>::Create(
+    //    raygen, SbtRecord<void>()));
     sbt->add_miss_record(Material<RgbRay, RgbMissData>::Create(
         rgbMiss, RgbMissData({uchar3({50,50,50})})));
     sbt->add_object(cube0);

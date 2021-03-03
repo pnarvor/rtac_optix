@@ -8,6 +8,7 @@
 
 #include <rtac_base/cuda/DeviceVector.h>
 
+#include <rtac_optix/ShaderBinding.h>
 #include <rtac_optix/Instance.h>
 #include <rtac_optix/ObjectInstance.h>
 #include <rtac_optix/GroupInstance.h>
@@ -33,11 +34,11 @@ class ShaderBindingTable
     
     OptixShaderBindingTable sbt_;
     
-    MaterialBase::Ptr raygenData_;
-    Buffer            raygenRecord_;
+    ShaderBindingBase::Ptr raygenData_;
+    Buffer                 raygenRecord_;
 
-    MaterialBase::Ptr exceptionData_;
-    Buffer            exceptionRecord_;
+    ShaderBindingBase::Ptr exceptionData_;
+    Buffer                 exceptionRecord_;
 
     MissRecords missRecordsData_;
     Buffer      missRecords_;
@@ -63,8 +64,8 @@ class ShaderBindingTable
     const OptixShaderBindingTable* sbt();
     operator OptixShaderBindingTable();
     
-    void set_raygen_record(const MaterialBase::Ptr& record);
-    void set_exception_record(const MaterialBase::Ptr& record);
+    void set_raygen_record(const ShaderBindingBase::Ptr& record);
+    void set_exception_record(const ShaderBindingBase::Ptr& record);
     void add_miss_record(const MaterialBase::Ptr& record);
     void add_object(const ObjectInstance::Ptr& object);
 };
@@ -112,7 +113,7 @@ ShaderBindingTable<RaytypeCountV>::operator OptixShaderBindingTable()
 }
 
 template <unsigned int RaytypeCountV>
-void ShaderBindingTable<RaytypeCountV>::set_raygen_record(const MaterialBase::Ptr& record)
+void ShaderBindingTable<RaytypeCountV>::set_raygen_record(const ShaderBindingBase::Ptr& record)
 {
     raygenData_ = record;
 }
@@ -131,7 +132,7 @@ void ShaderBindingTable<RaytypeCountV>::fill_raygen_record()
 }
 
 template <unsigned int RaytypeCountV>
-void ShaderBindingTable<RaytypeCountV>::set_exception_record(const MaterialBase::Ptr& record)
+void ShaderBindingTable<RaytypeCountV>::set_exception_record(const ShaderBindingBase::Ptr& record)
 {
     exceptionData_ = record;
 }
