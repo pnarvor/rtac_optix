@@ -1,3 +1,8 @@
+
+# Saving this file location to find the generate_ptr_header.cmake file which is
+# supposed to be in the same directory, either in the repository or installed
+# on the system
+set(RTAC_TARGET_ADD_PTX_LOCATION ${CMAKE_CURRENT_LIST_DIR})
 function(target_add_ptx TARGET_NAME)
 
     # TAG_FOR_INSTALL             : Option to enable installation of the generated header.
@@ -73,7 +78,7 @@ function(target_add_ptx TARGET_NAME)
                        -DPTX_FILES="${ptx_files}"
                        -DTARGET_NAME=${TARGET_NAME}
                        -DOUTPUT_FILE=${full_output_path}
-                       -P ${CMAKE_SOURCE_DIR}/cmake/generate_ptx_header.cmake
+                       -P ${RTAC_TARGET_ADD_PTX_LOCATION}/generate_ptx_header.cmake
                        COMMENT "Generating PTX header file ${ARGUMENTS_INSTALL_DESTINATION}/${output_name}")
     set(ptx_header_target ${TARGET_NAME}_PTX_GEN_HEADER)
     add_custom_target(${ptx_header_target} DEPENDS ${full_output_path})

@@ -28,7 +28,11 @@ list(APPEND rtac_optix_PUBLIC_HEADERS
     include/rtac_optix/MeshGeometry.h
     include/rtac_optix/CustomGeometry.h
     
+
+    include/rtac_optix/Raytype.h
+    include/rtac_optix/RaytypeFactory.h
     include/rtac_optix/ShaderBinding.h
+    include/rtac_optix/ShaderBindingTable.h
     include/rtac_optix/Material.h
     include/rtac_optix/ObjectInstance.h
     include/rtac_optix/GroupInstance.h
@@ -37,6 +41,7 @@ list(APPEND rtac_optix_PUBLIC_HEADERS
     include/rtac_optix/optix_SDK/sutil/Preprocessor.h
     include/rtac_optix/optix_SDK/sutil/vec_math.h
     
+    include/rtac_optix/samples/maths.h
     include/rtac_optix/samples/PinholeCamera.h
 )
 list(APPEND rtac_optix_SOURCES
@@ -77,7 +82,10 @@ target_link_libraries(rtac_optix PUBLIC
     rtac_cuda
 )
 rtac_install_target(rtac_optix
-    ADDITIONAL_CONFIG_FILES ${CMAKE_CURRENT_SOURCE_DIR}/cmake/FindOptiX.cmake
+    ADDITIONAL_CONFIG_FILES
+        ${CMAKE_CURRENT_SOURCE_DIR}/cmake/FindOptiX.cmake
+        ${CMAKE_CURRENT_SOURCE_DIR}/cmake/rtac_target_add_ptx.cmake
+        ${CMAKE_CURRENT_SOURCE_DIR}/cmake/generate_ptx_header.cmake
 )
 
 add_subdirectory(tests)
