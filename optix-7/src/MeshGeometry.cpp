@@ -103,6 +103,16 @@ void MeshGeometry::unset_pre_transform()
     this->buildInput_.triangleArray.transformFormat = OPTIX_TRANSFORM_FORMAT_NONE;
 }
 
+void MeshGeometry::enable_vertex_access()
+{
+    this->buildOptions_.buildFlags |= OPTIX_BUILD_FLAG_ALLOW_RANDOM_VERTEX_ACCESS;
+}
+
+void MeshGeometry::disable_vertex_access()
+{
+    this->buildOptions_.buildFlags &= ~OPTIX_BUILD_FLAG_ALLOW_RANDOM_VERTEX_ACCESS;
+}
+
 unsigned int MeshGeometry::primitive_count() const
 {
     // If we have an index buffer set, returning its size. If the index buffer

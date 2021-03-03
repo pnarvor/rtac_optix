@@ -61,6 +61,9 @@ class AccelerationStruct : public TraversableHandle
     OptixBuildInput& build_input();
     const OptixBuildInput& build_input() const;
 
+    OptixAccelBuildOptions& build_options();
+    const OptixAccelBuildOptions& build_options() const;
+
     virtual operator OptixTraversableHandle();
     virtual unsigned int sbt_width() const = 0;
 };

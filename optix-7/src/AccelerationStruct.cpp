@@ -128,5 +128,15 @@ const OptixBuildInput& AccelerationStruct::build_input() const
     return buildInput_;
 }
 
+OptixAccelBuildOptions& AccelerationStruct::build_options()
+{
+    return buildOptions_;
+}
+
+const OptixAccelBuildOptions& AccelerationStruct::build_options() const
+{
+    return buildOptions_;
+}
+
 }; //namespace optix
 }; //namespace rtac

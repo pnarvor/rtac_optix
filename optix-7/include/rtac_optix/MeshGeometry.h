@@ -58,6 +58,9 @@ class MeshGeometry : public GeometryAccelStruct
     void set_pre_transform(const DeviceVector<float>& preTransform);
     void unset_pre_transform();
 
+    void enable_vertex_access();
+    void disable_vertex_access();
+
     virtual unsigned int primitive_count() const;
 };
 
