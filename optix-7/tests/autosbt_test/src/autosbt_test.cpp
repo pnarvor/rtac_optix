@@ -54,10 +54,12 @@ int main()
     auto cubeGeom = MeshGeometry::CreateCube(context);
     cubeGeom->material_hit_setup({OPTIX_GEOMETRY_FLAG_NONE, OPTIX_GEOMETRY_FLAG_NONE},
                                  std::vector<uint8_t>({0,1,0,1,0,1,0,1,0,1,0,1}));
-    
-    auto yellow = Material<RgbRay, RgbHitData>::Create(hitRgb, RgbHitData({uchar3({255,255,0})}));
-    auto cyan   = Material<RgbRay, RgbHitData>::Create(hitRgb, RgbHitData({uchar3({0,255,255})}));
-    auto majenta= Material<RgbRay, RgbHitData>::Create(hitRgb, RgbHitData({uchar3({255,0,255})}));
+    cubeGeom->enable_vertex_access();
+
+    float3 light = float3({-5,-2,7});
+    auto yellow = RgbMaterial::Create(hitRgb, RgbHitData({uchar3({255,255,0}), light}));
+    auto cyan   = RgbMaterial::Create(hitRgb, RgbHitData({uchar3({0,255,255}), light}));
+    auto majenta= RgbMaterial::Create(hitRgb, RgbHitData({uchar3({255,0,255}), light}));
 
     auto cube0 = ObjectInstance::Create(cubeGeom);
     cube0->add_material(yellow,  0);
@@ -80,10 +82,8 @@ int main()
     auto sbt = ShaderBindingTable<2>::Create();
 
     sbt->set_raygen_record(ShaderBinding<void>::Create(raygen));
-    //sbt->set_raygen_record(Material<RgbRay, SbtRecord<void>>::Create(
-    //    raygen, SbtRecord<void>()));
-    sbt->add_miss_record(Material<RgbRay, RgbMissData>::Create(
-        rgbMiss, RgbMissData({uchar3({50,50,50})})));
+    sbt->add_miss_record(RgbMissMaterial::Create(rgbMiss,RgbMissData({uchar3({50,50,50})})));
+    sbt->add_miss_record(ShadowMaterial::Create(shadowMiss));
     sbt->add_object(cube0);
     sbt->add_object(cube1);
 
@@ -94,7 +94,7 @@ int main()
     params.width  = W;
     params.height = H;
     params.output = output.data();
-    params.cam = PinholeCamera::New({0,0,0}, {5,4,3});
+    params.cam = PinholeCamera::New({0,0,0}, {3,5,3});
     params.topObject = *topObject;
     //params.light = {4,2,10};
 
