@@ -97,6 +97,15 @@ unsigned int Instance::sbt_width() const
     return child_->sbt_width();
 }
 
+
+// below here are only helpers / overrides
+void Instance::set_position(const std::array<float,3>& pos)
+{
+    instance_.transform[3]  = pos[0];
+    instance_.transform[7]  = pos[1];
+    instance_.transform[11] = pos[2];
+}
+
 }; //namespace optix
 }; //namespace rtac
 

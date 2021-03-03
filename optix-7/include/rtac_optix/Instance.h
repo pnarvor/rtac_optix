@@ -55,6 +55,9 @@ class Instance : public TraversableHandle
     OptixBuildInputType build_type() const;
     virtual operator OptixTraversableHandle();
     virtual unsigned int sbt_width() const;
+
+    // below here are only helpers / overrides
+    void set_position(const std::array<float,3>& pos);
 };
 
 }; //namespace optix
