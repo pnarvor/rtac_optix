@@ -27,7 +27,8 @@ list(APPEND rtac_optix_PUBLIC_HEADERS
     include/rtac_optix/GeometryAccelStruct.h
     include/rtac_optix/MeshGeometry.h
     include/rtac_optix/CustomGeometry.h
-
+    
+    include/rtac_optix/ShaderBinding.h
     include/rtac_optix/Material.h
     include/rtac_optix/ObjectInstance.h
     include/rtac_optix/GroupInstance.h
@@ -52,6 +53,7 @@ list(APPEND rtac_optix_SOURCES
     src/MeshGeometry.cpp
     src/CustomGeometry.cpp
 
+    src/ShaderBinding.cpp
     src/Material.cpp
     src/ObjectInstance.cpp
     src/GroupInstance.cpp

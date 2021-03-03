@@ -11,10 +11,11 @@
 #include <rtac_optix/Handle.h>
 #include <rtac_optix/utils.h>
 #include <rtac_optix/ProgramGroup.h>
+#include <rtac_optix/ShaderBinding.h>
 
 namespace rtac { namespace optix {
 
-class MaterialBase
+class MaterialBase : public virtual ShaderBindingBase
 {
     // Generic base Material class to be used in Instance type, but must not be
     // instanciated on its own.
@@ -25,10 +26,7 @@ class MaterialBase
 
     protected:
 
-    unsigned int              rayTypeIndex_;
-    // putting these mutable for now. To be fixed.
-    mutable ProgramGroup::Ptr hitPrograms_; // Must have been instanciated with a Pipeline.
-    mutable bool              needsUpdate_;
+    unsigned int rayTypeIndex_;
     
     // have to be instanciated by a Material<> type
     MaterialBase(unsigned int rayTypeIndex, const ProgramGroup::Ptr& hitPrograms);
@@ -36,89 +34,44 @@ class MaterialBase
     public:
 
     unsigned int raytype_index() const;
-    bool needs_update() const;
-
-    ProgramGroup::Ptr      hit_programs();
-    ProgramGroup::ConstPtr hit_programs() const;
-    
-    virtual unsigned int record_size() const = 0;
-    virtual void fill_sbt_record(void* dst) const = 0;
 };
 
 template <typename RayT, class ParamsT>
-class Material : public MaterialBase
+class Material : public ShaderBinding<ParamsT>, public MaterialBase
 {
     public:
 
     using RayType       = RayT;
-    using ParamsType    = ParamsT;
-    using SbtRecordType = SbtRecord<ParamsT>;
+    using ParamsType    = typename ShaderBinding<ParamsT>::ParamsType;
+    using SbtRecordType = typename ShaderBinding<ParamsT>::SbtRecordType;
 
     using Ptr      = Handle<Material<RayType, ParamsType>>;
     using ConstPtr = Handle<const Material<RayType, ParamsType>>;
     
     protected:
 
-    mutable SbtRecordType sbtRecord_;
-
-    Material(const ProgramGroup::Ptr& hitPrograms, const ParamsType& params);
+    Material(const ProgramGroup::Ptr& hitPrograms, const SbtRecordType& params);
 
     public:
 
     static Ptr Create(const ProgramGroup::Ptr& hitPrograms,
-                      const ParamsType& params = zero<ParamsType>());
-    
-    ParamsType& params();
-    const ParamsType& params() const;
-
-    virtual unsigned int record_size() const;
-    virtual void fill_sbt_record(void* dst) const;
+                      const SbtRecordType& params = zero<SbtRecordType>());
 };
 
 template <typename RayT, class ParamsT>
 Material<RayT,ParamsT>::Material(const ProgramGroup::Ptr& hitPrograms,
-                                 const ParamsType& params) :
-    MaterialBase(RayT::Index, hitPrograms),
-    sbtRecord_(params)
+                                 const SbtRecordType& params) :
+    ShaderBindingBase(hitPrograms),
+    ShaderBinding<ParamsT>(hitPrograms, params),
+    MaterialBase(RayT::Index, hitPrograms)
 {}
 
 template <typename RayT, class ParamsT>
 typename Material<RayT,ParamsT>::Ptr Material<RayT,ParamsT>::Create(
-    const ProgramGroup::Ptr& hitPrograms, const ParamsType& params)
+    const ProgramGroup::Ptr& hitPrograms, const SbtRecordType& params)
 {
     return Ptr(new Material<RayT,ParamsT>(hitPrograms, params));
 }
-
-template <typename RayT, class ParamsT>
-ParamsT& Material<RayT,ParamsT>::params()
-{
-    this->needsUpdate_ = true;
-    return sbtRecord_.data;
-}
-
-template <typename RayT, class ParamsT>
-const ParamsT& Material<RayT,ParamsT>::params() const
-{
-    return sbtRecord_.data;
-}
-
-template <typename RayT, class ParamsT>
-unsigned int Material<RayT,ParamsT>::record_size() const
-{
-    return sizeof(SbtRecordType);
-}
-
-template <typename RayT, class ParamsT>
-void Material<RayT,ParamsT>::fill_sbt_record(void* dst) const
-{
-    if(this->needsUpdate_) {
-        OPTIX_CHECK( optixSbtRecordPackHeader(*(this->hitPrograms_), &sbtRecord_) );
-        this->needsUpdate_ = false;
-    }
-    
-    std::memcpy(dst, &sbtRecord_, sizeof(sbtRecord_));
-}
-
 
 }; //namespace optix
 }; //namespace rtac

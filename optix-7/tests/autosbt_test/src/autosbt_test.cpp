@@ -15,34 +15,12 @@ using namespace rtac;
 //#include <rtac_optix/InstanceAccelStruct.h>
 #include <rtac_optix/GroupInstance.h>
 #include <rtac_optix/ShaderBindingTable.h>
+#include <rtac_optix/ShaderBinding.h>
 using namespace rtac::optix;
 
 #include <rtac_optix_7_autosbt_test/ptx_files.h>
 
 #include "autosbt_test.h"
-
-void visit_graph(Instance::Ptr top, unsigned int level = 0)
-{
-    switch(top->build_type()) {
-        case OPTIX_BUILD_INPUT_TYPE_TRIANGLES:
-        case OPTIX_BUILD_INPUT_TYPE_CUSTOM_PRIMITIVES:
-            cout << level << ", " << top.get() << " is an object" << endl;
-            break;
-        case OPTIX_BUILD_INPUT_TYPE_INSTANCES:
-        case OPTIX_BUILD_INPUT_TYPE_INSTANCE_POINTERS:
-            cout << level << ", " << top.get() << " is a group" << endl;
-            for(auto& instance : std::dynamic_pointer_cast<GroupInstance>(top)->instances()) {
-                visit_graph(instance, level + 1);
-            }
-            break;
-        case OPTIX_BUILD_INPUT_TYPE_CURVES:
-            throw std::runtime_error("Got curves, not implemented yet");
-            break;
-        default:
-            throw std::runtime_error("Unknown build type");
-            break;
-    }
-}
 
 int main()
 {
@@ -100,6 +78,8 @@ int main()
 
     //visit_graph(topObject);
     auto sbt = ShaderBindingTable<2>::Create();
+
+    auto raygenRecord = ShaderBinding<void>::Create(raygen);
 
     sbt->set_raygen_record(Material<RgbRay, SbtRecord<void>>::Create(
         raygen, SbtRecord<void>()));
