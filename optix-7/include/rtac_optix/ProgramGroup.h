@@ -14,17 +14,21 @@
 #include <rtac_optix/Handle.h>
 #include <rtac_optix/Context.h>
 #include <rtac_optix/Module.h>
+#include <rtac_optix/OptixWrapper.h>
 
 namespace rtac { namespace optix {
 
 class Pipeline;
 
-class ProgramGroup
+class ProgramGroup : public OptixWrapper<OptixProgramGroup>
 {
     public:
 
     friend class Pipeline;
     
+    using Ptr      = OptixWrapperHandle<ProgramGroup>;
+    using ConstPtr = OptixWrapperHandle<const ProgramGroup>;
+
     struct Function {
 
         static const char* Raygen;
@@ -46,9 +50,6 @@ class ProgramGroup
         {}
     };
 
-    using Ptr      = Handle<ProgramGroup>;
-    using ConstPtr = Handle<const ProgramGroup>;
-
     using Kind        = OptixProgramGroupKind;
     using Description = OptixProgramGroupDesc;
     using Options     = OptixProgramGroupOptions;
@@ -62,11 +63,10 @@ class ProgramGroup
 
     protected:
     
-    mutable OptixProgramGroup program_;
-    Context::ConstPtr         context_;
-    mutable Description       description_;
-    Options                   options_;
-    Functions                 functions_;
+    Context::ConstPtr   context_;
+    mutable Description description_;
+    Options             options_;
+    Functions           functions_;
     
     // Making these protected to force the user to use the set_* methods below
     Description& description();
@@ -74,7 +74,7 @@ class ProgramGroup
 
     void update_description() const;
     virtual void do_build() const;
-    virtual void destroy() const;
+    virtual void clean() const;
 
     ProgramGroup(const Context::ConstPtr& context, Kind kind,
                  unsigned int flags = OPTIX_PROGRAM_GROUP_FLAGS_NONE,
@@ -87,13 +87,8 @@ class ProgramGroup
 
     ~ProgramGroup();
 
-    OptixProgramGroup build();
-
-    operator OptixProgramGroup();
-
     const Description& description() const;
     const Options& options() const;
-
     Options& options();
 
     Kind kind() const;

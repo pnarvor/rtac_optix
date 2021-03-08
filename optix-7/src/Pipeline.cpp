@@ -65,7 +65,7 @@ void Pipeline::do_build() const
     std::vector<OptixProgramGroup> compiledPrograms(programs_.size());
     for(int i = 0; i < programs_.size(); i++) {
         // No-op if programs were already compiled
-        compiledPrograms[i] = programs_[i]->build();
+        compiledPrograms[i] = *programs_[i];
     }
 
     OPTIX_CHECK(

@@ -28,7 +28,6 @@ ProgramGroup::Options ProgramGroup::default_options()
 ProgramGroup::ProgramGroup(const Context::ConstPtr& context,
                            Kind kind, unsigned int flags,
                            const Options& options) :
-    program_(zero<OptixProgramGroup>()),
     context_(context),
     description_(empty_description(kind, flags)),
     options_(options)
@@ -44,20 +43,12 @@ ProgramGroup::Ptr ProgramGroup::Create(const Context::ConstPtr& context,
 ProgramGroup::~ProgramGroup()
 {
     try {
-        this->destroy();
+        this->clean();
     }
     catch(const std::runtime_error& e) {
         std::cerr << "Caught exception during rtac::optix::ProgramGroup destruction : " 
                   << e.what() << std::endl;
     }
-}
-
-OptixProgramGroup ProgramGroup::build()
-{
-    if(program_ != nullptr)
-        return program_;
-    this->do_build();
-    return program_;
 }
 
 void ProgramGroup::update_description() const
@@ -144,19 +135,13 @@ void ProgramGroup::do_build() const
         nullptr, nullptr, // These are logging related, log will also
                           // be written in context log, but with less
                           // tracking information (TODO Fix this).
-        &program_));
+        &optixObject_));
 }
 
-void ProgramGroup::destroy() const
+void ProgramGroup::clean() const
 {
-    if(program_ != nullptr)
-        OPTIX_CHECK( optixProgramGroupDestroy(program_) );
-}
-
-ProgramGroup::operator OptixProgramGroup()
-{
-    this->build();
-    return program_;
+    if(optixObject_ != nullptr)
+        OPTIX_CHECK( optixProgramGroupDestroy(optixObject_) );
 }
 
 const ProgramGroup::Description& ProgramGroup::description() const
@@ -171,11 +156,13 @@ const ProgramGroup::Options& ProgramGroup::options() const
 
 ProgramGroup::Description& ProgramGroup::description()
 {
+    this->bump_version();
     return description_;
 }
 
 ProgramGroup::Options& ProgramGroup::options()
 {
+    this->bump_version();
     return options_;
 }
 
@@ -204,7 +191,10 @@ void ProgramGroup::add_function(const std::string& kind, const Function& functio
     if(!function.module) {
         throw std::runtime_error("Function module is null");
     }
+    this->bump_version();
     functions_[kind] = function;
+    // This allows to rebuild this object if the module changes.
+    this->add_dependency(function.module);
 }
 
 ProgramGroup::Functions::const_iterator ProgramGroup::function(const std::string& kind) const
