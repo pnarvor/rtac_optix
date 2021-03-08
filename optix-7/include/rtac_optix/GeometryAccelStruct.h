@@ -28,8 +28,10 @@ class GeometryAccelStruct : public AccelerationStruct
     using Buffer              = AccelerationStruct::Buffer;
     using MaterialIndexBuffer = rtac::cuda::DeviceVector<uint8_t>;
 
-    static OptixBuildInput           default_build_input();
-    static OptixAccelBuildOptions    default_build_options();
+    using BuildInput   = AccelerationStruct::BuildInput;
+    using BuildOptions = AccelerationStruct::BuildOptions;
+    static BuildInput   default_build_input();
+    static BuildOptions default_build_options();
     static std::vector<unsigned int> default_hit_flags();
     
     private:
@@ -49,7 +51,7 @@ class GeometryAccelStruct : public AccelerationStruct
 
     public:
     
-    virtual void build(Buffer& tempBuffer, CUstream cudaStream = 0);
+    virtual void build();
     
     void material_hit_setup(const std::vector<unsigned int>& hitFlags,
                             const Handle<MaterialIndexBuffer>& materialIndexes = nullptr);

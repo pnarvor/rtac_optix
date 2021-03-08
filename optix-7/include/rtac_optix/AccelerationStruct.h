@@ -34,37 +34,49 @@ class AccelerationStruct : public TraversableHandle
     using Ptr      = Handle<AccelerationStruct>;
     using ConstPtr = Handle<const AccelerationStruct>;
 
-    using Buffer = rtac::cuda::DeviceVector<unsigned char>;
+    using BuildInput   = OptixBuildInput;
+    using BuildOptions = OptixAccelBuildOptions;
+    static BuildInput   default_build_input();
+    static BuildOptions default_build_options();
 
-    static OptixBuildInput        default_build_input();
-    static OptixAccelBuildOptions default_build_options();
+    using Buffer = rtac::cuda::DeviceVector<unsigned char>;
+    // This contains the CUDA stream in which the build is performed and a
+    // temporaty buffer needed during the build but not used afterwards.  This
+    // can be ignored by the user (defaults values will be provided). They are
+    // usefull if the user wants to optimize the build process.
+    struct BuildMeta { Handle<Buffer> buffer; CUstream stream; };
 
     protected:
     
-    Context::ConstPtr      context_;
     OptixTraversableHandle handle_;
-    OptixBuildInput        buildInput_;
-    OptixAccelBuildOptions buildOptions_;
+    Context::ConstPtr      context_;
+    BuildInput             buildInput_;
+    BuildOptions           buildOptions_;
     Buffer                 buffer_; // contains data after build
+    BuildMeta              buildMeta_;
 
     AccelerationStruct(const Context::ConstPtr& context,
-                       const OptixBuildInput& buildInput = default_build_input(),
-                       const OptixAccelBuildOptions& buildOptions = default_build_options());
+                       const BuildInput& buildInput = default_build_input(),
+                       const BuildOptions& buildOptions = default_build_options());
 
     public:
 
-    virtual void build(Buffer& tempBuffer, CUstream cudaStream = 0);
-    void build(CUstream cudaStream = 0);
+    virtual void build();
     
-    CUdeviceptr data();
+    const BuildInput& build_input() const;
+    const BuildOptions& build_options() const;
 
-    OptixBuildInput& build_input();
-    const OptixBuildInput& build_input() const;
+    BuildInput& build_input();
+    BuildOptions& build_options();
 
-    OptixAccelBuildOptions& build_options();
-    const OptixAccelBuildOptions& build_options() const;
+    void set_build_buffer(const Handle<Buffer>& buffer);
+    void resize_build_buffer(size_t size);
+    void set_build_stream(CUstream stream);
+    void set_build_meta(const Handle<Buffer>& buffer, CUstream stream = 0);
 
     virtual operator OptixTraversableHandle();
+
+    CUdeviceptr data();
     virtual unsigned int sbt_width() const = 0;
 };
 

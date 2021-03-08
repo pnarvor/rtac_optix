@@ -2,14 +2,14 @@
 
 namespace rtac { namespace optix {
 
-OptixBuildInput InstanceAccelStruct::default_build_input()
+InstanceAccelStruct::BuildInput InstanceAccelStruct::default_build_input()
 {
-    auto res = zero<OptixBuildInput>();
+    auto res = zero<BuildInput>();
     res.type = OPTIX_BUILD_INPUT_TYPE_INSTANCES;
     return res;
 }
 
-OptixAccelBuildOptions InstanceAccelStruct::default_build_options()
+InstanceAccelStruct::BuildOptions InstanceAccelStruct::default_build_options()
 {
     return AccelerationStruct::default_build_options();
 }
@@ -23,7 +23,7 @@ InstanceAccelStruct::Ptr InstanceAccelStruct::Create(const Context::ConstPtr& co
     return Ptr(new InstanceAccelStruct(context));
 }
 
-void InstanceAccelStruct::build(Buffer& buffer, CUstream cudaStream)
+void InstanceAccelStruct::build()
 {
     // The buildInput_ needs to be updated before the build with created
     // instances.
@@ -37,7 +37,7 @@ void InstanceAccelStruct::build(Buffer& buffer, CUstream cudaStream)
         reinterpret_cast<CUdeviceptr>(tmpInstanceData_.data());
     this->buildInput_.instanceArray.numInstances = tmpInstanceData_.size();
 
-    this->AccelerationStruct::build(buffer, cudaStream);
+    this->AccelerationStruct::build();
 
     cudaDeviceSynchronize();
 }

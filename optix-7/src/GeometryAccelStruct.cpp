@@ -2,13 +2,12 @@
 
 namespace rtac { namespace optix {
 
-OptixBuildInput GeometryAccelStruct::default_build_input()
+GeometryAccelStruct::BuildInput GeometryAccelStruct::default_build_input()
 {
-    auto res = AccelerationStruct::default_build_input();
-    return res;
+    return AccelerationStruct::default_build_input();
 }
 
-OptixAccelBuildOptions GeometryAccelStruct::default_build_options()
+GeometryAccelStruct::BuildOptions GeometryAccelStruct::default_build_options()
 {
     return AccelerationStruct::default_build_options();
 }
@@ -78,10 +77,10 @@ void GeometryAccelStruct::update_hit_setup()
     };
 }
 
-void GeometryAccelStruct::build(Buffer& tempBuffer, CUstream cudaStream)
+void GeometryAccelStruct::build()
 {
     this->update_hit_setup();
-    AccelerationStruct::build(tempBuffer, cudaStream);
+    AccelerationStruct::build();
 }
 
 void GeometryAccelStruct::material_hit_setup(

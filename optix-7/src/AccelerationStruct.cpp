@@ -2,30 +2,31 @@
 
 namespace rtac { namespace optix {
 
-OptixBuildInput AccelerationStruct::default_build_input()
+AccelerationStruct::BuildInput AccelerationStruct::default_build_input()
 {
-    return zero<OptixBuildInput>();
+    return zero<BuildInput>();
 }
 
-OptixAccelBuildOptions AccelerationStruct::default_build_options()
+AccelerationStruct::BuildOptions AccelerationStruct::default_build_options()
 {
-    auto options = zero<OptixAccelBuildOptions>();
+    auto options = zero<BuildOptions>();
     options.buildFlags = OPTIX_BUILD_FLAG_NONE;
     options.operation  = OPTIX_BUILD_OPERATION_BUILD;
     return options;
 }
 
 AccelerationStruct::AccelerationStruct(const Context::ConstPtr& context,
-                                       const OptixBuildInput& buildInput,
-                                       const OptixAccelBuildOptions& buildOptions) :
-    context_(context),
+                                       const BuildInput& buildInput,
+                                       const BuildOptions& buildOptions) :
     handle_(0),
+    context_(context),
     buildInput_(buildInput),
     buildOptions_(buildOptions),
-    buffer_(0)
+    buffer_(0),
+    buildMeta_({Handle<Buffer>(nullptr), 0})
 {}
 
-void AccelerationStruct::build(Buffer& tempBuffer, CUstream cudaStream)
+void AccelerationStruct::build()
 {
     if(handle_) return;
 
@@ -37,11 +38,11 @@ void AccelerationStruct::build(Buffer& tempBuffer, CUstream cudaStream)
 
     if(!(buildOptions_.buildFlags & OPTIX_BUILD_FLAG_ALLOW_COMPACTION)) {
         // if compaction is not requested, building and exiting right away
-        tempBuffer.resize(bufferSizes.tempSizeInBytes);
+        this->resize_build_buffer(bufferSizes.tempSizeInBytes);
         buffer_.resize(bufferSizes.outputSizeInBytes);
-        OPTIX_CHECK(optixAccelBuild(*context_, cudaStream,
+        OPTIX_CHECK(optixAccelBuild(*context_, buildMeta_.stream,
             &buildOptions_, &buildInput_, 1,
-            reinterpret_cast<CUdeviceptr>(tempBuffer.data()), tempBuffer.size(),
+            reinterpret_cast<CUdeviceptr>(buildMeta_.buffer->data()), buildMeta_.buffer->size(),
             reinterpret_cast<CUdeviceptr>(buffer_.data()), buffer_.size(),
             &handle_, nullptr, 0));
     }
@@ -62,19 +63,19 @@ void AccelerationStruct::build(Buffer& tempBuffer, CUstream cudaStream)
 
         // Compacted size will be returned as a uint64_t
         // (Total needed size is last offset + last size
-        tempBuffer.resize(offsets.back() + sizeof(uint64_t));
+        this->resize_build_buffer(offsets.back() + sizeof(uint64_t));
         
         // Building the request for the compacted size which will be send to
         // optixAccelBuild.
         auto propertyRequest   = zero<OptixAccelEmitDesc>();
         propertyRequest.type   = OPTIX_PROPERTY_TYPE_COMPACTED_SIZE;
         propertyRequest.result = reinterpret_cast<CUdeviceptr>(
-            tempBuffer.data() + offsets.back());
+            buildMeta_.buffer->data() + offsets.back());
             
-        OPTIX_CHECK(optixAccelBuild(*context_, cudaStream,
+        OPTIX_CHECK(optixAccelBuild(*context_, buildMeta_.stream,
             &buildOptions_, &buildInput_, 1,
-            reinterpret_cast<CUdeviceptr>(tempBuffer.data()), offsets[0],
-            reinterpret_cast<CUdeviceptr>(tempBuffer.data() + offsets[0]),
+            reinterpret_cast<CUdeviceptr>(buildMeta_.buffer->data()), offsets[0],
+            reinterpret_cast<CUdeviceptr>(buildMeta_.buffer->data() + offsets[0]),
             offsets[1] - offsets[0],
             &handle_, &propertyRequest, 1));
 
@@ -90,21 +91,57 @@ void AccelerationStruct::build(Buffer& tempBuffer, CUstream cudaStream)
         //if(compactedSize < bufferSizes.outputSizeInBytes)
         {
             buffer_.resize(compactedSize);
-            OPTIX_CHECK(optixAccelCompact(*context_, cudaStream, handle_,
+            OPTIX_CHECK(optixAccelCompact(*context_, buildMeta_.stream, handle_,
                 reinterpret_cast<CUdeviceptr>(buffer_.data()), buffer_.size(),
                 &handle_));
         }
     }
 }
 
-void AccelerationStruct::build(CUstream cudaStream)
+const AccelerationStruct::BuildInput& AccelerationStruct::build_input() const
 {
-    Buffer tempBuffer;
-    this->build(tempBuffer, cudaStream);
-    // the build operation is asynchronous. A sync barrier is required here
-    // because tempBuffer will go out of scope and the associated device memory
-    // will be released. This must not happen before the end of the build.
-    cudaStreamSynchronize(cudaStream);
+    return buildInput_;
+}
+
+const AccelerationStruct::BuildOptions& AccelerationStruct::build_options() const
+{
+    return buildOptions_;
+}
+
+AccelerationStruct::BuildInput& AccelerationStruct::build_input()
+{
+    return buildInput_;
+}
+
+AccelerationStruct::BuildOptions& AccelerationStruct::build_options()
+{
+    return buildOptions_;
+}
+
+void AccelerationStruct::set_build_buffer(const Handle<Buffer>& buffer)
+{
+    buildMeta_.buffer = buffer;
+}
+
+void AccelerationStruct::resize_build_buffer(size_t size)
+{
+    if(!buildMeta_.buffer) {
+        buildMeta_.buffer = Handle<Buffer>(new Buffer(size));
+    }
+    else {
+        buildMeta_.buffer->resize(size);
+    }
+}
+
+void AccelerationStruct::set_build_stream(CUstream stream)
+{
+    buildMeta_.stream = stream;
+}
+
+void AccelerationStruct::set_build_meta(const Handle<Buffer>& buffer, CUstream stream)
+{
+    this->set_build_buffer(buffer);
+    this->set_build_stream(stream);
 }
 
 AccelerationStruct::operator OptixTraversableHandle()
@@ -116,26 +153,6 @@ AccelerationStruct::operator OptixTraversableHandle()
 CUdeviceptr AccelerationStruct::data()
 {
     return reinterpret_cast<CUdeviceptr>(buffer_.data());
-}
-
-OptixBuildInput& AccelerationStruct::build_input()
-{
-    return buildInput_;
-}
-
-const OptixBuildInput& AccelerationStruct::build_input() const
-{
-    return buildInput_;
-}
-
-OptixAccelBuildOptions& AccelerationStruct::build_options()
-{
-    return buildOptions_;
-}
-
-const OptixAccelBuildOptions& AccelerationStruct::build_options() const
-{
-    return buildOptions_;
 }
 
 }; //namespace optix

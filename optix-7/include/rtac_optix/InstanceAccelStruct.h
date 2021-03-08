@@ -31,9 +31,11 @@ class InstanceAccelStruct : public AccelerationStruct
 
     using Buffer    = AccelerationStruct::Buffer;
     using Instances = std::vector<Instance::Ptr>;
-
-    static OptixBuildInput        default_build_input();
-    static OptixAccelBuildOptions default_build_options();
+    
+    using BuildInput   = AccelerationStruct::BuildInput;
+    using BuildOptions = AccelerationStruct::BuildOptions;
+    static BuildInput   default_build_input();
+    static BuildOptions default_build_options();
 
     protected:
 
@@ -48,7 +50,7 @@ class InstanceAccelStruct : public AccelerationStruct
     public:
 
     static Ptr Create(const Context::ConstPtr& context);
-    virtual void build(Buffer& tempBuffer, CUstream cudaStream = 0);
+    virtual void build();
 
     void add_instance(const Instance::Ptr& instance);
     Instances& instances();
