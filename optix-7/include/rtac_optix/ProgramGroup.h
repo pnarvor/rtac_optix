@@ -3,6 +3,7 @@
 
 #include <iostream>
 #include <sstream>
+#include <unordered_map>
 
 #include <optix.h>
 // careful : because of OptiX function table optix_stubs.h must be included to
@@ -12,51 +13,103 @@
 #include <rtac_optix/utils.h>
 #include <rtac_optix/Handle.h>
 #include <rtac_optix/Context.h>
+#include <rtac_optix/Module.h>
 
 namespace rtac { namespace optix {
+
+class Pipeline;
 
 class ProgramGroup
 {
     public:
 
+    friend class Pipeline;
+    
+    struct Function {
+
+        static const char* Raygen;
+        static const char* Miss;
+        static const char* Exception;
+        static const char* Intersection;
+        static const char* AnyHit;
+        static const char* ClosestHit;
+        static const char* DirectCallable;
+        static const char* ContinuationCallable;
+
+        std::string name;
+        Module::Ptr module;
+    };
+    struct FunctionNotFound : public std::runtime_error {
+        FunctionNotFound(const std::string& kind) : 
+            std::runtime_error(
+                std::string("ProgramGroup has no \"") + kind + "\" function.")
+        {}
+    };
+
     using Ptr      = Handle<ProgramGroup>;
     using ConstPtr = Handle<const ProgramGroup>;
+
+    using Kind        = OptixProgramGroupKind;
+    using Description = OptixProgramGroupDesc;
+    using Options     = OptixProgramGroupOptions;
+    using Functions   = std::unordered_map<std::string, Function>;
     
+    static Description empty_description(const Kind& kind,
+        unsigned int flags = OPTIX_PROGRAM_GROUP_FLAGS_NONE);
+
     // This is not used by optix-7. Leaving this here for future compatibility.
-    static OptixProgramGroupOptions default_options();
+    static Options default_options();
 
     protected:
     
-    Context::ConstPtr         context_;
     mutable OptixProgramGroup program_;
-    OptixProgramGroupDesc     description_;
-    OptixProgramGroupOptions  options_;
+    Context::ConstPtr         context_;
+    mutable Description       description_;
+    Options                   options_;
+    Functions                 functions_;
     
-    // The entry function names are saved in these strings. The
-    // OptixProgramGroupDesc only saves const char* to the function names and
-    // that migth be an issue if the original string which were used to fill
-    // the description goes out of scope.
-    std::string entryFunctionNames_[3];
+    // Making these protected to force the user to use the set_* methods below
+    Description& description();
+    void add_function(const std::string& kind, const Function& function);
 
-    ProgramGroup(const Context::ConstPtr&        context,
-                 const OptixProgramGroupDesc&    description,
-                 const OptixProgramGroupOptions& options = default_options());
+    void update_description() const;
+    virtual void do_build() const;
+    virtual void destroy() const;
+
+    ProgramGroup(const Context::ConstPtr& context, Kind kind,
+                 unsigned int flags = OPTIX_PROGRAM_GROUP_FLAGS_NONE,
+                 const Options& options = default_options());
     
-    private:
-
-    void store_entry_function_names();
-    void store_entry_function_name(std::string& dst, const char** src);
-
+    static Ptr Create(const Context::ConstPtr& context, Kind kind,
+                      unsigned int flags = OPTIX_PROGRAM_GROUP_FLAGS_NONE,
+                      const Options& options = default_options());
     public:
 
-    static Ptr Create(const Context::ConstPtr&        context,
-                      const OptixProgramGroupDesc&    description,
-                      const OptixProgramGroupOptions& options = default_options());
     ~ProgramGroup();
 
     OptixProgramGroup build();
 
     operator OptixProgramGroup();
+
+    const Description& description() const;
+    const Options& options() const;
+
+    Options& options();
+
+    Kind kind() const;
+    unsigned int flags() const;
+    void set_kind(Kind kind);
+
+    Functions::const_iterator function(const std::string& kind) const;
+
+    void set_raygen(const Function& function);
+    void set_miss(const Function& function);
+    void set_exception(const Function& function);
+    void set_intersection(const Function& function);
+    void set_anyhit(const Function& function);
+    void set_closesthit(const Function& function);
+    void set_direct_callable(const Function& function);
+    void set_continuation_callable(const Function& function);
 };
 
 }; //namespace optix

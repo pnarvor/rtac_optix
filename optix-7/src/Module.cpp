@@ -45,6 +45,9 @@ Module::~Module()
 
 void Module::do_build() const
 {
+    if(module_)
+        return;
+
     OPTIX_CHECK( 
     optixModuleCreateFromPTX(*context_,
         &moduleOptions_, &pipelineOptions_,

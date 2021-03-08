@@ -2,72 +2,49 @@
 
 namespace rtac { namespace optix {
 
-OptixProgramGroupOptions ProgramGroup::default_options()
+const char* ProgramGroup::Function::Raygen               = "raygen";
+const char* ProgramGroup::Function::Miss                 = "miss";
+const char* ProgramGroup::Function::Exception            = "exception";
+const char* ProgramGroup::Function::Intersection         = "intersection";
+const char* ProgramGroup::Function::AnyHit               = "anyhit";
+const char* ProgramGroup::Function::ClosestHit           = "closesthit";
+const char* ProgramGroup::Function::DirectCallable       = "direct_callable";
+const char* ProgramGroup::Function::ContinuationCallable = "continuation_callable";
+
+ProgramGroup::Description ProgramGroup::empty_description(const Kind& kind,  
+                                                          unsigned int flags)
 {
-    return zero<OptixProgramGroupOptions>();
+    auto description = zero<Description>();
+    description.kind  = kind;
+    description.flags = flags;
+    return description;
 }
 
-ProgramGroup::ProgramGroup(const Context::ConstPtr&        context,
-                           const OptixProgramGroupDesc&    description,
-                           const OptixProgramGroupOptions& options) :
+ProgramGroup::Options ProgramGroup::default_options()
+{
+    return zero<Options>();
+}
+
+ProgramGroup::ProgramGroup(const Context::ConstPtr& context,
+                           Kind kind, unsigned int flags,
+                           const Options& options) :
+    program_(zero<OptixProgramGroup>()),
     context_(context),
-    program_(nullptr),
-    description_(description),
+    description_(empty_description(kind, flags)),
     options_(options)
-{
-    this->store_entry_function_names();
-}
+{}
 
-void ProgramGroup::store_entry_function_names()
+ProgramGroup::Ptr ProgramGroup::Create(const Context::ConstPtr& context,
+                                       Kind kind, unsigned int flags,
+                                       const Options& options)
 {
-    // // This makes a copy of the entry function names in owned std::string.
-    switch(description_.kind) {
-        case OPTIX_PROGRAM_GROUP_KIND_RAYGEN:
-            this->store_entry_function_name(entryFunctionNames_[0],
-                                            &description_.raygen.entryFunctionName);
-            break;
-        case OPTIX_PROGRAM_GROUP_KIND_MISS:
-            this->store_entry_function_name(entryFunctionNames_[0],
-                                            &description_.miss.entryFunctionName);
-            break;
-        case OPTIX_PROGRAM_GROUP_KIND_EXCEPTION:
-            this->store_entry_function_name(entryFunctionNames_[0],
-                                            &description_.exception.entryFunctionName);
-            break;
-        case OPTIX_PROGRAM_GROUP_KIND_CALLABLES:
-            this->store_entry_function_name(entryFunctionNames_[0],
-                                            &description_.callables.entryFunctionNameDC);
-            this->store_entry_function_name(entryFunctionNames_[1],
-                                            &description_.callables.entryFunctionNameCC);
-            break;
-        case OPTIX_PROGRAM_GROUP_KIND_HITGROUP:
-            this->store_entry_function_name(entryFunctionNames_[0],
-                                            &description_.hitgroup.entryFunctionNameCH);
-            this->store_entry_function_name(entryFunctionNames_[1],
-                                            &description_.hitgroup.entryFunctionNameAH);
-            this->store_entry_function_name(entryFunctionNames_[2],
-                                            &description_.hitgroup.entryFunctionNameIS);
-            break;
-        default:
-            std::ostringstream oss;
-            oss << "Invalid program group kind : " << description_.kind;
-            throw std::runtime_error(oss.str());
-            break;
-    }
-}
-
-void ProgramGroup::store_entry_function_name(std::string& dst, const char** src)
-{
-    if(!src || !*src) return;
-    dst = std::string(*src);
-    *src = dst.c_str();
+    return Ptr(new ProgramGroup(context, kind, flags, options));
 }
 
 ProgramGroup::~ProgramGroup()
 {
     try {
-        if(program_ != nullptr)
-            OPTIX_CHECK( optixProgramGroupDestroy(program_) );
+        this->destroy();
     }
     catch(const std::runtime_error& e) {
         std::cerr << "Caught exception during rtac::optix::ProgramGroup destruction : " 
@@ -75,31 +52,216 @@ ProgramGroup::~ProgramGroup()
     }
 }
 
-ProgramGroup::Ptr ProgramGroup::Create(const Context::ConstPtr&        context,
-                                       const OptixProgramGroupDesc&    description,
-                                       const OptixProgramGroupOptions& options)
-{
-    return Ptr(new ProgramGroup(context, description, options));
-}
-
 OptixProgramGroup ProgramGroup::build()
 {
     if(program_ != nullptr)
         return program_;
+    this->do_build();
+    return program_;
+}
 
+void ProgramGroup::update_description() const
+{
+    auto f = functions_.end();
+    switch(this->kind()) {
+        case OPTIX_PROGRAM_GROUP_KIND_RAYGEN:
+            f = this->function(Function::Raygen);
+            description_.raygen.module            = *f->second.module;
+            description_.raygen.entryFunctionName = f->second.name.c_str();
+            break;
+        case OPTIX_PROGRAM_GROUP_KIND_MISS:
+            f = this->function(Function::Miss);
+            description_.miss.module            = *f->second.module;
+            description_.miss.entryFunctionName = f->second.name.c_str();
+            break;
+        case OPTIX_PROGRAM_GROUP_KIND_EXCEPTION:
+            f = this->function(Function::Exception);
+            description_.exception.module            = *f->second.module;
+            description_.exception.entryFunctionName = f->second.name.c_str();
+            break;
+        case OPTIX_PROGRAM_GROUP_KIND_HITGROUP:
+            try {
+                f = this->function(Function::Intersection);
+                description_.hitgroup.moduleIS            = *f->second.module;
+                description_.hitgroup.entryFunctionNameIS = f->second.name.c_str();
+            }
+            catch(const FunctionNotFound&) {} // ignoring here but check f afterwards
+            try {
+                f = this->function(Function::AnyHit);
+                description_.hitgroup.moduleAH            = *f->second.module;
+                description_.hitgroup.entryFunctionNameAH = f->second.name.c_str();
+            }
+            catch(const FunctionNotFound&) {} // ignoring here but check f afterwards
+            try {
+                f = this->function(Function::ClosestHit);
+                description_.hitgroup.moduleCH            = *f->second.module;
+                description_.hitgroup.entryFunctionNameCH = f->second.name.c_str();
+            }
+            catch(const FunctionNotFound&) {} // ignoring here but check f afterwards
+            if(f == functions_.end()) {
+                // f not set, no function was successfully retrived through the
+                // function method, so no program was set.
+                std::ostringstream oss;
+                oss << "ProgramGroup kind is HITGROUP but no "
+                    << "intersection anyhit or closesthit function was set.";
+                throw std::runtime_error(oss.str());
+            }
+            break;
+        case OPTIX_PROGRAM_GROUP_KIND_CALLABLES:
+            try {
+                f = this->function(Function::DirectCallable);
+                description_.callables.moduleDC            = *f->second.module;
+                description_.callables.entryFunctionNameDC = f->second.name.c_str();
+            }
+            catch(const FunctionNotFound&) {} // ignoring here but check f afterwards
+            try {
+                f = this->function(Function::ContinuationCallable);
+                description_.callables.moduleCC            = *f->second.module;
+                description_.callables.entryFunctionNameCC = f->second.name.c_str();
+            }
+            catch(const FunctionNotFound&) {} // ignoring here but check f afterwards
+            if(f == functions_.end()) {
+                // f not set, no function was successfully retrived through the
+                // function method, so no program was set.
+                std::ostringstream oss;
+                oss << "ProgramGroup kind is CALLABLES but no "
+                    << "direct_callable or continuation_callable function was set.";
+                throw std::runtime_error(oss.str());
+            }
+            break;
+        default:
+            throw std::runtime_error(
+                "Unknown program group kind : check OptiX version");
+            break;
+    }
+}
+
+void ProgramGroup::do_build() const
+{
+    this->update_description();
     OPTIX_CHECK( optixProgramGroupCreate(
         *context_, &description_, 1, &options_,
         nullptr, nullptr, // These are logging related, log will also
                           // be written in context log, but with less
                           // tracking information (TODO Fix this).
         &program_));
-    return program_;
+}
+
+void ProgramGroup::destroy() const
+{
+    if(program_ != nullptr)
+        OPTIX_CHECK( optixProgramGroupDestroy(program_) );
 }
 
 ProgramGroup::operator OptixProgramGroup()
 {
     this->build();
     return program_;
+}
+
+const ProgramGroup::Description& ProgramGroup::description() const
+{
+    return description_;
+}
+
+const ProgramGroup::Options& ProgramGroup::options() const
+{
+    return options_;
+}
+
+ProgramGroup::Description& ProgramGroup::description()
+{
+    return description_;
+}
+
+ProgramGroup::Options& ProgramGroup::options()
+{
+    return options_;
+}
+
+ProgramGroup::Kind ProgramGroup::kind() const
+{
+    return description_.kind;
+}
+
+unsigned int ProgramGroup::flags() const
+{
+    return description_.flags;
+}
+
+void ProgramGroup::set_kind(Kind kind)
+{
+    if(this->kind() != kind) {
+        // We do something only if the program kind changes.
+        this->description() = empty_description(kind, this->flags());
+        // If the kind changes, functions_ are unrelated to the new kind
+        functions_.clear();
+    }
+}
+
+void ProgramGroup::add_function(const std::string& kind, const Function& function)
+{
+    if(!function.module) {
+        throw std::runtime_error("Function module is null");
+    }
+    functions_[kind] = function;
+}
+
+ProgramGroup::Functions::const_iterator ProgramGroup::function(const std::string& kind) const
+{
+    auto it = functions_.find(kind);
+    if(it == functions_.end()) {
+        throw FunctionNotFound(kind);
+    }
+    return it;
+}
+
+void ProgramGroup::set_raygen(const Function& function)
+{
+    this->set_kind(OPTIX_PROGRAM_GROUP_KIND_RAYGEN);
+    this->add_function(Function::Raygen, function);
+}
+
+void ProgramGroup::set_miss(const Function& function)
+{
+    this->set_kind(OPTIX_PROGRAM_GROUP_KIND_MISS);
+    this->add_function(Function::Miss, function);
+}
+
+void ProgramGroup::set_exception(const Function& function)
+{
+    this->set_kind(OPTIX_PROGRAM_GROUP_KIND_EXCEPTION);
+    this->add_function(Function::Exception, function);
+}
+
+void ProgramGroup::set_intersection(const Function& function)
+{
+    this->set_kind(OPTIX_PROGRAM_GROUP_KIND_HITGROUP);
+    this->add_function(Function::Intersection, function);
+}
+
+void ProgramGroup::set_anyhit(const Function& function)
+{
+    this->set_kind(OPTIX_PROGRAM_GROUP_KIND_HITGROUP);
+    this->add_function(Function::AnyHit, function);
+}
+
+void ProgramGroup::set_closesthit(const Function& function)
+{
+    this->set_kind(OPTIX_PROGRAM_GROUP_KIND_HITGROUP);
+    this->add_function(Function::ClosestHit, function);
+}
+
+void ProgramGroup::set_direct_callable(const Function& function)
+{
+    this->set_kind(OPTIX_PROGRAM_GROUP_KIND_CALLABLES);
+    this->add_function(Function::DirectCallable, function);
+}
+
+void ProgramGroup::set_continuation_callable(const Function& function)
+{
+    this->set_kind(OPTIX_PROGRAM_GROUP_KIND_CALLABLES);
+    this->add_function(Function::ContinuationCallable, function);
 }
 
 }; //namespace optix {

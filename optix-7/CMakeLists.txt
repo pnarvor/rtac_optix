@@ -18,8 +18,8 @@ list(APPEND rtac_optix_PUBLIC_HEADERS
     include/rtac_optix/utils.h
     include/rtac_optix/Context.h
     include/rtac_optix/Module.h
-    include/rtac_optix/Pipeline.h
     include/rtac_optix/ProgramGroup.h
+    include/rtac_optix/Pipeline.h
 
     include/rtac_optix/TraversableHandle.h
     include/rtac_optix/Instance.h
@@ -50,8 +50,8 @@ list(APPEND rtac_optix_SOURCES
     src/Nvrtc.cpp
     src/Context.cpp
     src/Module.cpp
-    src/Pipeline.cpp
     src/ProgramGroup.cpp
+    src/Pipeline.cpp
 
     src/Instance.cpp
     src/AccelerationStruct.cpp
