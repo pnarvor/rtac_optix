@@ -40,12 +40,8 @@ int main()
     auto raygenProgram = pipeline->add_raygen_program("__raygen__mesh_test", "src/mesh_test.cu");
     auto missProgram   = pipeline->add_miss_program("__miss__mesh_test", "src/mesh_test.cu");
 
-     // Creating closest hit program
-     auto closestHitDesc = rtac::optix::zero<OptixProgramGroupDesc>();
-     closestHitDesc.kind = OPTIX_PROGRAM_GROUP_KIND_HITGROUP;
-     closestHitDesc.hitgroup.moduleCH = pipeline->module("src/mesh_test.cu");
-     closestHitDesc.hitgroup.entryFunctionNameCH = "__closesthit__mesh_test";
-     auto closestHitProgram = pipeline->add_program_group(closestHitDesc);
+    auto closestHitProgram = pipeline->add_hit_programs();
+    closestHitProgram->set_closesthit({"__closesthit__mesh_test", pipeline->module("src/mesh_test.cu")});
     
     // linking pipeline
     //pipeline->link();

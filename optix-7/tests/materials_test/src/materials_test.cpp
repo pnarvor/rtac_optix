@@ -30,11 +30,8 @@ int main()
     
     auto raygen = pipeline->add_raygen_program("__raygen__materials_test", "module0");
     auto miss   = pipeline->add_miss_program("__miss__materials_test", "module0");
-    auto hitGroupDesc = zero<OptixProgramGroupDesc>();
-    hitGroupDesc.kind = OPTIX_PROGRAM_GROUP_KIND_HITGROUP;
-    hitGroupDesc.hitgroup.moduleCH            = pipeline->module("module0");
-    hitGroupDesc.hitgroup.entryFunctionNameCH = "__closesthit__materials_test";
-    auto hitGroup = pipeline->add_program_group(hitGroupDesc);
+    auto hitGroup = pipeline->add_hit_programs();
+    hitGroup->set_closesthit({"__closesthit__materials_test", pipeline->module("module0")});
 
     auto cubeGeom = MeshGeometry::CreateCube(context); 
     std::vector<unsigned char> idxData(12);
@@ -48,7 +45,7 @@ int main()
     auto blue   = Material<RGBRay, HitData>::Create(hitGroup, HitData({uchar3({0,0,255})}));
 
     auto cube0 = ObjectInstance::Create(cubeGeom);
-    cube0->set_material(yellow, 0);
+    cube0->add_material(yellow, 0);
     //cube0->set_sbt_offset(1);
     cout << "cube0.sbt_width : " << cube0->sbt_width() << endl;
 

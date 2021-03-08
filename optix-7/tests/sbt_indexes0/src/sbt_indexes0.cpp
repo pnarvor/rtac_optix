@@ -38,11 +38,9 @@ int main()
                          rtac_optix_7_sbt_indexes0::get_ptx_files()["src/sbt_indexes0.cu"]);
     auto raygen = pipeline->add_raygen_program("__raygen__sbt_indexes0", "sbt_indexes0");
     auto miss   = pipeline->add_miss_program("__miss__sbt_indexes0", "sbt_indexes0");
-    auto hitGroupDesc = rtac::optix::zero<OptixProgramGroupDesc>();
-    hitGroupDesc.kind = OPTIX_PROGRAM_GROUP_KIND_HITGROUP;
-    hitGroupDesc.hitgroup.moduleCH            = pipeline->module("sbt_indexes0");
-    hitGroupDesc.hitgroup.entryFunctionNameCH = "__closesthit__sbt_indexes0";
-    auto hitGroup = pipeline->add_program_group(hitGroupDesc);
+
+    auto hitGroup = pipeline->add_hit_programs();
+    hitGroup->set_closesthit({"__closesthit__sbt_indexes0", pipeline->module("sbt_indexes0")});
 
     auto cubeMesh = MeshGeometry::cube_data();
     auto cube0    = MeshGeometry::Create(context, cubeMesh);

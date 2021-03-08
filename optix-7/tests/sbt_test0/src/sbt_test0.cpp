@@ -84,19 +84,14 @@ int main()
     pipeline->add_module("sbt_test0", ptxFiles["src/sbt_test0.cu"]);
     auto raygenProgram = pipeline->add_raygen_program("__raygen__sbt_test", "sbt_test0");
     auto missProgram   = pipeline->add_miss_program("__miss__sbt_test", "sbt_test0");
-    auto hitDesc = rtac::optix::zero<OptixProgramGroupDesc>();
-    hitDesc.kind = OPTIX_PROGRAM_GROUP_KIND_HITGROUP;
-    hitDesc.hitgroup.moduleCH = pipeline->module("sbt_test0");
-    hitDesc.hitgroup.entryFunctionNameCH = "__closesthit__sbt_test";
-    auto hitProgram = pipeline->add_program_group(hitDesc);
 
-    auto sphereHitDesc = rtac::optix::zero<OptixProgramGroupDesc>();
-    sphereHitDesc.kind = OPTIX_PROGRAM_GROUP_KIND_HITGROUP;
-    sphereHitDesc.hitgroup.moduleIS = pipeline->module("sbt_test0");
-    sphereHitDesc.hitgroup.entryFunctionNameIS = "__intersection__sphere";
-    sphereHitDesc.hitgroup.moduleCH = pipeline->module("sbt_test0");
-    sphereHitDesc.hitgroup.entryFunctionNameCH = "__closesthit__sphere";
-    auto sphereHitProgram = pipeline->add_program_group(sphereHitDesc);
+    auto hitProgram = pipeline->add_hit_programs();
+    hitProgram->set_closesthit({"__closesthit__sbt_test", pipeline->module("sbt_test0")});
+
+    auto sphereHitProgram = pipeline->add_hit_programs();
+    sphereHitProgram->set_intersection({"__intersection__sphere", pipeline->module("sbt_test0")});
+    sphereHitProgram->set_closesthit({"__closesthit__sphere", pipeline->module("sbt_test0")});
+
     // At this point the pipeline is not linked and the program are not
     // compiled yet. They will do so when used in an optix API call. (the
     // implicit cast between rtac::optix type and corresponding OptiX native

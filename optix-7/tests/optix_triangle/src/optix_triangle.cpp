@@ -179,11 +179,13 @@ int main( int argc, char* argv[] )
     auto raygen_prog_group = pipeline0->add_raygen_program("__raygen__rg", "src/optix_triangle.cu");
     auto miss_prog_group   = pipeline0->add_miss_program("__miss__ms", "src/optix_triangle.cu");
 
-    OptixProgramGroupDesc hitgroup_prog_group_desc = {};
-    hitgroup_prog_group_desc.kind                         = OPTIX_PROGRAM_GROUP_KIND_HITGROUP;
-    hitgroup_prog_group_desc.hitgroup.moduleCH            = pipeline0->module("src/optix_triangle.cu");
-    hitgroup_prog_group_desc.hitgroup.entryFunctionNameCH = "__closesthit__ch";
-    auto hitgroup_prog_group = pipeline0->add_program_group(hitgroup_prog_group_desc);
+    //OptixProgramGroupDesc hitgroup_prog_group_desc = {};
+    //hitgroup_prog_group_desc.kind                         = OPTIX_PROGRAM_GROUP_KIND_HITGROUP;
+    //hitgroup_prog_group_desc.hitgroup.moduleCH            = pipeline0->module("src/optix_triangle.cu");
+    //hitgroup_prog_group_desc.hitgroup.entryFunctionNameCH = "__closesthit__ch";
+    //auto hitgroup_prog_group = pipeline0->add_program_group(hitgroup_prog_group_desc);
+    auto hitgroup_prog_group = pipeline0->add_hit_programs();
+    hitgroup_prog_group->set_closesthit({"__closesthit__ch", pipeline0->module("src/optix_triangle.cu")});
     pipeline0->link();
 
     //
