@@ -47,7 +47,7 @@ void MeshGeometry::set_mesh(const Handle<const DeviceMesh>& mesh)
 {
     if(mesh->num_points() == 0)
         return;
-
+    
     sourceMesh_ = mesh; // Keeping a reference to mesh to keep it alive.
                         // Can be released after build.
 
@@ -77,6 +77,7 @@ void MeshGeometry::set_mesh(const Handle<const DeviceMesh>& mesh)
         this->buildInput_.triangleArray.indexStrideInBytes  = 0;
         this->buildInput_.triangleArray.indexBuffer         = 0;
     }
+    this->bump_version();
 }
 
 void MeshGeometry::set_pre_transform(const DeviceVector<float>& preTransform)
@@ -92,25 +93,25 @@ void MeshGeometry::set_pre_transform(const DeviceVector<float>& preTransform)
         throw std::runtime_error(oss.str());
     }
     preTransform_ = preTransform;
-    this->buildInput_.triangleArray.preTransform = 
+    this->build_input().triangleArray.preTransform = 
         reinterpret_cast<CUdeviceptr>(preTransform_.data());
-    this->buildInput_.triangleArray.transformFormat = OPTIX_TRANSFORM_FORMAT_MATRIX_FLOAT12;
+    this->build_input().triangleArray.transformFormat = OPTIX_TRANSFORM_FORMAT_MATRIX_FLOAT12;
 }
 
 void MeshGeometry::unset_pre_transform()
 {
-    this->buildInput_.triangleArray.preTransform    = 0;
-    this->buildInput_.triangleArray.transformFormat = OPTIX_TRANSFORM_FORMAT_NONE;
+    this->build_input().triangleArray.preTransform    = 0;
+    this->build_input().triangleArray.transformFormat = OPTIX_TRANSFORM_FORMAT_NONE;
 }
 
 void MeshGeometry::enable_vertex_access()
 {
-    this->buildOptions_.buildFlags |= OPTIX_BUILD_FLAG_ALLOW_RANDOM_VERTEX_ACCESS;
+    this->build_options().buildFlags |= OPTIX_BUILD_FLAG_ALLOW_RANDOM_VERTEX_ACCESS;
 }
 
 void MeshGeometry::disable_vertex_access()
 {
-    this->buildOptions_.buildFlags &= ~OPTIX_BUILD_FLAG_ALLOW_RANDOM_VERTEX_ACCESS;
+    this->build_options().buildFlags &= ~OPTIX_BUILD_FLAG_ALLOW_RANDOM_VERTEX_ACCESS;
 }
 
 unsigned int MeshGeometry::primitive_count() const

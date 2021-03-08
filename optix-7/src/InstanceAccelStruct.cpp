@@ -23,7 +23,7 @@ InstanceAccelStruct::Ptr InstanceAccelStruct::Create(const Context::ConstPtr& co
     return Ptr(new InstanceAccelStruct(context));
 }
 
-void InstanceAccelStruct::build()
+void InstanceAccelStruct::do_build() const
 {
     // The buildInput_ needs to be updated before the build with created
     // instances.
@@ -37,14 +37,13 @@ void InstanceAccelStruct::build()
         reinterpret_cast<CUdeviceptr>(tmpInstanceData_.data());
     this->buildInput_.instanceArray.numInstances = tmpInstanceData_.size();
 
-    this->AccelerationStruct::build();
-
-    cudaDeviceSynchronize();
+    this->AccelerationStruct::do_build();
 }
 
 void InstanceAccelStruct::add_instance(const Instance::Ptr& instance)
 {
     instances_.push_back(instance);
+    this->add_dependency(instance);
 }
 
 InstanceAccelStruct::Instances& InstanceAccelStruct::instances()

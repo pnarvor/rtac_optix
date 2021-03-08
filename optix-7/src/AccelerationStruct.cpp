@@ -18,7 +18,6 @@ AccelerationStruct::BuildOptions AccelerationStruct::default_build_options()
 AccelerationStruct::AccelerationStruct(const Context::ConstPtr& context,
                                        const BuildInput& buildInput,
                                        const BuildOptions& buildOptions) :
-    handle_(0),
     context_(context),
     buildInput_(buildInput),
     buildOptions_(buildOptions),
@@ -26,10 +25,8 @@ AccelerationStruct::AccelerationStruct(const Context::ConstPtr& context,
     buildMeta_({Handle<Buffer>(nullptr), 0})
 {}
 
-void AccelerationStruct::build()
+void AccelerationStruct::do_build() const
 {
-    if(handle_) return;
-
     // Computing memory usage needed(both for output and temporary usage for
     // the build itself) and resizing buffers accordingly;
     OptixAccelBufferSizes bufferSizes; // should I keep that in attributes ?
@@ -44,7 +41,7 @@ void AccelerationStruct::build()
             &buildOptions_, &buildInput_, 1,
             reinterpret_cast<CUdeviceptr>(buildMeta_.buffer->data()), buildMeta_.buffer->size(),
             reinterpret_cast<CUdeviceptr>(buffer_.data()), buffer_.size(),
-            &handle_, nullptr, 0));
+            &optixObject_, nullptr, 0));
     }
     else {
         // Compaction is requested, a second temporary space is needed.
@@ -77,7 +74,7 @@ void AccelerationStruct::build()
             reinterpret_cast<CUdeviceptr>(buildMeta_.buffer->data()), offsets[0],
             reinterpret_cast<CUdeviceptr>(buildMeta_.buffer->data() + offsets[0]),
             offsets[1] - offsets[0],
-            &handle_, &propertyRequest, 1));
+            &optixObject_, &propertyRequest, 1));
 
         // Retrieving compacted size
         uint64_t compactedSize;
@@ -91,9 +88,9 @@ void AccelerationStruct::build()
         //if(compactedSize < bufferSizes.outputSizeInBytes)
         {
             buffer_.resize(compactedSize);
-            OPTIX_CHECK(optixAccelCompact(*context_, buildMeta_.stream, handle_,
+            OPTIX_CHECK(optixAccelCompact(*context_, buildMeta_.stream, optixObject_,
                 reinterpret_cast<CUdeviceptr>(buffer_.data()), buffer_.size(),
-                &handle_));
+                &optixObject_));
         }
     }
 }
@@ -110,11 +107,13 @@ const AccelerationStruct::BuildOptions& AccelerationStruct::build_options() cons
 
 AccelerationStruct::BuildInput& AccelerationStruct::build_input()
 {
+    this->bump_version();
     return buildInput_;
 }
 
 AccelerationStruct::BuildOptions& AccelerationStruct::build_options()
 {
+    this->bump_version();
     return buildOptions_;
 }
 
@@ -123,7 +122,7 @@ void AccelerationStruct::set_build_buffer(const Handle<Buffer>& buffer)
     buildMeta_.buffer = buffer;
 }
 
-void AccelerationStruct::resize_build_buffer(size_t size)
+void AccelerationStruct::resize_build_buffer(size_t size) const
 {
     if(!buildMeta_.buffer) {
         buildMeta_.buffer = Handle<Buffer>(new Buffer(size));
@@ -142,17 +141,6 @@ void AccelerationStruct::set_build_meta(const Handle<Buffer>& buffer, CUstream s
 {
     this->set_build_buffer(buffer);
     this->set_build_stream(stream);
-}
-
-AccelerationStruct::operator OptixTraversableHandle()
-{
-    this->build();
-    return handle_;
-}
-
-CUdeviceptr AccelerationStruct::data()
-{
-    return reinterpret_cast<CUdeviceptr>(buffer_.data());
 }
 
 }; //namespace optix

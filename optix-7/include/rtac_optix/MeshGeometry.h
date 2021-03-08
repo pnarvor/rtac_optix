@@ -16,6 +16,7 @@
 #include <rtac_optix/Handle.h>
 #include <rtac_optix/utils.h>
 #include <rtac_optix/Context.h>
+#include <rtac_optix/OptixWrapper.h>
 #include <rtac_optix/GeometryAccelStruct.h>
 
 namespace rtac { namespace optix {
@@ -24,14 +25,14 @@ class MeshGeometry : public GeometryAccelStruct
 {
     public:
 
-    using Ptr        = Handle<MeshGeometry>;
-    using ConstPtr   = Handle<const MeshGeometry>;
+    using Ptr        = OptixWrapperHandle<MeshGeometry>;
+    using ConstPtr   = OptixWrapperHandle<const MeshGeometry>;
     using DeviceMesh = rtac::cuda::DeviceMesh<float3, uint3>;
     template <typename T>
     using DeviceVector = rtac::cuda::DeviceVector<T>;
 
-    static OptixBuildInput           default_build_input();
-    static OptixAccelBuildOptions    default_build_options();
+    static OptixBuildInput        default_build_input();
+    static OptixAccelBuildOptions default_build_options();
 
     static Handle<DeviceMesh> cube_data(float scale = 1.0f);
 

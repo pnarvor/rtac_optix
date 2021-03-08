@@ -24,8 +24,8 @@ class ObjectInstance : public Instance
 
     public:
 
-    using Ptr       = Handle<ObjectInstance>;
-    using ConstPtr  = Handle<const ObjectInstance>;
+    using Ptr       = OptixWrapperHandle<ObjectInstance>;
+    using ConstPtr  = OptixWrapperHandle<const ObjectInstance>;
     using Materials = std::vector<std::pair<unsigned int, MaterialBase::Ptr>>;
     
     protected:

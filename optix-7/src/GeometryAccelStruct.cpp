@@ -25,7 +25,7 @@ GeometryAccelStruct::GeometryAccelStruct(const Context::ConstPtr& context,
     this->material_hit_setup(default_hit_flags());
 }
 
-void GeometryAccelStruct::update_hit_setup()
+void GeometryAccelStruct::update_hit_setup() const
 {
     switch(this->buildInput_.type)
     {
@@ -77,10 +77,10 @@ void GeometryAccelStruct::update_hit_setup()
     };
 }
 
-void GeometryAccelStruct::build()
+void GeometryAccelStruct::do_build() const
 {
     this->update_hit_setup();
-    AccelerationStruct::build();
+    AccelerationStruct::do_build();
 }
 
 void GeometryAccelStruct::material_hit_setup(
@@ -88,6 +88,7 @@ void GeometryAccelStruct::material_hit_setup(
     const Handle<MaterialIndexBuffer>& materialIndexes)
 {
     if(hitFlags.size() == 0) {
+        this->bump_version();
         materialHitFlags_.resize(0);
     }
     else if(hitFlags.size() == 1) {
@@ -96,6 +97,7 @@ void GeometryAccelStruct::material_hit_setup(
                       << "buffer but requested only one material type. "
                       << "The indexes will be ignored";
         }
+        this->bump_version();
         materialHitFlags_ = hitFlags;
     }
     else if(hitFlags.size() > 1) {
@@ -117,6 +119,7 @@ void GeometryAccelStruct::material_hit_setup(
                 << ", expected " << this->primitive_count() << ")";
             throw std::runtime_error(oss.str());
         }
+        this->bump_version();
         materialHitFlags_ = hitFlags;
         materialIndexes_  = materialIndexes;
     }
@@ -132,6 +135,7 @@ void GeometryAccelStruct::material_hit_setup(
 
 void GeometryAccelStruct::clear_hit_setup()
 {
+    this->bump_version();
     materialHitFlags_.resize(0);
 }
 

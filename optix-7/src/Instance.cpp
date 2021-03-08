@@ -20,13 +20,15 @@ OptixInstance Instance::default_instance(unsigned int instanceId)
 
 Instance::Instance(const AccelerationStruct::Ptr& child,
                    unsigned int instanceId) :
-    instance_(default_instance(instanceId)),
+    OptixWrapper<OptixInstance>(),
     child_(child)
 {
+    optixObject_ = default_instance(instanceId);
     if(!child) {
         throw std::runtime_error("Instance::Instance : the child of an instance "
             "should not be nullptr. It cannot be modified afterwards.");
     }
+    this->add_dependency(child);
 }
 
 Instance::Ptr Instance::Create(const AccelerationStruct::Ptr& child,
@@ -35,59 +37,49 @@ Instance::Ptr Instance::Create(const AccelerationStruct::Ptr& child,
     return Ptr(new Instance(child, instanceId));
 }
 
+void Instance::do_build() const
+{
+    if(this->child_)
+        optixObject_.traversableHandle = *child_;
+    else
+        optixObject_.traversableHandle = 0;
+}
+
 void Instance::set_sbt_offset(unsigned int offset)
 {
-    instance_.sbtOffset = offset;
+    optixObject_.sbtOffset = offset;
+    this->bump_version(false);
 }
 
 void Instance::set_visibility_mask(unsigned int mask)
 {
-    instance_.visibilityMask = mask;
+    optixObject_.visibilityMask = mask;
+    this->bump_version(false);
 }
 
 void Instance::set_transform(const std::array<float,12>& transform)
 {
-    std::memcpy(&instance_.transform, transform.data(), 12*sizeof(float));
+    std::memcpy(&optixObject_.transform, transform.data(), 12*sizeof(float));
+    this->bump_version(false);
 }
 
 void Instance::set_flags(unsigned int flags)
 {
-    instance_.flags = flags;
+    optixObject_.flags = flags;
+    this->bump_version(false);
 }
 
 void Instance::add_flags(unsigned int flag)
 {
-    instance_.flags |= flag;
+    optixObject_.flags |= flag;
+    this->bump_version(false);
 }
 
 void Instance::unset_flags(unsigned int flag)
 {
     // invert all bits in flag then bitwise and will set flags to 0;
-    instance_.flags &= ~flag; 
-}
-
-Instance::operator OptixInstance()
-{
-    if(!child_)
-        instance_.traversableHandle = 0;
-    else
-        instance_.traversableHandle = *child_;
-    return instance_;
-}
-
-OptixBuildInputType Instance::build_type() const
-{
-    if(!child_) {
-        throw std::runtime_error("Instance : child is nullptr");
-    }
-    return child_->build_input().type;
-}
-
-Instance::operator OptixTraversableHandle()
-{
-    if(!child_)
-        return 0;
-    return *child_;
+    optixObject_.flags &= ~flag; 
+    this->bump_version(false);
 }
 
 unsigned int Instance::sbt_width() const
@@ -97,13 +89,21 @@ unsigned int Instance::sbt_width() const
     return child_->sbt_width();
 }
 
+Instance::operator const OptixTraversableHandle&() const
+{
+    if(!child_) {
+        throw std::runtime_error("This instance has no child !");
+    }
+    return *child_;
+}
 
 // below here are only helpers / overrides
 void Instance::set_position(const std::array<float,3>& pos)
 {
-    instance_.transform[3]  = pos[0];
-    instance_.transform[7]  = pos[1];
-    instance_.transform[11] = pos[2];
+    optixObject_.transform[3]  = pos[0];
+    optixObject_.transform[7]  = pos[1];
+    optixObject_.transform[11] = pos[2];
+    this->bump_version(false);
 }
 
 }; //namespace optix

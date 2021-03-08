@@ -83,6 +83,7 @@ void ObjectInstance::add_material(const MaterialBase::Ptr& material, unsigned in
         throw std::runtime_error("Invalid index for material");
     }
     materials_.push_back(std::pair<unsigned int, MaterialBase::Ptr>(index, material));
+    this->bump_version();
 }
 
 ObjectInstance::Materials& ObjectInstance::materials()

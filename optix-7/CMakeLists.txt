@@ -25,10 +25,10 @@ list(APPEND rtac_optix_PUBLIC_HEADERS
     include/rtac_optix/TraversableHandle.h
     include/rtac_optix/Instance.h
     include/rtac_optix/AccelerationStruct.h
-    include/rtac_optix/InstanceAccelStruct.h
     include/rtac_optix/GeometryAccelStruct.h
     include/rtac_optix/MeshGeometry.h
     include/rtac_optix/CustomGeometry.h
+    include/rtac_optix/InstanceAccelStruct.h
     
 
     include/rtac_optix/Raytype.h
@@ -56,10 +56,10 @@ list(APPEND rtac_optix_SOURCES
 
     src/Instance.cpp
     src/AccelerationStruct.cpp
-    src/InstanceAccelStruct.cpp
     src/GeometryAccelStruct.cpp
     src/MeshGeometry.cpp
     src/CustomGeometry.cpp
+    src/InstanceAccelStruct.cpp
 
     src/ShaderBinding.cpp
     src/Material.cpp

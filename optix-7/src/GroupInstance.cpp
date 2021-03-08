@@ -2,38 +2,30 @@
 
 namespace rtac { namespace optix {
 
-GroupInstance::GroupInstance(const Context::ConstPtr& context) :
-    Instance(InstanceAccelStruct::Create(context))
+GroupInstance::GroupInstance(const Context::ConstPtr& context,
+                             const InstanceAccelStruct::Ptr& instanceAS) :
+    Instance(instanceAS),
+    instanceAS_(instanceAS)
 {}
 
 GroupInstance::Ptr GroupInstance::Create(const Context::ConstPtr& context)
 {
-    return Ptr(new GroupInstance(context));
-}
-
-InstanceAccelStruct::Ptr GroupInstance::instanceAS()
-{
-    return std::dynamic_pointer_cast<InstanceAccelStruct>(child_);
-}
-
-InstanceAccelStruct::ConstPtr GroupInstance::instanceAS() const
-{
-    return std::dynamic_pointer_cast<const InstanceAccelStruct>(child_);
+    return Ptr(new GroupInstance(context, InstanceAccelStruct::Create(context)));
 }
 
 void GroupInstance::add_instance(const Instance::Ptr& instance)
 {
-    this->instanceAS()->add_instance(instance);
+    instanceAS_->add_instance(instance);
 }
 
 GroupInstance::Instances& GroupInstance::instances()
 {
-    return this->instanceAS()->instances();
+    return instanceAS_->instances();
 }
 
 const GroupInstance::Instances& GroupInstance::instances() const
 {
-    return this->instanceAS()->instances();
+    return instanceAS_->instances();
 }
 
 }; //namespace optix

@@ -13,6 +13,7 @@
 #include <rtac_optix/Handle.h>
 #include <rtac_optix/utils.h>
 #include <rtac_optix/Context.h>
+#include <rtac_optix/OptixWrapper.h>
 #include <rtac_optix/Instance.h>
 #include <rtac_optix/InstanceAccelStruct.h>
 
@@ -22,16 +23,16 @@ class GroupInstance : public Instance
 {
     public:
 
-    using Ptr       = Handle<GroupInstance>;
-    using ConstPtr  = Handle<const GroupInstance>;
+    using Ptr       = OptixWrapperHandle<GroupInstance>;
+    using ConstPtr  = OptixWrapperHandle<const GroupInstance>;
     using Instances = InstanceAccelStruct::Instances;
 
     protected:
 
-    InstanceAccelStruct::Ptr      instanceAS();
-    InstanceAccelStruct::ConstPtr instanceAS() const;
+    InstanceAccelStruct::Ptr instanceAS_;
 
-    GroupInstance(const Context::ConstPtr& context);
+    GroupInstance(const Context::ConstPtr& context,
+                  const InstanceAccelStruct::Ptr& instanceAS);
 
     public:
 

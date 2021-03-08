@@ -12,17 +12,17 @@
 
 #include <rtac_optix/Handle.h>
 #include <rtac_optix/utils.h>
-#include <rtac_optix/TraversableHandle.h>
+#include <rtac_optix/OptixWrapper.h>
 #include <rtac_optix/AccelerationStruct.h>
 
 namespace rtac { namespace optix {
 
-class Instance : public TraversableHandle
+class Instance : public OptixWrapper<OptixInstance>
 {
     public:
 
-    using Ptr      = Handle<Instance>;
-    using ConstPtr = Handle<const Instance>;
+    using Ptr      = OptixWrapperHandle<Instance>;
+    using ConstPtr = OptixWrapperHandle<const Instance>;
 
     const static unsigned int DefaultFlags = OPTIX_INSTANCE_FLAG_NONE;
     const static float DefaultTransform[];
@@ -31,8 +31,9 @@ class Instance : public TraversableHandle
 
     protected:
     
-    OptixInstance           instance_;
-    AccelerationStruct::Ptr child_;
+    mutable AccelerationStruct::Ptr child_;
+
+    void do_build() const;
 
     Instance(const AccelerationStruct::Ptr& handle,
              unsigned int instanceId = 0);
@@ -50,11 +51,9 @@ class Instance : public TraversableHandle
     void add_flags(unsigned int flag);
     void unset_flags(unsigned int flag);
 
-    operator OptixInstance();
-    
-    OptixBuildInputType build_type() const;
-    virtual operator OptixTraversableHandle();
     virtual unsigned int sbt_width() const;
+
+    operator const OptixTraversableHandle&() const;
 
     // below here are only helpers / overrides
     void set_position(const std::array<float,3>& pos);

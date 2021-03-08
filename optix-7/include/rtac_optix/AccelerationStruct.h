@@ -17,11 +17,11 @@
 #include <rtac_optix/Handle.h>
 #include <rtac_optix/utils.h>
 #include <rtac_optix/Context.h>
-#include <rtac_optix/TraversableHandle.h>
+#include <rtac_optix/OptixWrapper.h>
 
 namespace rtac { namespace optix {
 
-class AccelerationStruct : public TraversableHandle
+class AccelerationStruct : public OptixWrapper<OptixTraversableHandle>
 {
     // ABSTRACT class
 
@@ -31,8 +31,8 @@ class AccelerationStruct : public TraversableHandle
 
     public:
 
-    using Ptr      = Handle<AccelerationStruct>;
-    using ConstPtr = Handle<const AccelerationStruct>;
+    using Ptr      = OptixWrapperHandle<AccelerationStruct>;
+    using ConstPtr = OptixWrapperHandle<const AccelerationStruct>;
 
     using BuildInput   = OptixBuildInput;
     using BuildOptions = OptixAccelBuildOptions;
@@ -48,12 +48,14 @@ class AccelerationStruct : public TraversableHandle
 
     protected:
     
-    OptixTraversableHandle handle_;
-    Context::ConstPtr      context_;
-    BuildInput             buildInput_;
-    BuildOptions           buildOptions_;
-    Buffer                 buffer_; // contains data after build
-    BuildMeta              buildMeta_;
+    Context::ConstPtr  context_;
+    mutable BuildInput buildInput_;
+    BuildOptions       buildOptions_;
+    mutable Buffer     buffer_; // contains data after build
+    mutable BuildMeta  buildMeta_;
+
+    virtual void do_build() const;
+    void resize_build_buffer(size_t size) const;
 
     AccelerationStruct(const Context::ConstPtr& context,
                        const BuildInput& buildInput = default_build_input(),
@@ -61,8 +63,6 @@ class AccelerationStruct : public TraversableHandle
 
     public:
 
-    virtual void build();
-    
     const BuildInput& build_input() const;
     const BuildOptions& build_options() const;
 
@@ -70,13 +70,9 @@ class AccelerationStruct : public TraversableHandle
     BuildOptions& build_options();
 
     void set_build_buffer(const Handle<Buffer>& buffer);
-    void resize_build_buffer(size_t size);
     void set_build_stream(CUstream stream);
     void set_build_meta(const Handle<Buffer>& buffer, CUstream stream = 0);
 
-    virtual operator OptixTraversableHandle();
-
-    CUdeviceptr data();
     virtual unsigned int sbt_width() const = 0;
 };
 

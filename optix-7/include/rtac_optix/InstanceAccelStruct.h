@@ -17,6 +17,7 @@
 #include <rtac_optix/Handle.h>
 #include <rtac_optix/utils.h>
 #include <rtac_optix/Context.h>
+#include <rtac_optix/OptixWrapper.h>
 #include <rtac_optix/AccelerationStruct.h>
 #include <rtac_optix/Instance.h>
 
@@ -26,8 +27,8 @@ class InstanceAccelStruct : public AccelerationStruct
 {
     public:
 
-    using Ptr      = Handle<InstanceAccelStruct>;
-    using ConstPtr = Handle<const InstanceAccelStruct>;
+    using Ptr      = OptixWrapperHandle<InstanceAccelStruct>;
+    using ConstPtr = OptixWrapperHandle<const InstanceAccelStruct>;
 
     using Buffer    = AccelerationStruct::Buffer;
     using Instances = std::vector<Instance::Ptr>;
@@ -43,14 +44,15 @@ class InstanceAccelStruct : public AccelerationStruct
 
     // tmpInstanceData_ is used only for the build operation, but must stay in memory
     // because the build operation is asynchronous.
-    cuda::DeviceVector<OptixInstance> tmpInstanceData_; 
+    mutable cuda::DeviceVector<OptixInstance> tmpInstanceData_; 
+
+    virtual void do_build() const;
 
     InstanceAccelStruct(const Context::ConstPtr& context);
 
     public:
 
     static Ptr Create(const Context::ConstPtr& context);
-    virtual void build();
 
     void add_instance(const Instance::Ptr& instance);
     Instances& instances();

@@ -12,6 +12,7 @@
 
 #include <rtac_optix/Handle.h>
 #include <rtac_optix/Context.h>
+#include <rtac_optix/OptixWrapper.h>
 #include <rtac_optix/AccelerationStruct.h>
 
 namespace rtac { namespace optix {
@@ -23,8 +24,8 @@ class GeometryAccelStruct : public AccelerationStruct
 
     public:
 
-    using Ptr                 = Handle<GeometryAccelStruct>;
-    using ConstPtr            = Handle<const GeometryAccelStruct>;
+    using Ptr                 = OptixWrapperHandle<GeometryAccelStruct>;
+    using ConstPtr            = OptixWrapperHandle<const GeometryAccelStruct>;
     using Buffer              = AccelerationStruct::Buffer;
     using MaterialIndexBuffer = rtac::cuda::DeviceVector<uint8_t>;
 
@@ -36,7 +37,8 @@ class GeometryAccelStruct : public AccelerationStruct
     
     private:
 
-    void update_hit_setup();
+    void update_hit_setup() const;
+    virtual void do_build() const;
 
     protected:
 
@@ -50,8 +52,6 @@ class GeometryAccelStruct : public AccelerationStruct
                         const OptixAccelBuildOptions& options = default_build_options());
 
     public:
-    
-    virtual void build();
     
     void material_hit_setup(const std::vector<unsigned int>& hitFlags,
                             const Handle<MaterialIndexBuffer>& materialIndexes = nullptr);
