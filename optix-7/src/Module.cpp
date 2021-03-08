@@ -17,7 +17,6 @@ Module::Module(const Context::ConstPtr& context,
                const std::string& ptxSource,
                const Module::PipelineOptions& pipelineOptions,
                const Module::ModuleOptions& moduleOptions) :
-    module_(zero<OptixModule>()),
     context_(context),
     ptxSource_(ptxSource),
     pipelineOptions_(pipelineOptions),
@@ -35,7 +34,7 @@ Module::Ptr Module::Create(const Context::ConstPtr& context,
 Module::~Module()
 {
     try {
-        this->destroy();
+        this->clean();
     }
     catch(const std::exception& e) {
         std::cerr << "Caught exception during rtac::optix::Module destruction : " 
@@ -45,9 +44,6 @@ Module::~Module()
 
 void Module::do_build() const
 {
-    if(module_)
-        return;
-
     OPTIX_CHECK( 
     optixModuleCreateFromPTX(*context_,
         &moduleOptions_, &pipelineOptions_,
@@ -56,14 +52,14 @@ void Module::do_build() const
                           // written in context log, but with less tracking
                           // information (TODO Fix this. See a unified
                           // interface with Context type ?)
-        &module_
+        &optixObject_
         ) );
 }
 
-void Module::destroy() const
+void Module::clean() const
 {
-    if(module_)
-        OPTIX_CHECK( optixModuleDestroy(module_) );
+    if(optixObject_)
+        OPTIX_CHECK( optixModuleDestroy(optixObject_) );
 }
 
 const Module::PipelineOptions& Module::pipeline_options() const
@@ -78,18 +74,14 @@ const Module::ModuleOptions& Module::module_options() const
 
 Module::PipelineOptions& Module::pipeline_options()
 {
+    this->bump_version();
     return pipelineOptions_;
 }
 
 Module::ModuleOptions& Module::module_options()
 {
+    this->bump_version();
     return moduleOptions_;
-}
-
-Module::operator OptixModule() const
-{
-    this->do_build();
-    return module_;
 }
 
 }; //namespace optix

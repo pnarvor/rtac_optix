@@ -11,6 +11,7 @@
 #include <rtac_optix/Handle.h>
 #include <rtac_optix/utils.h>
 #include <rtac_optix/Context.h>
+#include <rtac_optix/OptixWrapper.h>
 
 namespace rtac { namespace optix {
 
@@ -18,14 +19,14 @@ namespace rtac { namespace optix {
 // Create a new Module
 class Pipeline;
 
-class Module
+class Module : public OptixWrapper<OptixModule>
 {
     public:
 
     friend class Pipeline;
 
-    using Ptr      = Handle<Module>;
-    using ConstPtr = Handle<const Module>;
+    using Ptr      = OptixWrapperHandle<Module>;
+    using ConstPtr = OptixWrapperHandle<const Module>;
 
     using PipelineOptions = OptixPipelineCompileOptions;
     using ModuleOptions   = OptixModuleCompileOptions;
@@ -33,14 +34,13 @@ class Module
 
     protected:
     
-    mutable OptixModule module_;
     Context::ConstPtr   context_;
     std::string         ptxSource_;
     PipelineOptions     pipelineOptions_;
     ModuleOptions       moduleOptions_;
 
     virtual void do_build() const;
-    virtual void destroy() const;
+    virtual void clean() const;
 
     Module(const Context::ConstPtr& context,
            const std::string& ptxSource,
@@ -62,8 +62,6 @@ class Module
     // rebuilt on cast to OptixPipeline type.
     PipelineOptions& pipeline_options();
     ModuleOptions&   module_options();
-
-    operator OptixModule() const; // this will trigger build
 };
 
 }; //namespace optix
