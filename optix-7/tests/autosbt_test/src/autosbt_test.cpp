@@ -29,7 +29,7 @@ int main()
     optix_init();
     auto context = Context::Create();
     auto pipeline = Pipeline::Create(context);
-    pipeline->add_module("module0", ptxFiles["src/autosbt_test.cu"]);
+    auto module = pipeline->add_module("module0", ptxFiles["src/autosbt_test.cu"]);
 
     auto raygen  = pipeline->add_raygen_program("__raygen__autosbt_test", "module0");
     auto rgbMiss = pipeline->add_miss_program("__miss__autosbt_rgb", "module0");
@@ -41,8 +41,6 @@ int main()
     auto hitShadow = pipeline->add_hit_programs();
     hitShadow->set_closesthit({"__closesthit__autosbt_shadow", pipeline->module("module0")});
 
-    pipeline->link();
-    
     auto cubeGeom = MeshGeometry::CreateCube(context);
     cubeGeom->material_hit_setup({OPTIX_GEOMETRY_FLAG_NONE, OPTIX_GEOMETRY_FLAG_NONE},
                                  std::vector<uint8_t>({0,1,0,1,0,1,0,1,0,1,0,1}));

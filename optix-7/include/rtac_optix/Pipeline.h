@@ -15,16 +15,18 @@
 #include <rtac_optix/utils.h>
 #include <rtac_optix/Handle.h>
 #include <rtac_optix/Context.h>
+#include <rtac_optix/OptixWrapper.h>
+#include <rtac_optix/Module.h>
 #include <rtac_optix/ProgramGroup.h>
 
 namespace rtac { namespace optix {
 
-class Pipeline
+class Pipeline : public OptixWrapper<OptixPipeline>
 {
     public:
 
-    using Ptr      = Handle<Pipeline>;
-    using ConstPtr = Handle<const Pipeline>;
+    using Ptr      = OptixWrapperHandle<Pipeline>;
+    using ConstPtr = OptixWrapperHandle<const Pipeline>;
 
     using Modules  = std::unordered_map<std::string, Module::Ptr>;
     using Programs = std::vector<ProgramGroup::Ptr>;
@@ -36,21 +38,22 @@ class Pipeline
 
     protected:
 
-    mutable OptixPipeline pipeline_;
-    Context::ConstPtr     context_;
-    CompileOptions        compileOptions_;
-    LinkOptions           linkOptions_;
+    Context::ConstPtr context_;
+    CompileOptions    compileOptions_;
+    LinkOptions       linkOptions_;
+    mutable bool      compileOptionsChanged_; 
 
     Modules  modules_;
     Programs programs_;
 
-    void autoset_stack_sizes();
-    virtual void do_build() const;
-    virtual void destroy()  const;
+    void autoset_stack_sizes(); // not used anymore
 
-    Pipeline(const Context::ConstPtr&           context,
+    virtual void do_build() const;
+    virtual void clean() const;
+
+    Pipeline(const Context::ConstPtr& context,
              const CompileOptions& compileOptions,
-             const LinkOptions&    linkOptions);
+             const LinkOptions& linkOptions);
 
     public:
 
@@ -59,11 +62,7 @@ class Pipeline
         const LinkOptions&    linkOptions    = default_pipeline_link_options());
     ~Pipeline();
 
-    void link(bool autoStackSizes = true);
-    // Implicitly castable to OptixPipeline for seamless use in optix API.
-    // This breaks encapsulation.
-    // /!\ Use only in optix API calls except for optixDeviceContextDestroy,
-    operator OptixPipeline();
+    virtual void build() const;
 
     const CompileOptions& compile_options() const;
     const LinkOptions&    link_options()    const;

@@ -4,8 +4,7 @@ namespace rtac { namespace optix {
 
 Pipeline::CompileOptions Pipeline::default_pipeline_compile_options()
 {
-    CompileOptions res;
-    std::memset(&res, 0, sizeof(res));
+    auto res = zero<CompileOptions>();
 
     res.usesMotionBlur        = false;
     //res.traversableGraphFlags = OPTIX_TRAVERSABLE_GRAPH_FLAG_ALLOW_SINGLE_GAS;
@@ -24,8 +23,7 @@ Pipeline::CompileOptions Pipeline::default_pipeline_compile_options()
 
 Pipeline::LinkOptions Pipeline::default_pipeline_link_options()
 {
-    LinkOptions res;
-    std::memset(&res, 0, sizeof(res));
+    auto res = zero<LinkOptions>();
 
     res.maxTraceDepth = 1;
     res.debugLevel    = OPTIX_COMPILE_DEBUG_LEVEL_FULL;
@@ -36,10 +34,10 @@ Pipeline::LinkOptions Pipeline::default_pipeline_link_options()
 Pipeline::Pipeline(const Context::ConstPtr& context,
                    const CompileOptions& compileOptions,
                    const LinkOptions& linkOptions) :
-    pipeline_(zero<OptixPipeline>()),
     context_(context),
     compileOptions_(compileOptions),
-    linkOptions_(linkOptions)
+    linkOptions_(linkOptions),
+    compileOptionsChanged_(false)
 {}
 
 Pipeline::Ptr Pipeline::Create(const Context::ConstPtr& context,
@@ -52,7 +50,7 @@ Pipeline::Ptr Pipeline::Create(const Context::ConstPtr& context,
 Pipeline::~Pipeline()
 {
     try {
-        this->destroy();
+        this->clean();
     }
     catch(const std::runtime_error& e) {
         std::cerr << "Caught exception during rtac::optix::Pipeline destruction : " 
@@ -60,11 +58,21 @@ Pipeline::~Pipeline()
     }
 }
 
+void Pipeline::build() const
+{
+    if(compileOptionsChanged_) {
+        for(auto module : modules_) {
+            module.second->pipeline_options() = compileOptions_;
+        }
+        compileOptionsChanged_ = false;
+    }
+    this->OptixWrapper<OptixPipeline>::build();
+}
+
 void Pipeline::do_build() const
 {
     std::vector<OptixProgramGroup> compiledPrograms(programs_.size());
     for(int i = 0; i < programs_.size(); i++) {
-        // No-op if programs were already compiled
         compiledPrograms[i] = *programs_[i];
     }
 
@@ -74,29 +82,20 @@ void Pipeline::do_build() const
         nullptr, nullptr, // These are logging related, log will also
                           // be written in context log, but with less
                           // tracking information (TODO Fix this).
-        &pipeline_));
+        &optixObject_));
 }
 
-void Pipeline::destroy() const
+void Pipeline::clean() const
 {
-    if(pipeline_) {
-        OPTIX_CHECK( optixPipelineDestroy(pipeline_) );
+    if(optixObject_) {
+        OPTIX_CHECK( optixPipelineDestroy(optixObject_) );
     }
-}
-
-void Pipeline::link(bool autoStackSizes)
-{
-    if(pipeline_)
-        return;
-
-    this->do_build();
-    
-    if(autoStackSizes)
-        this->autoset_stack_sizes();
 }
 
 void Pipeline::autoset_stack_sizes()
 {
+    // Not used anymore
+
     // From the docs : defaults values will be set if none are given (if
     // maximum depth of call trees CC and DC programs is at most 2)
 
@@ -118,18 +117,12 @@ void Pipeline::autoset_stack_sizes()
         &directCallableStackSizeFromState,
         &continuationStackSize));
     OPTIX_CHECK(
-    optixPipelineSetStackSize( pipeline_,
+    optixPipelineSetStackSize( optixObject_,
         directCallableStackSizeFromTraversal,
         directCallableStackSizeFromState, continuationStackSize,
         1  // maxTraversableDepth ?
         ) );
 
-}
-
-Pipeline::operator OptixPipeline()
-{
-    this->link();
-    return pipeline_;
 }
 
 const Pipeline::CompileOptions& Pipeline::compile_options() const
@@ -144,11 +137,14 @@ const Pipeline::LinkOptions& Pipeline::link_options() const
 
 Pipeline::CompileOptions& Pipeline::compile_options()
 {
+    this->bump_version();
+    compileOptionsChanged_ = true;
     return compileOptions_;
 }
 
 Pipeline::LinkOptions& Pipeline::link_options()
 {
+    this->bump_version();
     return linkOptions_;
 }
 
@@ -160,14 +156,15 @@ Module::Ptr Pipeline::add_module(const std::string& name, const std::string& ptx
     if(!forceReplace) {
         auto it = modules_.find(name);
         if(it != modules_.end()) {
-            // A module with this name already exists. Ignoring compilation.
             return it->second;
         }
     }
-
+    
+    this->bump_version();
     auto module = Module::Create(context_, ptxContent,
                                  compileOptions_, moduleOptions);
     modules_[name] = module;
+    this->add_dependency(module);
     return module;
 }
 
@@ -191,6 +188,7 @@ ProgramGroup::Ptr Pipeline::add_program_group(ProgramGroup::Kind kind)
 {
     auto program = ProgramGroup::Create(context_, kind);
     programs_.push_back(program);
+    this->add_dependency(program);
     return program;
 }
 
