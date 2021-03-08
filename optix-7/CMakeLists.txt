@@ -17,6 +17,7 @@ list(APPEND rtac_optix_PUBLIC_HEADERS
     include/rtac_optix/Nvrtc.h
     include/rtac_optix/utils.h
     include/rtac_optix/Context.h
+    include/rtac_optix/Module.h
     include/rtac_optix/Pipeline.h
     include/rtac_optix/ProgramGroup.h
 
@@ -48,6 +49,7 @@ list(APPEND rtac_optix_SOURCES
     src/Source.cpp
     src/Nvrtc.cpp
     src/Context.cpp
+    src/Module.cpp
     src/Pipeline.cpp
     src/ProgramGroup.cpp
 
