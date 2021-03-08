@@ -37,17 +37,21 @@ int main()
     auto rgbMiss = pipeline->add_miss_program("__miss__autosbt_rgb", "module0");
     auto shadowMiss = pipeline->add_miss_program("__miss__autosbt_shadow", "module0");
     
-    auto hitRgbDesc = zero<OptixProgramGroupDesc>();
-    hitRgbDesc.kind = OPTIX_PROGRAM_GROUP_KIND_HITGROUP;
-    hitRgbDesc.hitgroup.moduleCH            = pipeline->module("module0");
-    hitRgbDesc.hitgroup.entryFunctionNameCH = "__closesthit__autosbt_rgb";
-    auto hitRgb = pipeline->add_program_group(hitRgbDesc);
+    //auto hitRgbDesc = zero<OptixProgramGroupDesc>();
+    //hitRgbDesc.kind = OPTIX_PROGRAM_GROUP_KIND_HITGROUP;
+    //hitRgbDesc.hitgroup.moduleCH            = pipeline->module("module0");
+    //hitRgbDesc.hitgroup.entryFunctionNameCH = "__closesthit__autosbt_rgb";
+    //auto hitRgb = pipeline->add_program_group(hitRgbDesc);
+    auto hitRgb = pipeline->add_hit_programs();
+    hitRgb->set_closesthit({"__closesthit__autosbt_rgb", pipeline->module("module0")});
 
-    auto hitShadowDesc = zero<OptixProgramGroupDesc>();
-    hitShadowDesc.kind = OPTIX_PROGRAM_GROUP_KIND_HITGROUP;
-    hitShadowDesc.hitgroup.moduleCH            = pipeline->module("module0");
-    hitShadowDesc.hitgroup.entryFunctionNameCH = "__closesthit__autosbt_shadow";
-    auto hitShadow = pipeline->add_program_group(hitShadowDesc);
+    //auto hitShadowDesc = zero<OptixProgramGroupDesc>();
+    //hitShadowDesc.kind = OPTIX_PROGRAM_GROUP_KIND_HITGROUP;
+    //hitShadowDesc.hitgroup.moduleCH            = pipeline->module("module0");
+    //hitShadowDesc.hitgroup.entryFunctionNameCH = "__closesthit__autosbt_shadow";
+    //auto hitShadow = pipeline->add_program_group(hitShadowDesc);
+    auto hitShadow = pipeline->add_hit_programs();
+    hitShadow->set_closesthit({"__closesthit__autosbt_shadow", pipeline->module("module0")});
 
     pipeline->link();
     

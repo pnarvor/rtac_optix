@@ -26,62 +26,68 @@ class Pipeline
     using Ptr      = Handle<Pipeline>;
     using ConstPtr = Handle<const Pipeline>;
 
-    using ModuleDict  = std::unordered_map<std::string, OptixModule>;
-    using Programs    = std::vector<ProgramGroup::Ptr>;
-
-    static OptixPipelineCompileOptions default_pipeline_compile_options();
-    static OptixPipelineLinkOptions    default_pipeline_link_options();
-    static OptixModuleCompileOptions   default_module_compile_options();
+    using Modules  = std::unordered_map<std::string, Module::Ptr>;
+    using Programs = std::vector<ProgramGroup::Ptr>;
+    
+    using CompileOptions = OptixPipelineCompileOptions;
+    using LinkOptions    = OptixPipelineLinkOptions;
+    static CompileOptions default_pipeline_compile_options();
+    static LinkOptions    default_pipeline_link_options();
 
     protected:
 
-    Context::ConstPtr     context_;
     mutable OptixPipeline pipeline_;
-    ModuleDict            modules_;
-    Programs              programs_;
+    Context::ConstPtr     context_;
+    CompileOptions        compileOptions_;
+    LinkOptions           linkOptions_;
 
-    OptixPipelineCompileOptions compileOptions_;
-    OptixPipelineLinkOptions    linkOptions_;
+    Modules  modules_;
+    Programs programs_;
 
     void autoset_stack_sizes();
+    virtual void do_build() const;
+    virtual void destroy()  const;
 
     Pipeline(const Context::ConstPtr&           context,
-             const OptixPipelineCompileOptions& compileOptions,
-             const OptixPipelineLinkOptions&    linkOptions);
+             const CompileOptions& compileOptions,
+             const LinkOptions&    linkOptions);
 
     public:
 
     static Ptr Create(const Context::ConstPtr& context,
-        const OptixPipelineCompileOptions& compileOptions = default_pipeline_compile_options(),
-        const OptixPipelineLinkOptions&    linkOptions    = default_pipeline_link_options());
+        const CompileOptions& compileOptions = default_pipeline_compile_options(),
+        const LinkOptions&    linkOptions    = default_pipeline_link_options());
     ~Pipeline();
 
+    void link(bool autoStackSizes = true);
     // Implicitly castable to OptixPipeline for seamless use in optix API.
     // This breaks encapsulation.
     // /!\ Use only in optix API calls except for optixDeviceContextDestroy,
     operator OptixPipeline();
 
-    OptixPipelineCompileOptions compile_options() const;
-    OptixPipelineLinkOptions    link_options()    const;
+    const CompileOptions& compile_options() const;
+    const LinkOptions&    link_options()    const;
+    CompileOptions& compile_options();
+    LinkOptions&    link_options();
 
-    OptixModule add_module(const std::string& name, const std::string& ptxContent,
-                           const OptixModuleCompileOptions& moduleOptions,
+    Module::Ptr add_module(const std::string& name, const std::string& ptxContent,
+                           const Module::ModuleOptions& moduleOptions,
                            bool forceReplace = false);
-    OptixModule module(const std::string& name);
+    Module::Ptr      module(const std::string& name);
+    Module::ConstPtr module(const std::string& name) const;
 
-    ProgramGroup::Ptr add_program_group(const OptixProgramGroupDesc& description);
-
-    void link(bool autoStackSizes = true);
+    ProgramGroup::Ptr add_program_group(ProgramGroup::Kind kind);
 
     // Starting from here, these are only overloads of already defined function
     // for convenience.
-    OptixModule add_module(const std::string& name, const std::string& ptxContent,
+    Module::Ptr add_module(const std::string& name, const std::string& ptxContent,
                            bool forceReplace = false);
 
     ProgramGroup::Ptr add_raygen_program(const std::string& entryPoint,
                                          const std::string& moduleName);
     ProgramGroup::Ptr add_miss_program(const std::string& entryPoint,
                                        const std::string& moduleName);
+    ProgramGroup::Ptr add_hit_programs();
 };
 
 }; //namespace optix
