@@ -17,7 +17,7 @@
 namespace rtac { namespace optix {
 
 template <unsigned int RaytypeCountV>
-class ShaderBindingTable : OptixWrapper<OptixShaderBindingTable>
+class ShaderBindingTable : public OptixWrapper<OptixShaderBindingTable>
 {
     public:
 
