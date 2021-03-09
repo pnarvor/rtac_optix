@@ -15,6 +15,7 @@
 #include <rtac_optix/Handle.h>
 #include <rtac_optix/utils.h>
 #include <rtac_optix/Context.h>
+#include <rtac_optix/OptixWrapper.h>
 #include <rtac_optix/GeometryAccelStruct.h>
 
 namespace rtac { namespace optix {
@@ -23,8 +24,8 @@ class CustomGeometry : public GeometryAccelStruct
 {
     public:
 
-    using Ptr      = Handle<CustomGeometry>;
-    using ConstPtr = Handle<const CustomGeometry>;
+    using Ptr      = OptixWrapperHandle<CustomGeometry>;
+    using ConstPtr = OptixWrapperHandle<const CustomGeometry>;
     template <typename T>
     using DeviceVector = rtac::cuda::DeviceVector<T>;
 
