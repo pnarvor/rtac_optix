@@ -31,7 +31,7 @@ class InstanceAccelStruct : public AccelerationStruct
     using ConstPtr = OptixWrapperHandle<const InstanceAccelStruct>;
 
     using Buffer    = AccelerationStruct::Buffer;
-    using Instances = std::vector<Instance::Ptr>;
+    using Instances = std::vector<Instance::ConstPtr>;
     
     using BuildInput   = AccelerationStruct::BuildInput;
     using BuildOptions = AccelerationStruct::BuildOptions;
@@ -54,8 +54,7 @@ class InstanceAccelStruct : public AccelerationStruct
 
     static Ptr Create(const Context::ConstPtr& context);
 
-    void add_instance(const Instance::Ptr& instance);
-    Instances& instances();
+    void add_instance(const Instance::ConstPtr& instance);
     const Instances& instances() const;
 
     virtual unsigned int sbt_width() const;

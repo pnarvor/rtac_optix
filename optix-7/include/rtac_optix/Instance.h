@@ -31,16 +31,16 @@ class Instance : public OptixWrapper<OptixInstance>
 
     protected:
     
-    mutable AccelerationStruct::Ptr child_;
+    mutable AccelerationStruct::ConstPtr child_;
 
     void do_build() const;
 
-    Instance(const AccelerationStruct::Ptr& handle,
+    Instance(const AccelerationStruct::ConstPtr& handle,
              unsigned int instanceId = 0);
 
     public:
 
-    static Ptr Create(const AccelerationStruct::Ptr& child,
+    static Ptr Create(const AccelerationStruct::ConstPtr& child,
                       unsigned int instanceId = 0); // what is instanceId for ?
 
     void set_sbt_offset(unsigned int offset);

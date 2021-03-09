@@ -26,32 +26,24 @@ class ObjectInstance : public Instance
 
     using Ptr       = OptixWrapperHandle<ObjectInstance>;
     using ConstPtr  = OptixWrapperHandle<const ObjectInstance>;
-    using Materials = std::vector<std::pair<unsigned int, MaterialBase::Ptr>>;
+    using Materials = std::vector<std::pair<unsigned int, MaterialBase::ConstPtr>>;
     
     protected:
 
     Materials materials_;
 
-    ObjectInstance(const GeometryAccelStruct::Ptr& geometry,
-                   unsigned int instanceId = 0); // What is it for ?
+    ObjectInstance(const GeometryAccelStruct::ConstPtr& geometry,
+                   unsigned int instanceId = 0);
 
     public:
 
-    static Ptr Create(const GeometryAccelStruct::Ptr& geometry,
-                      unsigned int instanceId = 0); // What is it for ?
+    static Ptr Create(const GeometryAccelStruct::ConstPtr& geometry,
+                      unsigned int instanceId = 0);
     
-    // num_materials if given by the GeometryAccelStruct (several Instances can
-    // share the same GeometryAccelStruct, so it is the responsibility of
-    // GeometryAccelStruct to set the number of materials).
     unsigned int material_count() const;
-    //MaterialBase::ConstPtr material(unsigned int index) const;
-    //MaterialBase::Ptr      material(unsigned int index);
-    //void set_material(const MaterialBase::Ptr& material,
-    //                  unsigned int index = 0);
-    //void unset_material(unsigned int index);
-    void add_material(const MaterialBase::Ptr& material,
+    void add_material(const MaterialBase::ConstPtr& material,
                       unsigned int index = 0);
-    Materials& materials(); // bad. Do this better
+    const Materials& materials() const;
 };
 
 }; //namespace optix

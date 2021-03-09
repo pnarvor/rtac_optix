@@ -18,7 +18,7 @@ OptixInstance Instance::default_instance(unsigned int instanceId)
     return instance;
 }
 
-Instance::Instance(const AccelerationStruct::Ptr& child,
+Instance::Instance(const AccelerationStruct::ConstPtr& child,
                    unsigned int instanceId) :
     OptixWrapper<OptixInstance>(),
     child_(child)
@@ -31,7 +31,7 @@ Instance::Instance(const AccelerationStruct::Ptr& child,
     this->add_dependency(child);
 }
 
-Instance::Ptr Instance::Create(const AccelerationStruct::Ptr& child,
+Instance::Ptr Instance::Create(const AccelerationStruct::ConstPtr& child,
                                unsigned int instanceId)
 {
     return Ptr(new Instance(child, instanceId));

@@ -41,7 +41,7 @@ class ProgramGroup : public OptixWrapper<OptixProgramGroup>
         static const char* ContinuationCallable;
 
         std::string name;
-        Module::Ptr module;
+        Module::ConstPtr module;
     };
     struct FunctionNotFound : public std::runtime_error {
         FunctionNotFound(const std::string& kind) : 

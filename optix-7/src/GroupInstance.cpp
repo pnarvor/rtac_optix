@@ -18,11 +18,6 @@ void GroupInstance::add_instance(const Instance::Ptr& instance)
     instanceAS_->add_instance(instance);
 }
 
-GroupInstance::Instances& GroupInstance::instances()
-{
-    return instanceAS_->instances();
-}
-
 const GroupInstance::Instances& GroupInstance::instances() const
 {
     return instanceAS_->instances();

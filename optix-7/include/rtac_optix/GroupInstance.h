@@ -39,7 +39,6 @@ class GroupInstance : public Instance
     static Ptr Create(const Context::ConstPtr& context);
 
     void add_instance(const Instance::Ptr& instance);
-    Instances& instances();
     const Instances& instances() const;
 };
 

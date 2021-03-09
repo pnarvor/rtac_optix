@@ -29,16 +29,16 @@ class ShaderBindingTable : OptixWrapper<OptixShaderBindingTable>
 
     protected:
     
-    using MissRecords            = std::vector<MaterialBase::Ptr>;
-    using MaterialRecordsIndexes = std::unordered_map<MaterialBase::Ptr,
+    using MissRecords            = std::vector<MaterialBase::ConstPtr>;
+    using MaterialRecordsIndexes = std::unordered_map<MaterialBase::ConstPtr,
                                                       std::vector<unsigned int>,
-                                                      MaterialBase::Ptr::Hash>;
+                                                      MaterialBase::ConstPtr::Hash>;
     
-    ShaderBindingBase::Ptr raygenRecord_;
-    mutable Buffer         raygenRecordData_;
+    ShaderBindingBase::ConstPtr raygenRecord_;
+    mutable Buffer              raygenRecordData_;
 
-    ShaderBindingBase::Ptr exceptionRecord_;
-    mutable Buffer         exceptionRecordData_;
+    ShaderBindingBase::ConstPtr exceptionRecord_;
+    mutable Buffer              exceptionRecordData_;
 
     MissRecords    missRecords_;
     mutable Buffer missRecordsData_;
@@ -49,7 +49,7 @@ class ShaderBindingTable : OptixWrapper<OptixShaderBindingTable>
     unsigned int                     hitRecordsSize_;
     mutable Buffer                   hitRecordsData_;
     
-    void add_material_record_index(const MaterialBase::Ptr& material, unsigned int index);
+    void add_material_record_index(const MaterialBase::ConstPtr& material, unsigned int index);
 
     void do_build() const;
     void fill_raygen_record() const;
@@ -65,9 +65,9 @@ class ShaderBindingTable : OptixWrapper<OptixShaderBindingTable>
 
     const OptixShaderBindingTable* sbt() const;
     
-    void set_raygen_record(const ShaderBindingBase::Ptr& record);
-    void set_exception_record(const ShaderBindingBase::Ptr& record);
-    void add_miss_record(const MaterialBase::Ptr& record);
+    void set_raygen_record(const ShaderBindingBase::ConstPtr& record);
+    void set_exception_record(const ShaderBindingBase::ConstPtr& record);
+    void add_miss_record(const MaterialBase::ConstPtr& record);
     void add_object(const ObjectInstance::Ptr& object);
 };
 
@@ -169,21 +169,23 @@ const OptixShaderBindingTable* ShaderBindingTable<RaytypeCountV>::sbt() const
 }
 
 template <unsigned int RaytypeCountV>
-void ShaderBindingTable<RaytypeCountV>::set_raygen_record(const ShaderBindingBase::Ptr& record)
+void ShaderBindingTable<RaytypeCountV>::set_raygen_record(
+                    const ShaderBindingBase::ConstPtr& record)
 {
     raygenRecord_ = record;
     this->add_dependency(record);
 }
 
 template <unsigned int RaytypeCountV>
-void ShaderBindingTable<RaytypeCountV>::set_exception_record(const ShaderBindingBase::Ptr& record)
+void ShaderBindingTable<RaytypeCountV>::set_exception_record(
+                    const ShaderBindingBase::ConstPtr& record)
 {
     exceptionRecord_ = record;
     this->add_dependency(record);
 }
 
 template <unsigned int RaytypeCountV>
-void ShaderBindingTable<RaytypeCountV>::add_miss_record(const MaterialBase::Ptr& record)
+void ShaderBindingTable<RaytypeCountV>::add_miss_record(const MaterialBase::ConstPtr& record)
 {
     if(record->raytype_index() >= RaytypeCount) {
         throw std::runtime_error("In valid miss record raytype index.");
@@ -194,7 +196,7 @@ void ShaderBindingTable<RaytypeCountV>::add_miss_record(const MaterialBase::Ptr&
 
 template <unsigned int RaytypeCountV>
 void ShaderBindingTable<RaytypeCountV>::add_material_record_index(
-    const MaterialBase::Ptr& material, unsigned int index)
+    const MaterialBase::ConstPtr& material, unsigned int index)
 {
     if(materials_.find(material) == materials_.end()) {
         materials_[material] = std::vector<unsigned int>();

@@ -40,15 +40,10 @@ void InstanceAccelStruct::do_build() const
     this->AccelerationStruct::do_build();
 }
 
-void InstanceAccelStruct::add_instance(const Instance::Ptr& instance)
+void InstanceAccelStruct::add_instance(const Instance::ConstPtr& instance)
 {
     instances_.push_back(instance);
     this->add_dependency(instance);
-}
-
-InstanceAccelStruct::Instances& InstanceAccelStruct::instances()
-{
-    return instances_;
 }
 
 const InstanceAccelStruct::Instances& InstanceAccelStruct::instances() const
