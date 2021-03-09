@@ -51,6 +51,8 @@ int main()
     auto cyan   = RgbMaterial::Create(hitRgb, RgbHitData({uchar3({0,255,255}), light}));
     auto majenta= RgbMaterial::Create(hitRgb, RgbHitData({uchar3({255,0,255}), light}));
 
+    yellow->data().color = uchar3({255,100,100});
+
     auto cube0 = ObjectInstance::Create(cubeGeom);
     cube0->add_material(yellow,  0);
     cube0->add_material(majenta, 1);
@@ -70,7 +72,7 @@ int main()
 
     //visit_graph(topObject);
     auto sbt = ShaderBindingTable<2>::Create();
-
+    
     sbt->set_raygen_record(ShaderBinding<void>::Create(raygen));
     sbt->add_miss_record(RgbMissMaterial::Create(rgbMiss,RgbMissData({uchar3({50,50,50})})));
     sbt->add_miss_record(ShadowMaterial::Create(shadowMiss));

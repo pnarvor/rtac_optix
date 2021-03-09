@@ -25,13 +25,12 @@ class ShaderBindingBase : public virtual rtac::types::BuildTarget
     protected:
 
     // putting these mutable for now. To be fixed.
-    mutable ProgramGroup::Ptr program_;
+    ProgramGroup::ConstPtr program_;
 
-    ShaderBindingBase(const ProgramGroup::Ptr& program);
+    ShaderBindingBase(const ProgramGroup::ConstPtr& program);
     
     public:
 
-    ProgramGroup::Ptr      program();
     ProgramGroup::ConstPtr program() const;
 
     virtual unsigned int record_size() const = 0;
@@ -57,22 +56,27 @@ class ShaderBinding : public OptixWrapper<SbtRecord<ParamsT>>,
     // Putting a SbtRecordType as constructor parameter to be compatible with
     // void ParamT SbtRecord are constructible with a ParamT, so Create can
     // still be called directly with parameters.
-    ShaderBinding(const ProgramGroup::Ptr& program, const SbtRecordType& params);
+    ShaderBinding(const ProgramGroup::ConstPtr& program, const SbtRecordType& params);
 
     public:
     
-    static Ptr Create(const ProgramGroup::Ptr& program,
+    static Ptr Create(const ProgramGroup::ConstPtr& program,
                       const SbtRecordType& params = zero<SbtRecordType>());
-    
-    SbtRecordType& record();
+
     const SbtRecordType& record() const;
+    
+    // Not defining these if ParamsT is void.
+    template <typename T = const ParamsT>
+    typename std::enable_if<!std::is_void<T>::value, T>::type& data() const;
+    template <typename T = ParamsT>
+    typename std::enable_if<!std::is_void<T>::value, T>::type& data();
 
     virtual unsigned int record_size() const;
     virtual void fill_sbt_record(void* dst) const;
 };
 
 template <typename ParamsT>
-ShaderBinding<ParamsT>::ShaderBinding(const ProgramGroup::Ptr& program,
+ShaderBinding<ParamsT>::ShaderBinding(const ProgramGroup::ConstPtr& program,
                                       const SbtRecordType& params) :
     ShaderBindingBase(program)
 {
@@ -82,7 +86,7 @@ ShaderBinding<ParamsT>::ShaderBinding(const ProgramGroup::Ptr& program,
 
 template <typename ParamsT>
 typename ShaderBinding<ParamsT>::Ptr ShaderBinding<ParamsT>::Create(
-    const ProgramGroup::Ptr& program, const SbtRecordType& params)
+    const ProgramGroup::ConstPtr& program, const SbtRecordType& params)
 {
     return Ptr(new ShaderBinding(program, params));
 }
@@ -94,15 +98,22 @@ void ShaderBinding<ParamsT>::do_build() const
 }
 
 template <typename ParamsT>
-typename ShaderBinding<ParamsT>::SbtRecordType& ShaderBinding<ParamsT>::record()
+const typename ShaderBinding<ParamsT>::SbtRecordType& ShaderBinding<ParamsT>::record() const
 {
     return *this;
 }
 
-template <typename ParamsT>
-const typename ShaderBinding<ParamsT>::SbtRecordType& ShaderBinding<ParamsT>::record() const
+template <typename ParamsT> template <typename T>
+typename std::enable_if<!std::is_void<T>::value, T>::type& ShaderBinding<ParamsT>::data() const
 {
-    return *this;
+    return this->optixObject_.data;
+}
+
+template <typename ParamsT> template <typename T>
+typename std::enable_if<!std::is_void<T>::value, T>::type& ShaderBinding<ParamsT>::data()
+{
+    this->bump_version(false);
+    return this->optixObject_.data;
 }
 
 template <typename ParamsT>
