@@ -186,7 +186,6 @@ int main( int argc, char* argv[] )
     //auto hitgroup_prog_group = pipeline0->add_program_group(hitgroup_prog_group_desc);
     auto hitgroup_prog_group = pipeline0->add_hit_programs();
     hitgroup_prog_group->set_closesthit({"__closesthit__ch", pipeline0->module("src/optix_triangle.cu")});
-    pipeline0->link();
 
     //
     // Set up shader binding table

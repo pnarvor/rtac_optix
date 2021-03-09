@@ -42,7 +42,6 @@ int main()
     // the missProgram is mandatory even without rays.
     auto missProgram = pipeline->add_miss_program("__miss__pinhole",
                                                  "src/pinhole_test.cu");
-    pipeline->link();
 
     // Shader binding table setup = setting program parameters
     auto sbt = rtac::optix::zero<OptixShaderBindingTable>();
