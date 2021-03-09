@@ -23,5 +23,10 @@ const GroupInstance::Instances& GroupInstance::instances() const
     return instanceAS_->instances();
 }
 
+InstanceAccelStruct::ConstPtr GroupInstance::instanceAS() const
+{
+    return instanceAS_;
+}
+
 }; //namespace optix
 }; //namespace rtac

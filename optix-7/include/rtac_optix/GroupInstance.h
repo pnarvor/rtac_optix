@@ -40,6 +40,7 @@ class GroupInstance : public Instance
 
     void add_instance(const Instance::Ptr& instance);
     const Instances& instances() const;
+    InstanceAccelStruct::ConstPtr instanceAS() const;
 };
 
 }; //namespace optix
