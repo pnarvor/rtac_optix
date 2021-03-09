@@ -3,14 +3,8 @@
 namespace rtac { namespace optix {
 
 ShaderBindingBase::ShaderBindingBase(const ProgramGroup::Ptr& program) :
-    program_(program),
-    needsUpdate_(true)
+    program_(program)
 {}
-
-bool ShaderBindingBase::needs_update() const
-{
-    return needsUpdate_;
-}
 
 ProgramGroup::Ptr ShaderBindingBase::program()
 {

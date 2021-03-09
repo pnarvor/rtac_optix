@@ -10,6 +10,7 @@
 
 #include <rtac_optix/Handle.h>
 #include <rtac_optix/utils.h>
+#include <rtac_optix/OptixWrapper.h>
 #include <rtac_optix/ProgramGroup.h>
 #include <rtac_optix/ShaderBinding.h>
 
@@ -21,8 +22,8 @@ class MaterialBase : public virtual ShaderBindingBase
     // instanciated on its own.
     public:
 
-    using Ptr      = Handle<MaterialBase>;
-    using ConstPtr = Handle<const MaterialBase>;
+    using Ptr      = OptixWrapperHandle<MaterialBase>;
+    using ConstPtr = OptixWrapperHandle<const MaterialBase>;
 
     protected:
 
@@ -45,8 +46,8 @@ class Material : public ShaderBinding<ParamsT>, public MaterialBase
     using ParamsType    = typename ShaderBinding<ParamsT>::ParamsType;
     using SbtRecordType = typename ShaderBinding<ParamsT>::SbtRecordType;
 
-    using Ptr      = Handle<Material<RayType, ParamsType>>;
-    using ConstPtr = Handle<const Material<RayType, ParamsType>>;
+    using Ptr      = OptixWrapperHandle<Material<RayType, ParamsType>>;
+    using ConstPtr = OptixWrapperHandle<const Material<RayType, ParamsType>>;
     
     protected:
 
