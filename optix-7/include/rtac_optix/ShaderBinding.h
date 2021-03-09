@@ -15,7 +15,7 @@
 
 namespace rtac { namespace optix {
 
-class ShaderBindingBase : public virtual rtac::types::BuildTarget
+class ShaderBindingBase : public rtac::types::BuildTarget
 {
     public:
 
@@ -38,8 +38,7 @@ class ShaderBindingBase : public virtual rtac::types::BuildTarget
 };
 
 template <typename ParamsT>
-class ShaderBinding : public OptixWrapper<SbtRecord<ParamsT>>,
-                      public virtual ShaderBindingBase
+class ShaderBinding : public virtual ShaderBindingBase
 {
     public:
 
@@ -50,6 +49,8 @@ class ShaderBinding : public OptixWrapper<SbtRecord<ParamsT>>,
     using ConstPtr = OptixWrapperHandle<const ShaderBinding<ParamsType>>;
     
     protected:
+
+    mutable SbtRecordType sbt_Record_;
 
     void do_build() const;
 
@@ -81,7 +82,7 @@ ShaderBinding<ParamsT>::ShaderBinding(const ProgramGroup::ConstPtr& program,
     ShaderBindingBase(program)
 {
     this->add_dependency(program);
-    this->optixObject_ = params;
+    this->sbt_Record_ = params;
 }
 
 template <typename ParamsT>
@@ -94,7 +95,7 @@ typename ShaderBinding<ParamsT>::Ptr ShaderBinding<ParamsT>::Create(
 template <typename ParamsT>
 void ShaderBinding<ParamsT>::do_build() const
 {
-    OPTIX_CHECK( optixSbtRecordPackHeader(*(this->program_), &this->optixObject_) );
+    OPTIX_CHECK( optixSbtRecordPackHeader(*(this->program_), &this->sbt_Record_) );
 }
 
 template <typename ParamsT>
@@ -106,14 +107,14 @@ const typename ShaderBinding<ParamsT>::SbtRecordType& ShaderBinding<ParamsT>::re
 template <typename ParamsT> template <typename T>
 typename std::enable_if<!std::is_void<T>::value, T>::type& ShaderBinding<ParamsT>::data() const
 {
-    return this->optixObject_.data;
+    return this->sbt_Record_.data;
 }
 
 template <typename ParamsT> template <typename T>
 typename std::enable_if<!std::is_void<T>::value, T>::type& ShaderBinding<ParamsT>::data()
 {
     this->bump_version(false);
-    return this->optixObject_.data;
+    return this->sbt_Record_.data;
 }
 
 template <typename ParamsT>
@@ -126,7 +127,7 @@ template <typename ParamsT>
 void ShaderBinding<ParamsT>::fill_sbt_record(void* dst) const
 {
     this->build();
-    std::memcpy(dst, &this->optixObject_, this->record_size());
+    std::memcpy(dst, &this->sbt_Record_, this->record_size());
 }
 
 }; //namespace optix
