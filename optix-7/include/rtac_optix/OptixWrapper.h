@@ -14,7 +14,7 @@ template <typename T>
 using OptixWrapperHandle = rtac::types::BuildTargetHandle<T,Handle>;
 
 template <typename OptixT>
-class OptixWrapper : public rtac::types::BuildTarget
+class OptixWrapper : public virtual rtac::types::BuildTarget
 {
     // This type aims at being a generic helper to be used instead of native
     // OptiX types.

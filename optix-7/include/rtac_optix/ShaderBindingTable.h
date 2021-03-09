@@ -63,7 +63,7 @@ class ShaderBindingTable : OptixWrapper<OptixShaderBindingTable>
 
     static Ptr Create();
 
-    const OptixShaderBindingTable* sbt();
+    const OptixShaderBindingTable* sbt() const;
     
     void set_raygen_record(const ShaderBindingBase::Ptr& record);
     void set_exception_record(const ShaderBindingBase::Ptr& record);
@@ -100,7 +100,7 @@ void ShaderBindingTable<RaytypeCountV>::fill_raygen_record() const
 {
     if(!raygenRecord_) {
         throw std::runtime_error(
-            "Not raygen record set. Cannot instanciate ShaderBindingTable");
+            "No raygen record set. Cannot instanciate ShaderBindingTable");
     }
     std::vector<uint8_t> tmp(raygenRecord_->record_size());
     raygenRecord_->fill_sbt_record(tmp.data());
@@ -162,18 +162,7 @@ void ShaderBindingTable<RaytypeCountV>::fill_hit_records() const
 }
 
 template <unsigned int RaytypeCountV>
-void ShaderBindingTable<RaytypeCountV>::add_material_record_index(
-    const MaterialBase::Ptr& material, unsigned int index)
-{
-    if(materials_.find(material) == materials_.end()) {
-        materials_[material] = std::vector<unsigned int>();
-    }
-    materials_[material].push_back(RaytypeCount*index + material->raytype_index());
-    hitRecordsSize_ = std::max(hitRecordsSize_, material->record_size());
-}
-
-template <unsigned int RaytypeCountV>
-const OptixShaderBindingTable* ShaderBindingTable<RaytypeCountV>::sbt()
+const OptixShaderBindingTable* ShaderBindingTable<RaytypeCountV>::sbt() const
 {
     this->build();
     return &optixObject_;
@@ -183,12 +172,14 @@ template <unsigned int RaytypeCountV>
 void ShaderBindingTable<RaytypeCountV>::set_raygen_record(const ShaderBindingBase::Ptr& record)
 {
     raygenRecord_ = record;
+    this->add_dependency(record);
 }
 
 template <unsigned int RaytypeCountV>
 void ShaderBindingTable<RaytypeCountV>::set_exception_record(const ShaderBindingBase::Ptr& record)
 {
     exceptionRecord_ = record;
+    this->add_dependency(record);
 }
 
 template <unsigned int RaytypeCountV>
@@ -198,6 +189,19 @@ void ShaderBindingTable<RaytypeCountV>::add_miss_record(const MaterialBase::Ptr&
         throw std::runtime_error("In valid miss record raytype index.");
     }
     missRecords_[record->raytype_index()] = record;
+    this->add_dependency(record);
+}
+
+template <unsigned int RaytypeCountV>
+void ShaderBindingTable<RaytypeCountV>::add_material_record_index(
+    const MaterialBase::Ptr& material, unsigned int index)
+{
+    if(materials_.find(material) == materials_.end()) {
+        materials_[material] = std::vector<unsigned int>();
+        this->add_dependency(material);
+    }
+    materials_[material].push_back(RaytypeCount*index + material->raytype_index());
+    hitRecordsSize_ = std::max(hitRecordsSize_, material->record_size());
 }
 
 template <unsigned int RaytypeCountV>

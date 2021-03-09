@@ -15,7 +15,7 @@
 
 namespace rtac { namespace optix {
 
-class ShaderBindingBase
+class ShaderBindingBase : public virtual rtac::types::BuildTarget
 {
     public:
 
