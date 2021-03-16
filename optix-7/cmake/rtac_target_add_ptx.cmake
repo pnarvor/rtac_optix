@@ -10,8 +10,9 @@ function(target_add_ptx TARGET_NAME)
     # INSTALL_DESTINATION <path>  : Install destination of the generated header relative to the installation path.
     #                               Will also be used as a prefix to generation path in the build directory.
     # CUDA_SOURCES <file_path...> : CUDA sources to be compiled and added to the generated header.
+    # CUDA_OPTIONS <options...>   : Additional CUDA compile options for ptx files.
 
-	cmake_parse_arguments(ARGUMENTS "TAG_FOR_INSTALL" "OUTPUT_NAME;INSTALL_DESTINATION" "CUDA_SOURCES" ${ARGN} )
+	cmake_parse_arguments(ARGUMENTS "TAG_FOR_INSTALL" "OUTPUT_NAME;INSTALL_DESTINATION" "CUDA_SOURCES;CUDA_OPTIONS" ${ARGN} )
 
     # output filename
     if("${ARGUMENTS_OUTPUT_NAME}" STREQUAL "")
@@ -30,6 +31,9 @@ function(target_add_ptx TARGET_NAME)
 
     # Enabling PTX generation
     set_target_properties(${ptx_target} PROPERTIES CUDA_PTX_COMPILATION ON)
+    target_compile_options(${ptx_target} PUBLIC
+        $<$<COMPILE_LANGUAGE:CUDA>: ${ARGUMENTS_CUDA_OPTIONS}>
+    )
 
     # Set target properties of TARGET_NAME to ptx_target.
     get_target_property(target_include_dirs ${TARGET_NAME} INCLUDE_DIRECTORIES)
