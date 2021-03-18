@@ -1,11 +1,11 @@
-#ifndef _DEF_RTAC_OPTIX_PINHOLE_CAMERA_H_
-#define _DEF_RTAC_OPTIX_PINHOLE_CAMERA_H_
+#ifndef _DEF_RTAC_OPTIX_HELPERS_PINHOLE_CAMERA_H_
+#define _DEF_RTAC_OPTIX_HELPERS_PINHOLE_CAMERA_H_
 
 #include <rtac_base/cuda/utils.h>
 
-#include <rtac_optix/samples/maths.h>
+#include <rtac_optix/helpers/maths.h>
 
-namespace rtac { namespace optix { namespace samples {
+namespace rtac { namespace optix { namespace helpers {
 
 struct PinholeCamera
 {
@@ -15,10 +15,10 @@ struct PinholeCamera
     float3 w_; // towards back, length controls the vertical field of view
 
     RTAC_HOSTDEVICE 
-    static PinholeCamera New(const float3& target   = {0.0,1.0f,0.0},
-                             const float3& position = {0.0f, 0.0f, 0.0f},
-                             float fovy = 90.0,
-                             const float3& up = {0.0f,0.0f,1.0f})
+    static PinholeCamera Create(const float3& target   = {0.0,1.0f,0.0},
+                                const float3& position = {0.0f, 0.0f, 0.0f},
+                                float fovy = 90.0,
+                                const float3& up = {0.0f,0.0f,1.0f})
     {
         PinholeCamera res;
         res.w_ = make_float3(0.0f,0.0f,1.0f);
@@ -33,8 +33,8 @@ struct PinholeCamera
     {
         origin = position_;
         // compensating aspect ratio
-        float px = dim.x * (2.0f * idx.x / (dim.x - 1) - 1.0f) / dim.y; 
-        float py =          2.0f * idx.y / (dim.y - 1) - 1.0f;
+        float px = dim.y * (2.0f * idx.y / (dim.y - 1) - 1.0f) / dim.x; 
+        float py =          2.0f * idx.x / (dim.x - 1) - 1.0f;
         direction = normalize(px*u_ + py*v_ + w_);
     }
 
@@ -65,13 +65,13 @@ struct PinholeCamera
 
 
 
-}; //namespace samples
+}; //namespace helpers
 }; //namespace optix
 }; //namespace rtac
 
 #ifndef __NVCC__
 #include <iostream>
-inline std::ostream& operator<<(std::ostream& os, const rtac::optix::samples::PinholeCamera& cam)
+inline std::ostream& operator<<(std::ostream& os, const rtac::optix::helpers::PinholeCamera& cam)
 {
     os << "PinholeCamera :"
        << "\n- center : " << cam.position_.x <<" "<< cam.position_.y <<" "<< cam.position_.z
@@ -82,4 +82,4 @@ inline std::ostream& operator<<(std::ostream& os, const rtac::optix::samples::Pi
 }
 #endif
 
-#endif //_DEF_RTAC_OPTIX_PINHOLE_CAMERA_H_
+#endif //_DEF_RTAC_OPTIX_HELPERS_PINHOLE_CAMERA_H_

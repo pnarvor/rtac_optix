@@ -69,6 +69,10 @@ class ShaderBindingTable : public OptixWrapper<OptixShaderBindingTable>
     void set_exception_record(const ShaderBindingBase::ConstPtr& record);
     void add_miss_record(const MaterialBase::ConstPtr& record);
     void add_object(const ObjectInstance::Ptr& object);
+
+    // BELOW HERE ARE ONLY HELPERS / OVERLOADS
+    void set_raygen_program(const ProgramGroup::ConstPtr& program);
+    void set_exception_program(const ProgramGroup::ConstPtr& program);
 };
 
 template <unsigned int RaytypeCountV>
@@ -221,6 +225,18 @@ void ShaderBindingTable<RaytypeCountV>::add_object(const ObjectInstance::Ptr& ob
             this->add_material_record_index(mat.second, hitRecordsCount_ + mat.first);
     }
     hitRecordsCount_ += object->material_count();
+}
+
+template <unsigned int RaytypeCountV>
+void ShaderBindingTable<RaytypeCountV>::set_raygen_program(const ProgramGroup::ConstPtr& program)
+{
+    this->set_raygen_record(ShaderBinding<void>::Create(program));
+}
+
+template <unsigned int RaytypeCountV>
+void ShaderBindingTable<RaytypeCountV>::set_exception_program(const ProgramGroup::ConstPtr& program)
+{
+    this->set_exception_record(ShaderBinding<void>::Create(program));
 }
 
 }; //namespace optix

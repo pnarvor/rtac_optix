@@ -1,5 +1,5 @@
-#ifndef _DEF_RTAC_OPTIX_SAMPLES_MATHS_H_
-#define _DEF_RTAC_OPTIX_SAMPLES_MATHS_H_
+#ifndef _DEF_RTAC_OPTIX_helpers_MATHS_H_
+#define _DEF_RTAC_OPTIX_helpers_MATHS_H_
 
 #include <cuda_runtime.h>
 #include <optix.h>
@@ -8,7 +8,7 @@
 
 #include <sutil/vec_math.h> // consider replacing this ?
 
-namespace rtac { namespace optix { namespace samples {
+namespace rtac { namespace optix { namespace helpers {
 
 
 //RTAC_HOSTDEVICE RTAC_INLINE
@@ -59,8 +59,8 @@ int line_sphere_intersection(const float3& p0, const float3& dir, float radius,
                            tmin, tmax);
 }
 
-}; //namespace samples
+}; //namespace helpers
 }; //namespace optix
 }; //namespace rtac
 
-#endif //_DEF_RTAC_OPTIX_SAMPLES_MATHS_H_
+#endif //_DEF_RTAC_OPTIX_helpers_MATHS_H_

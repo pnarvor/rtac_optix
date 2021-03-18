@@ -62,8 +62,8 @@ struct Raytype : public PayloadT // Inheriting payload type for easy access
     __device__       uint32_t* data();
     
     // copy from/to optix ray payload registers using optixSetPayload_n and optixGetPayload_n
-    __device__ static void to_registers(const PayloadT& payload);
-    __device__ void to_registers() const;
+    __device__ static void set_payload(const PayloadT& payload);
+    __device__ void set_payload() const;
 
     __device__ void load_registers();
     __device__ static Raytype<PayloadT,SbtOffsetV,SbtStrideV,MissSbtOffsetV> from_registers();
@@ -172,7 +172,7 @@ data()
 
 template <class PayloadT, uint8_t SbtOffsetV, uint8_t SbtStrideV, uint8_t MissSbtOffsetV>
 __device__ void Raytype<PayloadT,SbtOffsetV,SbtStrideV,MissSbtOffsetV>::
-to_registers(const PayloadT& payload)
+set_payload(const PayloadT& payload)
 {
     // if constexpr is a c++17 feature which allows to ignore code at compile
     // time by checking the result of a constexpr test.
@@ -189,7 +189,7 @@ to_registers(const PayloadT& payload)
 
 template <class PayloadT, uint8_t SbtOffsetV, uint8_t SbtStrideV, uint8_t MissSbtOffsetV>
 __device__ void Raytype<PayloadT,SbtOffsetV,SbtStrideV,MissSbtOffsetV>::
-to_registers() const
+set_payload() const
 {
     to_register(*this);
 }
