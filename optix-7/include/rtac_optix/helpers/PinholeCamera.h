@@ -33,8 +33,8 @@ struct PinholeCamera
     {
         origin = position_;
         // compensating aspect ratio
-        float px = dim.y * (2.0f * idx.y / (dim.y - 1) - 1.0f) / dim.x; 
-        float py =          2.0f * idx.x / (dim.x - 1) - 1.0f;
+        float px = dim.x * (2.0f * idx.x / (dim.x - 1) - 1.0f) / dim.y; 
+        float py =          2.0f * idx.y / (dim.y - 1) - 1.0f;
         direction = normalize(px*u_ + py*v_ + w_);
     }
 
