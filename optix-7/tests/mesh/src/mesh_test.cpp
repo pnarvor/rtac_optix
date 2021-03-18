@@ -83,17 +83,23 @@ int main()
     auto sbt = rtac::optix::zero<OptixShaderBindingTable>();
     RaygenRecord raygenRecord;
     OPTIX_CHECK(optixSbtRecordPackHeader(*raygenProgram, &raygenRecord));
-    sbt.raygenRecord   = reinterpret_cast<CUdeviceptr>(memcpy::host_to_device(raygenRecord));
+    cudaMalloc((void**)&sbt.raygenRecord, sizeof(RaygenRecord));
+    cudaMemcpy((void*)sbt.raygenRecord, &raygenRecord, sizeof(RaygenRecord),
+               cudaMemcpyHostToDevice);
 
     MissRecord missRecord;
     OPTIX_CHECK(optixSbtRecordPackHeader(*missProgram, &missRecord));
-    sbt.missRecordBase = reinterpret_cast<CUdeviceptr>(memcpy::host_to_device(missRecord));
+    cudaMalloc((void**)&sbt.missRecordBase, sizeof(MissRecord));
+    cudaMemcpy((void*)sbt.missRecordBase, &missRecord, sizeof(MissRecord),
+               cudaMemcpyHostToDevice);
     sbt.missRecordStrideInBytes = sizeof(MissRecord);
     sbt.missRecordCount         = 1;
 
     ClosestHitRecord chRecord;
     OPTIX_CHECK(optixSbtRecordPackHeader(*closestHitProgram, &chRecord));
-    sbt.hitgroupRecordBase          = reinterpret_cast<CUdeviceptr>(memcpy::host_to_device(chRecord));
+    cudaMalloc((void**)&sbt.hitgroupRecordBase, sizeof(ClosestHitRecord));
+    cudaMemcpy((void*)sbt.hitgroupRecordBase, &chRecord, sizeof(ClosestHitRecord),
+               cudaMemcpyHostToDevice);
     sbt.hitgroupRecordStrideInBytes = sizeof(chRecord);
     sbt.hitgroupRecordCount         = 1;
 
@@ -105,11 +111,15 @@ int main()
     params.width     = W;
     params.height    = H;
     params.imageData = imgData.data();
-    params.cam       = samples::PinholeCamera::New({0.0f,0.0f,0.0f}, {5.0f,4.0f,3.0f});
+    params.cam       = helpers::PinholeCamera::Create({0.0f,0.0f,0.0f}, {5.0f,4.0f,3.0f});
     params.topObject = *handle;
+
+    CUdeviceptr dparams;
+    cudaMalloc((void**)&dparams, sizeof(Params));
+    cudaMemcpy((void*)dparams, &params, sizeof(Params), cudaMemcpyHostToDevice);
     
     OPTIX_CHECK(optixLaunch(*pipeline, 0,
-                            reinterpret_cast<CUdeviceptr>(memcpy::host_to_device(params)),
+                            dparams,
                             sizeof(params), &sbt, W,H,1));
     cudaDeviceSynchronize();
 

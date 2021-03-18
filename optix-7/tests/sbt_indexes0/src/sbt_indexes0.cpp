@@ -73,7 +73,9 @@ int main()
 
     RaygenRecord raygenRecord;
     OPTIX_CHECK( optixSbtRecordPackHeader(*raygen, &raygenRecord) );
-    sbt.raygenRecord = (CUdeviceptr)memcpy::host_to_device(raygenRecord);
+    cudaMalloc((void**)&sbt.raygenRecord, sizeof(RaygenRecord));
+    cudaMemcpy((void*)sbt.raygenRecord, &raygenRecord, sizeof(RaygenRecord),
+               cudaMemcpyHostToDevice);
 
     std::vector<MissRecord> missRecords(255);
     for(int i = 0; i < missRecords.size(); i++) {
@@ -106,14 +108,18 @@ int main()
     params.width  = W;
     params.height = H;
     params.output = output.data();
-    params.cam    = samples::PinholeCamera::New(float3({0.0f,0.0f,0.0f}),
+    params.cam    = helpers::PinholeCamera::Create(float3({0.0f,0.0f,0.0f}),
                                                 float3({5.0f,4.0f,3.0f}));
     //params.topObject = *cube0;
     //params.topObject = *topObject;
     params.topObject = *topTopObject;
     
+    CUdeviceptr dparams;
+    cudaMalloc((void**)&dparams, sizeof(Params));
+    cudaMemcpy((void*)dparams, &params, sizeof(Params), cudaMemcpyHostToDevice);
+    
     OPTIX_CHECK( optixLaunch(*pipeline, 0,
-                             (CUdeviceptr)memcpy::host_to_device(params), sizeof(Params),
+                             dparams, sizeof(Params),
                              &sbt, W, H, 1) );
     cudaDeviceSynchronize();
 

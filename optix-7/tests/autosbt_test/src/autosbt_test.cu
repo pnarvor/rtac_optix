@@ -20,7 +20,7 @@ extern "C" __global__ void __raygen__autosbt_test()
 extern "C" __global__ void __miss__autosbt_rgb()
 {
     auto data = reinterpret_cast<const RgbMissData*>(optixGetSbtDataPointer());
-    RgbRay::to_registers(data->color);
+    RgbRay::set_payload(data->color);
 }
 
 extern "C" __global__ void __closesthit__autosbt_rgb()
@@ -47,7 +47,7 @@ extern "C" __global__ void __closesthit__autosbt_rgb()
     sray.trace(params.topObject, hitPosition, rayDirection, 1.0e-4);
     if(sray.tHit < 0.0f) {
         // the shadow ray did not encounter any object. No shadow
-        RgbRay::to_registers(data->color);
+        RgbRay::set_payload(data->color);
     }
     else {
         // the shadow ray did encounter an object. Shadow
@@ -55,16 +55,16 @@ extern "C" __global__ void __closesthit__autosbt_rgb()
         c.x /= 8;
         c.y /= 8;
         c.z /= 8;
-        RgbRay::to_registers(c);
+        RgbRay::set_payload(c);
     }
 }
 
 extern "C" __global__ void __miss__autosbt_shadow()
 {
-    ShadowRay::to_registers({-1.0f});
+    ShadowRay::set_payload({-1.0f});
 }
 
 extern "C" __global__ void __closesthit__autosbt_shadow()
 {
-    ShadowRay::to_registers({optixGetRayTmax()});
+    ShadowRay::set_payload({optixGetRayTmax()});
 }

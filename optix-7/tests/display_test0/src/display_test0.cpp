@@ -156,13 +156,15 @@ int main()
 
     RaygenRecord raygenRecord;
     OPTIX_CHECK( optixSbtRecordPackHeader(*raygenProgram, &raygenRecord) );
-    sbt.raygenRecord = reinterpret_cast<CUdeviceptr>(
-        rtac::cuda::memcpy::host_to_device(raygenRecord));
+    cudaMalloc((void**)&sbt.raygenRecord, sizeof(RaygenRecord));
+    cudaMemcpy((void*)sbt.raygenRecord, &raygenRecord, sizeof(RaygenRecord),
+               cudaMemcpyHostToDevice);
 
     MissRecord missRecord;
     OPTIX_CHECK( optixSbtRecordPackHeader(*missProgram, &missRecord) );
-    sbt.missRecordBase = reinterpret_cast<CUdeviceptr>(
-        rtac::cuda::memcpy::host_to_device(missRecord));
+    cudaMalloc((void**)&sbt.missRecordBase, sizeof(MissRecord));
+    cudaMemcpy((void*)sbt.missRecordBase, &missRecord, sizeof(MissRecord),
+               cudaMemcpyHostToDevice);
     sbt.missRecordCount = 1;
     sbt.missRecordStrideInBytes = sizeof(MissRecord);
     
@@ -195,7 +197,7 @@ int main()
     params.height    = H;
     //params.imageData = renderData.data();
     params.imageData = nullptr;
-    params.cam       = samples::PinholeCamera::New(camTarget, camPos);
+    params.cam       = helpers::PinholeCamera::Create(camTarget, camPos);
     params.sceneTreeHandle = *topInstance;
     
     // Preparing display
@@ -234,9 +236,13 @@ int main()
             auto ptr = imgData.map_cuda(); 
             params.imageData = ptr;
 
+            CUdeviceptr dparams;
+            cudaMalloc((void**)&dparams, sizeof(Params));
+            cudaMemcpy((void*)dparams, &params, sizeof(Params), cudaMemcpyHostToDevice);
+
             // Updating ray-traced image (data in renderData
             OPTIX_CHECK( optixLaunch(*pipeline, 0, 
-                                     reinterpret_cast<CUdeviceptr>(memcpy::host_to_device(params)),
+                                     dparams,
                                      sizeof(params), &sbt, W, H, 1) );
             cudaDeviceSynchronize(); // optixLaunch is asynchrounous
         }

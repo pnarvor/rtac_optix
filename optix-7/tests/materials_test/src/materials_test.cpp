@@ -56,11 +56,15 @@ int main()
 
     SbtRecord<RaygenData> raygenRecord;
     OPTIX_CHECK( optixSbtRecordPackHeader(*raygen, &raygenRecord) );
-    sbt.raygenRecord = (CUdeviceptr)cuda::memcpy::host_to_device(raygenRecord);
+    cudaMalloc((void**)&sbt.raygenRecord, sizeof(SbtRecord<RaygenData>));
+    cudaMemcpy((void*)sbt.raygenRecord, &raygenRecord, sizeof(SbtRecord<RaygenData>),
+               cudaMemcpyHostToDevice);
 
     SbtRecord<MissData> missRecord;
     OPTIX_CHECK( optixSbtRecordPackHeader(*miss, &missRecord) );
-    sbt.missRecordBase          = (CUdeviceptr)cuda::memcpy::host_to_device(missRecord);
+    cudaMalloc((void**)&sbt.missRecordBase, sizeof(SbtRecord<MissData>));
+    cudaMemcpy((void*)sbt.missRecordBase, &missRecord, sizeof(SbtRecord<MissData>),
+               cudaMemcpyHostToDevice);
     sbt.missRecordCount         = 1;
     sbt.missRecordStrideInBytes = sizeof(SbtRecord<MissData>);
 
@@ -78,11 +82,15 @@ int main()
     params.width = W;
     params.height = H;
     params.imgData = output.data();
-    params.cam = samples::PinholeCamera::New({0,0,0}, {5,4,3});
+    params.cam = helpers::PinholeCamera::Create({0,0,0}, {5,4,3});
     params.topObject = *topObject;
 
+    CUdeviceptr dparams;
+    cudaMalloc((void**)&dparams, sizeof(Params));
+    cudaMemcpy((void*)dparams, &params, sizeof(Params), cudaMemcpyHostToDevice);
+
     OPTIX_CHECK(optixLaunch(*pipeline, 0,
-        (CUdeviceptr)cuda::memcpy::host_to_device(params), sizeof(params),
+        dparams, sizeof(params),
         &sbt, W,H,1));
     cudaDeviceSynchronize();
 

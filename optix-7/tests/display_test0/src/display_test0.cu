@@ -1,6 +1,6 @@
 #include "display_test0.h"
 
-#include <rtac_optix/samples/maths.h>
+#include <rtac_optix/helpers/maths.h>
 
 using namespace rtac::optix;
 
@@ -65,7 +65,7 @@ extern "C" __global__ void __intersection__sphere()
     auto rayDirection = optixGetObjectRayDirection();
 
     float tmin, tmax;
-    if(samples::line_sphere_intersection(rayOrigin, rayDirection,
+    if(helpers::line_sphere_intersection(rayOrigin, rayDirection,
                                          sphere.radius,
                                          tmin, tmax) > 0) {
         float rayTmin = optixGetRayTmin();

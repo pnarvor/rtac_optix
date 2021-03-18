@@ -19,13 +19,13 @@ extern "C" __global__ void __raygen__materials_test()
 extern "C" __global__ void __miss__materials_test()
 {
     auto data = reinterpret_cast<const HitData*>(optixGetSbtDataPointer());
-    RGBRay::to_registers(data->color);
+    RGBRay::set_payload(data->color);
 }
 
 extern "C" __global__ void __closesthit__materials_test()
 {
     auto data = reinterpret_cast<const HitData*>(optixGetSbtDataPointer());
-    RGBRay::to_registers(data->color);
+    RGBRay::set_payload(data->color);
 }
 
 

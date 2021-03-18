@@ -20,11 +20,11 @@ extern "C" __global__ void __raygen__sbt_indexes0()
 extern "C" __global__ void __miss__sbt_indexes0()
 {
     auto data = reinterpret_cast<const MissData*>(optixGetSbtDataPointer());
-    RGBRay::to_registers(RGBPayload({make_uchar3(data->value, data->value, data->value)}));
+    RGBRay::set_payload(RGBPayload({make_uchar3(data->value, data->value, data->value)}));
 }
 
 extern "C" __global__ void __closesthit__sbt_indexes0()
 {
     auto data = reinterpret_cast<const HitData*>(optixGetSbtDataPointer());
-    RGBRay::to_registers(RGBPayload({make_uchar3(data->value, data->value, data->value)}));
+    RGBRay::set_payload(RGBPayload({make_uchar3(data->value, data->value, data->value)}));
 }

@@ -3,7 +3,7 @@
 
 #include <optix.h>
 
-#include <rtac_optix/samples/PinholeCamera.h>
+#include <rtac_optix/helpers/PinholeCamera.h>
 
 struct Params
 {
@@ -13,7 +13,7 @@ struct Params
     float*       imageData;
 
     // camera
-    rtac::optix::samples::PinholeCamera cam;
+    rtac::optix::helpers::PinholeCamera cam;
 };
 
 struct RaygenData

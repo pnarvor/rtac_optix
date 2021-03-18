@@ -43,8 +43,8 @@ list(APPEND rtac_optix_PUBLIC_HEADERS
     include/rtac_optix/optix_SDK/sutil/Preprocessor.h
     include/rtac_optix/optix_SDK/sutil/vec_math.h
     
-    include/rtac_optix/samples/maths.h
-    include/rtac_optix/samples/PinholeCamera.h
+    include/rtac_optix/helpers/maths.h
+    include/rtac_optix/helpers/PinholeCamera.h
 )
 list(APPEND rtac_optix_SOURCES
     src/Source.cpp

@@ -9,13 +9,13 @@
 #include <rtac_optix/Raytype.h>
 #include <rtac_optix/RaytypeFactory.h>
 
-#include <rtac_optix/samples/PinholeCamera.h>
+#include <rtac_optix/helpers/PinholeCamera.h>
 
 struct Params {
     unsigned int width;
     unsigned int height;
     uchar3*      imgData;
-    rtac::optix::samples::PinholeCamera cam;
+    rtac::optix::helpers::PinholeCamera cam;
     OptixTraversableHandle topObject;
 };
 

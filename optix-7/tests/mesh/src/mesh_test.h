@@ -3,14 +3,14 @@
 
 #include <optix.h>
 
-#include <rtac_optix/samples/PinholeCamera.h>
+#include <rtac_optix/helpers/PinholeCamera.h>
 
 struct Params
 {
     unsigned int width;
     unsigned int height;
     uchar3*      imageData;
-    rtac::optix::samples::PinholeCamera cam;
+    rtac::optix::helpers::PinholeCamera cam;
     OptixTraversableHandle topObject;
 };
 

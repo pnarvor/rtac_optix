@@ -87,12 +87,16 @@ int main()
     params.width  = W;
     params.height = H;
     params.output = output.data();
-    params.cam = PinholeCamera::New({0,0,0}, {3,5,3});
+    params.cam = PinholeCamera::Create({0,0,0}, {3,5,3});
     params.topObject = *topObject;
     //params.light = {4,2,10};
 
+    CUdeviceptr dparams;
+    cudaMalloc((void**)&dparams, sizeof(Params));
+    cudaMemcpy((void*)dparams, &params, sizeof(Params), cudaMemcpyHostToDevice);
+    
     OPTIX_CHECK( optixLaunch(*pipeline, 0, 
-                             (CUdeviceptr)cuda::memcpy::host_to_device(params), sizeof(params),
+                             dparams, sizeof(params),
                              sbt->sbt(), W, H, 1) );
     cudaDeviceSynchronize();
     CUDA_CHECK_LAST();

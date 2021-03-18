@@ -15,8 +15,8 @@ using namespace rtac::cuda;
 #include <rtac_optix/Pipeline.h>
 using namespace rtac::optix;
 
-#include <rtac_optix/samples/PinholeCamera.h>
-using namespace rtac::optix::samples;
+#include <rtac_optix/helpers/PinholeCamera.h>
+using namespace rtac::optix::helpers;
 
 #include <pinhole_test/ptx_files.h>
 
@@ -48,10 +48,13 @@ int main()
     // Is setting the record mandatory when empty ?
     RaygenRecord raygenRecord; // no parameters
     OPTIX_CHECK(optixSbtRecordPackHeader(*raygenProgram, &raygenRecord));
-    sbt.raygenRecord = reinterpret_cast<CUdeviceptr>(memcpy::host_to_device(raygenRecord));
+    //sbt.raygenRecord = reinterpret_cast<CUdeviceptr>(memcpy::host_to_device(raygenRecord));
+    cudaMalloc((void**)&sbt.raygenRecord, sizeof(RaygenRecord));
+    cudaMemcpy((void*)sbt.raygenRecord, &raygenRecord, sizeof(RaygenRecord), cudaMemcpyHostToDevice);
     MissRecord missRecord; // no parameters
     OPTIX_CHECK(optixSbtRecordPackHeader(*missProgram, &missRecord));
-    sbt.missRecordBase          = reinterpret_cast<CUdeviceptr>(memcpy::host_to_device(missRecord));
+    cudaMalloc((void**)&sbt.missRecordBase, sizeof(MissRecord));
+    cudaMemcpy((void*)sbt.missRecordBase, &missRecord, sizeof(MissRecord), cudaMemcpyHostToDevice);
     sbt.missRecordCount         = 1;
     sbt.missRecordStrideInBytes = sizeof(MissRecord);
 
@@ -61,15 +64,15 @@ int main()
     params.width     = W;
     params.height    = H;
     params.imageData = imgData.data(); 
-    params.cam = PinholeCamera::New();
+    params.cam = PinholeCamera::Create();
     cout << params.cam << endl;
 
-    CUstream stream;
-    cudaStreamCreate(&stream);
+    CUdeviceptr dparams;
+    cudaMalloc((void**)&dparams, sizeof(Params));
+    cudaMemcpy((void*)dparams, &params, sizeof(Params), cudaMemcpyHostToDevice);
 
-    OPTIX_CHECK(optixLaunch(*pipeline, stream,
-                            reinterpret_cast<CUdeviceptr>(memcpy::host_to_device(params)),
-                            sizeof(params),
+    OPTIX_CHECK(optixLaunch(*pipeline, 0,
+                            dparams, sizeof(params),
                             &sbt, W,H,1));
     cudaDeviceSynchronize();
 
