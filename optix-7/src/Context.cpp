@@ -28,6 +28,7 @@ Context::Ptr Context::Create(const OptixDeviceContextOptions& options,
                              CUcontext cudaContext,
                              bool diskCacheEnabled)
 {
+    optix_init();
     OptixDeviceContext context;
     OPTIX_CHECK( optixDeviceContextCreate(cudaContext, &options, &context) );
 
