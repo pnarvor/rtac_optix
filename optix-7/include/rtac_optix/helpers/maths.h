@@ -59,6 +59,26 @@ int line_sphere_intersection(const float3& p0, const float3& dir, float radius,
                            tmin, tmax);
 }
 
+#ifdef RTAC_CUDACC
+__device__ __forceinline__
+float3 get_triangle_hit_position()
+{
+    // /!\ Will only works if hitting a triangle.
+    float3 vertices[3];
+    optixGetTriangleVertexData(optixGetGASTraversableHandle(), // current object
+                               optixGetPrimitiveIndex(),       // current triangle
+                               optixGetSbtGASIndex(),          // ?
+                               optixGetRayTmax(),              // Ray time at hit
+                               vertices);
+    float2 tBary = optixGetTriangleBarycentrics(); // Hit position in the triangle
+                                                   // in barycentrics coordinates
+    return (1.0f - tBary.x - tBary.y) * vertices[0] +
+                              tBary.x * vertices[1] +
+                              tBary.y * vertices[2];
+}
+
+#endif //RTAC_CUDACC
+
 }; //namespace helpers
 }; //namespace optix
 }; //namespace rtac

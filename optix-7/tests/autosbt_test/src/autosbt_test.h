@@ -5,6 +5,7 @@
 #include <rtac_optix/Material.h>
 using namespace rtac::optix;
 
+#include <rtac_optix/helpers/maths.h>
 #include <rtac_optix/helpers/PinholeCamera.h>
 using PinholeCamera = rtac::optix::helpers::PinholeCamera;
 

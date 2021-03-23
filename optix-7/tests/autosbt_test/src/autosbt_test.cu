@@ -27,19 +27,8 @@ extern "C" __global__ void __closesthit__autosbt_rgb()
 {
     auto data = reinterpret_cast<const RgbHitData*>(optixGetSbtDataPointer());
     
-    // Calculating hit position
-    float3 vertices[3];
-    optixGetTriangleVertexData(optixGetGASTraversableHandle(), // current object
-                               optixGetPrimitiveIndex(),       // current triangle
-                               optixGetSbtGASIndex(),          // ?
-                               optixGetRayTmax(),              // Ray time at hit
-                               vertices);
-    float2 tBary = optixGetTriangleBarycentrics(); // Hit position in the triangle
-                                                   // in barycentrics coordinates
     float3 hitPosition = optixTransformPointFromObjectToWorldSpace(
-        (1.0f - tBary.x - tBary.y) * vertices[0] +
-                           tBary.x * vertices[1] +
-                           tBary.y * vertices[2]);
+        helpers::get_triangle_hit_position());
 
     // sending a shadow ray towards light starting hitPosition
     float3 rayDirection = normalize(data->light - hitPosition);
