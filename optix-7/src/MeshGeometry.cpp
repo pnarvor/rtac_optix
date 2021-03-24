@@ -43,6 +43,14 @@ MeshGeometry::Ptr MeshGeometry::CreateCube(const Context::ConstPtr& context,
     return Create(context, cube_data(scale), preTransform);
 }
 
+MeshGeometry::Ptr MeshGeometry::Create(const Context::ConstPtr& context,
+                                       const Mesh& mesh,
+                                       const DeviceVector<float>& preTransform)
+{
+    Handle<DeviceMesh> deviceMesh(new DeviceMesh(mesh));
+    return Ptr(new MeshGeometry(context, deviceMesh, preTransform));
+}
+
 void MeshGeometry::set_mesh(const Handle<const DeviceMesh>& mesh)
 {
     if(mesh->num_points() == 0)

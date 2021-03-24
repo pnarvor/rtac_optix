@@ -28,6 +28,7 @@ class MeshGeometry : public GeometryAccelStruct
     using Ptr        = OptixWrapperHandle<MeshGeometry>;
     using ConstPtr   = OptixWrapperHandle<const MeshGeometry>;
     using DeviceMesh = rtac::cuda::DeviceMesh<float3, uint3>;
+    using Mesh       = DeviceMesh::MeshBase;
     template <typename T>
     using DeviceVector = rtac::cuda::DeviceVector<T>;
 
@@ -53,6 +54,9 @@ class MeshGeometry : public GeometryAccelStruct
     static Ptr CreateCube(const Context::ConstPtr& context,
                           float scale = 1.0f,
                           const DeviceVector<float>& preTransform = DeviceVector<float>(0));
+    static Ptr Create(const Context::ConstPtr& context,
+                      const Mesh& mesh,
+                      const DeviceVector<float>& preTransform = DeviceVector<float>(0));
 
     void set_mesh(const Handle<const DeviceMesh>& mesh);
 
