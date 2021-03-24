@@ -60,6 +60,7 @@ int line_sphere_intersection(const float3& p0, const float3& dir, float radius,
 }
 
 #ifdef RTAC_CUDACC
+
 __device__ __forceinline__
 float3 get_triangle_hit_position()
 {
@@ -75,6 +76,24 @@ float3 get_triangle_hit_position()
     return (1.0f - tBary.x - tBary.y) * vertices[0] +
                               tBary.x * vertices[1] +
                               tBary.y * vertices[2];
+}
+
+__device__ __forceinline__
+void get_triangle_hit_data(float3& position, float3& normal)
+{
+    // /!\ Will only works if hitting a triangle.
+    float3 vertices[3];
+    optixGetTriangleVertexData(optixGetGASTraversableHandle(), // current object
+                               optixGetPrimitiveIndex(),       // current triangle
+                               optixGetSbtGASIndex(),          // ?
+                               optixGetRayTmax(),              // Ray time at hit
+                               vertices);
+    float2 tBary = optixGetTriangleBarycentrics(); // Hit position in the triangle
+                                                   // in barycentrics coordinates
+    position = (1.0f - tBary.x - tBary.y) * vertices[0] +
+                                  tBary.x * vertices[1] +
+                                  tBary.y * vertices[2];
+    normal = normalize(cross(vertices[1] - vertices[0], vertices[2] - vertices[1]));
 }
 
 #endif //RTAC_CUDACC
