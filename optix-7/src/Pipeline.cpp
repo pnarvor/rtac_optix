@@ -183,6 +183,14 @@ Module::ConstPtr Pipeline::module(const std::string& name) const
         throw std::runtime_error("No module with name '" + name + "'");
     return it->second;
 }
+bool Pipeline::contains_module(const Module::ConstPtr& module) const
+{
+    for(auto& item : modules_) {
+        if(item.second == module)
+            return true;
+    }
+    return false;
+}
 
 ProgramGroup::Ptr Pipeline::add_program_group(ProgramGroup::Kind kind)
 {
@@ -208,11 +216,33 @@ ProgramGroup::Ptr Pipeline::add_raygen_program(const std::string& entryPoint,
     return program;
 }
 
+ProgramGroup::Ptr Pipeline::add_raygen_program(const std::string& entryPoint,
+                                               const Module::Ptr& module)
+{
+    if(!this->contains_module(module)) {
+        throw std::runtime_error("Trying to create a program with a foreign module");
+    }
+    auto program = this->add_program_group(OPTIX_PROGRAM_GROUP_KIND_RAYGEN);
+    program->set_raygen({entryPoint, module});
+    return program;
+}
+
 ProgramGroup::Ptr Pipeline::add_miss_program(const std::string& entryPoint,
                                              const std::string& moduleName)
 {
     auto program = this->add_program_group(OPTIX_PROGRAM_GROUP_KIND_MISS);
     program->set_miss({entryPoint, this->module(moduleName)});
+    return program;
+}
+
+ProgramGroup::Ptr Pipeline::add_miss_program(const std::string& entryPoint,
+                                             const Module::Ptr& module)
+{
+    if(!this->contains_module(module)) {
+        throw std::runtime_error("Trying to create a program with a foreign module");
+    }
+    auto program = this->add_program_group(OPTIX_PROGRAM_GROUP_KIND_MISS);
+    program->set_miss({entryPoint, module});
     return program;
 }
 

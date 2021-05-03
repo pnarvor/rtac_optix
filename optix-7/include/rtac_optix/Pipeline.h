@@ -74,6 +74,7 @@ class Pipeline : public OptixWrapper<OptixPipeline>
                            bool forceReplace = false);
     Module::Ptr      module(const std::string& name);
     Module::ConstPtr module(const std::string& name) const;
+    bool contains_module(const Module::ConstPtr& module) const;
 
     ProgramGroup::Ptr add_program_group(ProgramGroup::Kind kind);
 
@@ -84,8 +85,12 @@ class Pipeline : public OptixWrapper<OptixPipeline>
 
     ProgramGroup::Ptr add_raygen_program(const std::string& entryPoint,
                                          const std::string& moduleName);
+    ProgramGroup::Ptr add_raygen_program(const std::string& entryPoint,
+                                         const Module::Ptr& module);
     ProgramGroup::Ptr add_miss_program(const std::string& entryPoint,
                                        const std::string& moduleName);
+    ProgramGroup::Ptr add_miss_program(const std::string& entryPoint,
+                                       const Module::Ptr& module);
     ProgramGroup::Ptr add_hit_programs();
 };
 
