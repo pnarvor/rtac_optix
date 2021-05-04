@@ -23,10 +23,10 @@ string(APPEND output_content "#include <unordered_map>\n\n")
 
 string(APPEND output_content "namespace ${TARGET_NAME} {\n\n")
 
-string(APPEND output_content "inline std::unordered_map<const char*,const char*> get_ptx_files()\n")
+string(APPEND output_content "inline std::unordered_map<std::string,std::string> get_ptx_files()\n")
 string(APPEND output_content "{\n")
 
-string(APPEND output_content "    std::unordered_map<const char*,const char*> ptxDict\;\n\n")
+string(APPEND output_content "    std::unordered_map<std::string,std::string> ptxDict\;\n\n")
 
 list(LENGTH PTX_FILES list_length)
 while(${list_length} GREATER 0)
