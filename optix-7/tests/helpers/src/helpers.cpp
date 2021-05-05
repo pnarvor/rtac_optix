@@ -55,7 +55,7 @@ int main()
     auto topObject = GroupInstance::Create(context);
     topObject->add_instance(cube0);
 
-    auto sbt = ShaderBindingTable<Raytypes::RaytypeCount>::Create();
+    auto sbt = ShaderBindingTable::Create(Raytypes::RaytypeCount);
     sbt->set_raygen_program(raygen);
     sbt->add_miss_record(gray);
     sbt->add_miss_record(ShadowMaterial::Create(shadowMiss));

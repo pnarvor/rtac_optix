@@ -69,7 +69,7 @@ int main()
     topObject->add_instance(cube1);
 
     //visit_graph(topObject);
-    auto sbt = ShaderBindingTable<2>::Create();
+    auto sbt = ShaderBindingTable::Create(2);
     
     auto raygenRecord = ShaderBinding<void>::Create(raygen);
     auto rgbMissRecord = RgbMissMaterial::Create(rgbMiss,RgbMissData({uchar3({50,50,50})}));

@@ -62,6 +62,7 @@ list(APPEND rtac_optix_SOURCES
     src/InstanceAccelStruct.cpp
 
     src/ShaderBinding.cpp
+    src/ShaderBindingTable.cpp
     src/Material.cpp
     src/ObjectInstance.cpp
     src/GroupInstance.cpp
