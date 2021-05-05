@@ -1,5 +1,11 @@
 #include <rtac_optix/Pipeline.h>
 
+// This header must be included in the source file because it contains
+// non-inlined function definitions (will trigger "multiple definition"
+// errors).
+// (Fixed in later version of optix. Current version is 7.1.0)
+#include <optix_stack_size.h> // This is to auto-compute the stack size (difficult)
+
 namespace rtac { namespace optix {
 
 Pipeline::CompileOptions Pipeline::default_pipeline_compile_options()

@@ -10,7 +10,6 @@
 // careful : because of OptiX function table optix_stubs.h must be included to
 // ensure proper linking.
 #include <optix_stubs.h>
-#include <optix_stack_size.h> // This is to auto-compute the stack size (difficult)
 
 #include <rtac_optix/utils.h>
 #include <rtac_optix/Handle.h>
