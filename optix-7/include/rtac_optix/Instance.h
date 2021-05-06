@@ -52,6 +52,7 @@ class Instance : public OptixWrapper<OptixInstance>
     void unset_flags(unsigned int flag);
 
     virtual unsigned int sbt_width() const;
+    OptixBuildInputType kind() const;
 
     operator const OptixTraversableHandle&() const;
 

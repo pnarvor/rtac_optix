@@ -143,5 +143,10 @@ void AccelerationStruct::set_build_meta(const Handle<Buffer>& buffer, CUstream s
     this->set_build_stream(stream);
 }
 
+OptixBuildInputType AccelerationStruct::kind() const
+{
+    return buildInput_.type;
+}
+
 }; //namespace optix
 }; //namespace rtac

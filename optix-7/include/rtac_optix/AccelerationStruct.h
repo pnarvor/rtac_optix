@@ -74,6 +74,8 @@ class AccelerationStruct : public OptixWrapper<OptixTraversableHandle>
     void set_build_meta(const Handle<Buffer>& buffer, CUstream stream = 0);
 
     virtual unsigned int sbt_width() const = 0;
+
+    OptixBuildInputType kind() const;
 };
 
 }; //namespace optix

@@ -89,6 +89,11 @@ unsigned int Instance::sbt_width() const
     return child_->sbt_width();
 }
 
+OptixBuildInputType Instance::kind() const
+{
+    return child_->kind();
+}
+
 Instance::operator const OptixTraversableHandle&() const
 {
     if(!child_) {
