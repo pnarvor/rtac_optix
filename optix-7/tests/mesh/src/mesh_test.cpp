@@ -4,7 +4,9 @@ using namespace std;
 #include <cuda_runtime.h>
 #include <optix.h>
 
+#include <rtac_base/type_utils.h>
 #include <rtac_base/files.h>
+using namespace rtac;
 using namespace rtac::files;
 
 #include <rtac_base/cuda/utils.h>
@@ -49,11 +51,11 @@ int main()
     //// Building mesh acceleration structure
     //auto mesh = DeviceMesh<>::cube();
 
-    //auto buildOptions = zero<OptixAccelBuildOptions>();
+    //auto buildOptions = types::zero<OptixAccelBuildOptions>();
     //buildOptions.buildFlags = OPTIX_BUILD_FLAG_NONE;
     //buildOptions.operation  = OPTIX_BUILD_OPERATION_BUILD;
 
-    //auto buildInput = zero<OptixBuildInput>();
+    //auto buildInput = types::zero<OptixBuildInput>();
     //CUdeviceptr vertexData = reinterpret_cast<CUdeviceptr>(mesh.points().data());
     //CUdeviceptr faceData   = reinterpret_cast<CUdeviceptr>(mesh.faces().data());
     //const uint32_t inputFlags[1] = {OPTIX_GEOMETRY_FLAG_NONE};
@@ -80,7 +82,7 @@ int main()
     handle->set_pre_transform(pose);
 
     // Building shader binding table
-    auto sbt = rtac::optix::zero<OptixShaderBindingTable>();
+    auto sbt = types::zero<OptixShaderBindingTable>();
     RaygenRecord raygenRecord;
     OPTIX_CHECK(optixSbtRecordPackHeader(*raygenProgram, &raygenRecord));
     cudaMalloc((void**)&sbt.raygenRecord, sizeof(RaygenRecord));
@@ -107,7 +109,7 @@ int main()
     // output buffer
     DeviceVector<uchar3> imgData(W*H);
 
-    auto params = rtac::optix::zero<Params>();
+    auto params = types::zero<Params>();
     params.width     = W;
     params.height    = H;
     params.imageData = imgData.data();

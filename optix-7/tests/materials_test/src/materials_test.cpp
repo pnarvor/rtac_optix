@@ -1,6 +1,7 @@
 #include <iostream>
 using namespace std;
 
+#include <rtac_base/type_utils.h>
 #include <rtac_base/files.h>
 #include <rtac_base/cuda/utils.h>
 #include <rtac_base/cuda/DeviceVector.h>
@@ -52,7 +53,7 @@ int main()
     auto topObject = InstanceAccelStruct::Create(context);
     topObject->add_instance(cube0);
     
-    auto sbt = zero<OptixShaderBindingTable>();
+    auto sbt = types::zero<OptixShaderBindingTable>();
 
     SbtRecord<RaygenData> raygenRecord;
     OPTIX_CHECK( optixSbtRecordPackHeader(*raygen, &raygenRecord) );

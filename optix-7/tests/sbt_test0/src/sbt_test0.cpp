@@ -1,7 +1,9 @@
 #include <iostream>
 using namespace std;
 
+#include <rtac_base/type_utils.h>
 #include <rtac_base/files.h>
+using namespace rtac;
 using namespace rtac::files;
 
 #include <rtac_base/types/common.h>
@@ -145,7 +147,7 @@ int main()
     auto uvBuffer = compute_cube_uv();
     
     // setting up sbt
-    auto sbt = rtac::optix::zero<OptixShaderBindingTable>();
+    auto sbt = types::zero<OptixShaderBindingTable>();
 
     RaygenRecord raygenRecord;
     OPTIX_CHECK( optixSbtRecordPackHeader(*raygenProgram, &raygenRecord) );
@@ -183,7 +185,7 @@ int main()
 
     DeviceVector<uchar3> imgData(W*H);
 
-    auto params = rtac::optix::zero<Params>();
+    auto params = types::zero<Params>();
     params.width     = W;
     params.height    = H;
     params.imageData = imgData.data();

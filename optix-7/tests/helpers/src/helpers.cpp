@@ -1,6 +1,7 @@
 #include <iostream>
 using namespace std;
 
+#include <rtac_base/type_utils.h>
 #include <rtac_base/files.h>
 #include <rtac_base/cuda/DeviceObject.h>
 using namespace rtac;

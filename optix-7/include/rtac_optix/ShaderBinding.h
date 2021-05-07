@@ -62,7 +62,7 @@ class ShaderBinding : public virtual ShaderBindingBase
     public:
     
     static Ptr Create(const ProgramGroup::ConstPtr& program,
-                      const SbtRecordType& params = zero<SbtRecordType>());
+                      const SbtRecordType& params = types::zero<SbtRecordType>());
 
     const SbtRecordType& record() const;
     

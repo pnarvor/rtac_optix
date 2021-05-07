@@ -10,7 +10,7 @@ namespace rtac { namespace optix {
 
 Pipeline::CompileOptions Pipeline::default_pipeline_compile_options()
 {
-    auto res = zero<CompileOptions>();
+    auto res = types::zero<CompileOptions>();
 
     res.usesMotionBlur        = false;
     //res.traversableGraphFlags = OPTIX_TRAVERSABLE_GRAPH_FLAG_ALLOW_SINGLE_GAS;
@@ -29,7 +29,7 @@ Pipeline::CompileOptions Pipeline::default_pipeline_compile_options()
 
 Pipeline::LinkOptions Pipeline::default_pipeline_link_options()
 {
-    auto res = zero<LinkOptions>();
+    auto res = types::zero<LinkOptions>();
 
     res.maxTraceDepth = 1;
     res.debugLevel    = OPTIX_COMPILE_DEBUG_LEVEL_FULL;

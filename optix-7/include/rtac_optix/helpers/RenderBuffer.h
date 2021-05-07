@@ -5,6 +5,7 @@
 
 #include <optix.h>
 
+#include <rtac_base/type_utils.h>
 #include <rtac_base/cuda/utils.h>
 
 #include <rtac_optix/utils.h>
@@ -57,7 +58,7 @@ RenderBuffer<T> RenderBuffer<T>::Create(unsigned int xsize,
 template <typename T>
 RenderBuffer<T> RenderBuffer<T>::Create(uint3 dims)
 {
-    auto res = zero<RenderBuffer<T>>();
+    auto res = types::zero<RenderBuffer<T>>();
     res.resize(dims);
     return res;
 }

@@ -54,7 +54,7 @@ class OptixWrapper : public rtac::types::BuildTarget
 template <typename OptixT>
 OptixWrapper<OptixT>::OptixWrapper() : 
     BuildTarget(),
-    optixObject_(zero<OptixType>())
+    optixObject_(types::zero<OptixType>())
 {}
 
 template <typename OptixT>

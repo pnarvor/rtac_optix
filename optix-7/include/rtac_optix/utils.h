@@ -12,6 +12,7 @@
 // ensure proper linking.
 #include <optix_stubs.h>
 
+#include <rtac_base/type_utils.h>
 #include <rtac_base/cuda/utils.h>
 
 #define OPTIX_CHECK( call )                                             \
@@ -34,16 +35,6 @@ inline void optix_init()
     CUDA_CHECK( cudaFree(0) ); // Will initialize CUDA if not already done. 
                                // No-op if CUDA already initialized.
     OPTIX_CHECK( optixInit() );
-}
-
-template <typename T>
-T zero()
-{
-    // Simple helper to ensure a T struct is initialized to 0.
-    // (helpful in an initializer list).
-    T res;
-    std::memset(&res, 0, sizeof(T));
-    return res;
 }
 
 inline unsigned int compute_aligned_offset(unsigned int size,
@@ -76,7 +67,7 @@ struct SbtRecord
     __align__( OPTIX_SBT_RECORD_ALIGNMENT ) char header[OPTIX_SBT_RECORD_HEADER_SIZE];
     T data;
 
-    SbtRecord() : data(zero<T>()) {}
+    SbtRecord() : data(types::zero<T>()) {}
     SbtRecord(const T& d) : data(d) {}
 };
 

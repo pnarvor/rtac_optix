@@ -5,9 +5,11 @@ using namespace std;
 #include <optix.h>
 #include <optix_stubs.h>
 
+#include <rtac_base/type_utils.h>
 #include <rtac_base/cuda/utils.h>
 #include <rtac_base/cuda/DeviceVector.h>
 #include <rtac_base/cuda/HostVector.h>
+using namespace rtac;
 using namespace rtac::cuda;
 
 #include <rtac_optix/utils.h>
@@ -44,7 +46,7 @@ int main()
                                                  "src/pinhole_test.cu");
 
     // Shader binding table setup = setting program parameters
-    auto sbt = rtac::optix::zero<OptixShaderBindingTable>();
+    auto sbt = types::zero<OptixShaderBindingTable>();
     // Is setting the record mandatory when empty ?
     RaygenRecord raygenRecord; // no parameters
     OPTIX_CHECK(optixSbtRecordPackHeader(*raygenProgram, &raygenRecord));

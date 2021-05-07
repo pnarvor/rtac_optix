@@ -1,7 +1,9 @@
 #include <iostream>
 using namespace std;
 
+#include <rtac_base/type_utils.h>
 #include <rtac_base/files.h>
+using namespace rtac;
 
 #include <rtac_base/cuda/utils.h>
 #include <rtac_base/cuda/DeviceVector.h>
@@ -69,7 +71,7 @@ int main()
     auto topTopObject = InstanceAccelStruct::Create(context);
     topTopObject->add_instance(inst2);
 
-    auto sbt = rtac::optix::zero<OptixShaderBindingTable>();
+    auto sbt = types::zero<OptixShaderBindingTable>();
 
     RaygenRecord raygenRecord;
     OPTIX_CHECK( optixSbtRecordPackHeader(*raygen, &raygenRecord) );
@@ -104,7 +106,7 @@ int main()
     unsigned int W = 800, H = 600;
     DeviceVector<uchar3> output(W*H);
 
-    auto params = rtac::optix::zero<Params>();
+    auto params = types::zero<Params>();
     params.width  = W;
     params.height = H;
     params.output = output.data();
