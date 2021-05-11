@@ -37,6 +37,13 @@ using namespace rtac::display;
 
 #include "display_test0.h"
 
+template<>
+struct rtac::display::GLFormat<uchar3> {
+    static constexpr unsigned int Size  = 3;
+    static constexpr GLenum PixelFormat = GL_RGB;
+    static constexpr GLenum Type        = GL_UNSIGNED_BYTE;
+};
+
 using RaygenRecord     = SbtRecord<RaygenData>;
 using MissRecord       = SbtRecord<MissData>;
 using ClosestHitRecord = SbtRecord<ClosestHitData>;
@@ -78,6 +85,7 @@ DeviceVector<float2> compute_cube_uv()
 
     return DeviceVector<float2>(uv);
 }
+
 
 int main()
 {
@@ -251,7 +259,7 @@ int main()
 
         // Updating display
         //imgData = renderData;
-        renderer->set_image({W,H}, imgData.gl_id(), GL_UNSIGNED_BYTE);
+        renderer->texture()->set_image({W,H}, imgData);
 
         display.draw();
 
