@@ -3,6 +3,11 @@
 
 namespace rtac { namespace optix {
 
+/**
+ * @return default options for context creation (logging and debug related).
+ *         Logging level is set to 4 and OptixDeviceContextValidationMode is
+ *         set to off.
+ */
 OptixDeviceContextOptions Context::default_options()
 {
     OptixDeviceContextOptions res;
@@ -14,6 +19,11 @@ OptixDeviceContextOptions Context::default_options()
     return res;
 }
 
+/**
+ * Called by the OptiX API when logging.
+ *
+ * Outputs to stderr.
+ */
 void Context::log_callback( unsigned int level, const char* tag, const char* message, void* data)
 {
     std::cerr << "[" << std::setw( 2 ) << level << "][" << std::setw( 12 ) << tag << "]: "
@@ -24,6 +34,16 @@ Context::Context(const OptixDeviceContext& context) :
     context_(context)
 {}
 
+/**
+ * Creates and initializes a new optix Context.
+ *
+ * @param options          OptixDeviceContextOptions. Logging related options.
+ *                         See [here](https://raytracing-docs.nvidia.com/optix7/api/html/struct_optix_device_context_options.html)
+ *                         for more information.
+ * @param cudaContext      a cuda context (represent a specific GPU). Default is 0
+ *                         (default GPU as seen by CUDA).
+ * @param diskCacheEnabled whether to use the disk cache (disabled by default).
+ */
 Context::Ptr Context::Create(const OptixDeviceContextOptions& options,
                              CUcontext cudaContext,
                              bool diskCacheEnabled)
@@ -51,16 +71,32 @@ Context::~Context()
     }
 }
 
+/**
+ * Implicit conversion of this wrapper to OptixDeviceContext.
+ *
+ * This allows to directly use this object into OptiX API functions which take
+ * an OptixDeviceContext object.
+ */
 Context::operator OptixDeviceContext() const
 {
     return context_;
 }
 
+/**
+ * Enables program cache (should speed-up application loading but not advised for debug).
+ *
+ * Cache is disabled by default.
+ */
 void Context::enable_cache()
 {
     OPTIX_CHECK( optixDeviceContextSetCacheEnabled(context_, 1) );
 }
 
+/**
+ * Disables program cache.
+ *
+ * Cache is disabled by default.
+ */
 void Context::disable_cache()
 {
     OPTIX_CHECK( optixDeviceContextSetCacheEnabled(context_, 0) );

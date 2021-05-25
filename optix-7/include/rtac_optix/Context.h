@@ -15,6 +15,18 @@
 
 namespace rtac { namespace optix {
 
+/**
+ * A wrapper around the OptixDeviceContext opaque type.
+ *
+ * This is the first object to be created before any other OptiX related code.
+ *
+ * A Context is used to manage a single GPU. A significant number of optix
+ * objects must be created on a specific GPU. These objects usually take an
+ * OptiX Context on creation. This allows to tie them to a specific GPU.
+ *
+ * The Context object also partially handles logging and a disk cache for
+ * compiled optix programs to speed-up loading of ray-tracing applications.
+ */
 class Context
 {
     public:

@@ -8,6 +8,30 @@
 
 namespace rtac { namespace optix {
 
+/**
+ * Generate default pipeline compile options. Will be called on Pipeline
+ * instanciation if no compile options were provided by the user.
+ *
+ * This provides a "to go" default configuration for a Pipeline. However some
+ * options might have to be modified by the user (numPayloadValues and
+ * numAttributesValue for example). Some other options can be left as-is in all
+ * cases, but tweaking these options may lead to better performances.
+ *
+ * See
+ * [here](https://raytracing-docs.nvidia.com/optix7/api/html/struct_optix_pipeline_compile_options.html)
+ * for an overlook on OptixPipelineCompileOptions.
+ *
+ * Default options :
+ * - usesMotionBlur        : false
+ * - traversableGraphFlags : [OPTIX_TRAVERSABLE_GRAPH_FLAG_ALLOW_ANY](https://raytracing-docs.nvidia.com/optix7/api/html/group__optix__types.html#gabd8bb7368518a44361e045fe5ad1fd17)
+ * - numPayloadValues      : 3
+ * - numAttributesValues   : 3
+ * - exceptionFlags        : [OPTIX_EXCEPTION_FLAGS_NONE](https://raytracing-docs.nvidia.com/optix7/api/html/group__optix__types.html#ga95e8175699d1a23c5c1d5333c4468190)
+ * - pipelineLaunchParamsVariableName : "params"
+ * - usesPrimitiveTypeFlags           : [OPTIX_PRIMITIVE_TYPE_FLAGS_TRIANGLE](https://raytracing-docs.nvidia.com/optix7/api/html/group__optix__types.html#ga1171b332da08991dd9e6ef54b52b3ba4)
+ *
+ * @return a OptixPipelineCompileOptions filled with default parameters.
+ */
 Pipeline::CompileOptions Pipeline::default_pipeline_compile_options()
 {
     auto res = types::zero<CompileOptions>();
@@ -27,6 +51,25 @@ Pipeline::CompileOptions Pipeline::default_pipeline_compile_options()
     return res;
 }
 
+/**
+ * Generate default pipeline link options. Will be called on Pipeline
+ * instanciation if no link options were provided by the user.
+ *
+ * This provides a "to go" default configuration for a Pipeline. However some
+ * options might have to be modified by the user (maxTraceDepth). Some other
+ * options can be left as-is in all cases, but tweaking these options may lead
+ * to better performances.
+ *
+ * See
+ * [here](https://raytracing-docs.nvidia.com/optix7/api/html/struct_optix_pipeline_link_options.html)
+ * for an overlook on OptixPipelineLinkOptions.
+ *
+ * Default options :
+ * - maxTraceDepth : 1
+ * - debugLevel    : [OPTIX_COMPILE_DEBUG_LEVEL_FULL](https://raytracing-docs.nvidia.com/optix7/api/html/group__optix__types.html#ga2a921efc5016b2b567fa81ddb429e81a)
+ *
+ * @return a OptixPipelineLinkOptions filled with default parameters.
+ */
 Pipeline::LinkOptions Pipeline::default_pipeline_link_options()
 {
     auto res = types::zero<LinkOptions>();
@@ -46,6 +89,22 @@ Pipeline::Pipeline(const Context::ConstPtr& context,
     compileOptionsChanged_(false)
 {}
 
+/**
+ * Instanciate a new Pipeline on the heap (Recommended way to create a new
+ * Pipeline).
+ *
+ * @param context        a non-null Context pointer. The Context cannot be
+ *                       changed in the Pipeline object lifetime.
+ * @param compileOptions compile options for this Pipeline and its modules.
+ *                       Defaults are provided by
+ *                       Pipeline::default_compile_options. May be modified
+ *                       after Pipeline creation.
+ * @param linkOptions    link option for this Pipeline. Defaults are provided
+ *                       by Pipeline::default_link_options. May be modified
+ *                       after Pipeline creation.
+ *
+ * @return a shared pointer to the newly instanciated Pipeline.
+ */
 Pipeline::Ptr Pipeline::Create(const Context::ConstPtr& context,
                                const CompileOptions& compileOptions,
                                const LinkOptions& linkOptions)
@@ -64,6 +123,14 @@ Pipeline::~Pipeline()
     }
 }
 
+/**
+ * Overrides rtac::types::BuildTarget::build method to ensure dependent
+ * modules (Module) are up to date with the Pipeline compileOptions_.
+ *
+ * Can be called by the user but there is not much point to it. It will be
+ * automatically called on conversion to the native OptixPipline type (for
+ * example on a ray-tracing launch).
+ */
 void Pipeline::build() const
 {
     if(compileOptionsChanged_) {
@@ -75,6 +142,13 @@ void Pipeline::build() const
     this->OptixWrapper<OptixPipeline>::build();
 }
 
+/**
+ * Effectively creates the underlying native pipeline type OptixPipeline using
+ * the OptiX API functions.
+ *
+ * **DO NOT CALL THIS METHOD DIRECTLY UNLESS YOU KNOW WHAT YOU ARE DOING.**
+ * This method will be called by the Pipeline::build method.
+ */
 void Pipeline::do_build() const
 {
     std::vector<OptixProgramGroup> compiledPrograms(programs_.size());
@@ -91,6 +165,9 @@ void Pipeline::do_build() const
         &optixObject_));
 }
 
+/**
+ * Destroy the underlying OptixPipeline Object (optixObject_)
+ */
 void Pipeline::clean() const
 {
     if(optixObject_) {
@@ -98,6 +175,12 @@ void Pipeline::clean() const
     }
 }
 
+/**
+ * Not used anymore (OptiX do this by default, although it can be optimized by
+ * the user). See
+ * [here](https://raytracing-docs.nvidia.com/optix7/guide/index.html#program_pipeline_creation#pipeline-stack-size)
+ * for more information.
+ */
 void Pipeline::autoset_stack_sizes()
 {
     // Not used anymore
@@ -141,6 +224,15 @@ const Pipeline::LinkOptions& Pipeline::link_options() const
     return linkOptions_;
 }
 
+/**
+ * This will trigger a rebuild of the Pipeline and its Modules (and the
+ * associated ProgramGroups).
+ *
+ * A writable access to compileOptions_ indicate that the user changed some
+ * options and that the Pipeline and its Module must be rebuilt with the new options.
+ *
+ * return a writable reference to the compileOptions_. 
+ */
 Pipeline::CompileOptions& Pipeline::compile_options()
 {
     this->bump_version();
@@ -148,12 +240,43 @@ Pipeline::CompileOptions& Pipeline::compile_options()
     return compileOptions_;
 }
 
+/**
+ * This will trigger a rebuild of the Pipeline.
+ *
+ * A writable access to linkOptions_ indicate that the user changed some
+ * options and that the Pipeline must be rebuilt with the new options.
+ *
+ * return a writable reference to the linkOptions_. 
+ */
 Pipeline::LinkOptions& Pipeline::link_options()
 {
     this->bump_version();
     return linkOptions_;
 }
 
+/**
+ * Creates a new Module object from a ptx source string and insert it into the
+ * Pipeline module dictionary.
+ *
+ * The Module is added to the dependencies of this Pipeline.
+ *
+ * @param name          unique name for the Module (used to retrieve the module
+ *                      using the Pipeline::module method).
+ * @param ptxContent    a ptx source string which was compiled from CUDA code
+ *                      using either NVCC at compile time or NVRTC at runtime (the
+ *                      later is not implemented yet).
+ * @param moduleOptions [OptixModuleCompileOptions](https://raytracing-docs.nvidia.com/optix7/api/html/struct_optix_module_compile_options.html)
+ *                      for this Module. Defaults are given by Module::default_options().
+ * @param forceReplace  if false, an error will be reported if the name was
+ *                      already used to create a Module. Otherwise, the
+ *                      existing Module with the same name will be removed (but
+ *                      not destroyed. If an existing ProgramGroup still hold a
+ *                      pointer to the removed Module, the removed Module
+ *                      remains valid as long as the Pipeline compileOptions_
+ *                      are not changed.
+ *
+ * @return a shared pointer to the newly created Module.
+ */
 Module::Ptr Pipeline::add_module(const std::string& name, const std::string& ptxContent,
                                  const Module::ModuleOptions& moduleOptions,
                                  bool forceReplace)
@@ -174,6 +297,15 @@ Module::Ptr Pipeline::add_module(const std::string& name, const std::string& ptx
     return module;
 }
 
+/**
+ * Retrieve a Module given its name.
+ * 
+ * Throws a std::runtime_error if a Module with the given name was not found.
+ *
+ * @param name The name of the Module to be retrieved.
+ *
+ * @return a shared pointer to the newly created Module.
+ */
 Module::Ptr Pipeline::module(const std::string& name)
 {
     auto it = modules_.find(name);
@@ -182,6 +314,15 @@ Module::Ptr Pipeline::module(const std::string& name)
     return it->second;
 }
 
+/**
+ * Retrieve a (const) Module given its name.
+ * 
+ * Throws a std::runtime_error if a Module with the given name was not found.
+ *
+ * @param name The name of the Module to be retrieved.
+ *
+ * @return a const shared pointer to the newly created Module.
+ */
 Module::ConstPtr Pipeline::module(const std::string& name) const
 {
     auto it = modules_.find(name);
@@ -189,6 +330,7 @@ Module::ConstPtr Pipeline::module(const std::string& name) const
         throw std::runtime_error("No module with name '" + name + "'");
     return it->second;
 }
+
 bool Pipeline::contains_module(const Module::ConstPtr& module) const
 {
     for(auto& item : modules_) {
@@ -198,6 +340,18 @@ bool Pipeline::contains_module(const Module::ConstPtr& module) const
     return false;
 }
 
+/**
+ * Creates and return an empty ProgramGroup.
+ *
+ * The ProgramGroup is empty. It must be filled with one or several Function
+ * information (function name and a module to be valid).
+ *
+ * The ProgramGroup is added to the dependencies of this Pipeline.
+ *
+ * @param kind the ProgramGroup::Kind of ProgramGroup to create.
+ *
+ * @return a shared pointer to the newly created ProgramGroup instance.
+ */
 ProgramGroup::Ptr Pipeline::add_program_group(ProgramGroup::Kind kind)
 {
     auto program = ProgramGroup::Create(context_, kind);
@@ -207,6 +361,11 @@ ProgramGroup::Ptr Pipeline::add_program_group(ProgramGroup::Kind kind)
 }
 
 // BELOW HERE, ONLY METHOD OVERLOADS
+/**
+ * Add a module with default [OptixModuleCompileOptions](https://raytracing-docs.nvidia.com/optix7/api/html/struct_optix_module_compile_options.html)
+ *
+ * See Pipeline::add_module for more info.
+ */
 Module::Ptr Pipeline::add_module(const std::string& name, const std::string& ptxContent,
                                  bool forceReplace)
 {
@@ -214,6 +373,21 @@ Module::Ptr Pipeline::add_module(const std::string& name, const std::string& ptx
                             Module::default_options(), forceReplace);
 }
 
+/**
+ * Creates a new raygen ProgramGroup.
+ *
+ * The ProgramGroup is added to the Pipeline::programs_ list.
+ *
+ * The ProgramGroup is added to the dependencies of this Pipeline.
+ *
+ * @param entryPoint name of the symbol (function name) of the entry function
+ *                   in the module. Must start with __raygen__ prefix.
+ * @param moduleName name of the Module which contains the function
+ *                   "entryPoint". Should have already be added to this
+ *                   Pipeline.
+ *
+ * @return a shared pointer to the newly created ProgramGroup.
+ */
 ProgramGroup::Ptr Pipeline::add_raygen_program(const std::string& entryPoint,
                                                const std::string& moduleName)
 {
@@ -222,6 +396,20 @@ ProgramGroup::Ptr Pipeline::add_raygen_program(const std::string& entryPoint,
     return program;
 }
 
+/**
+ * Creates a new raygen ProgramGroup.
+ *
+ * The ProgramGroup is added to the Pipeline::programs_ list.
+ *
+ * The ProgramGroup is added to the dependencies of this Pipeline.
+ *
+ * @param entryPoint name of the symbol (function name) of the entry function
+ *                   in the module. Must start with __raygen__ prefix.
+ * @param module     Module::Ptr which contains the function "entryPoint".
+ *                   Should have already be added to this Pipeline.
+ *
+ * @return a shared pointer to the newly created ProgramGroup.
+ */
 ProgramGroup::Ptr Pipeline::add_raygen_program(const std::string& entryPoint,
                                                const Module::Ptr& module)
 {
@@ -233,6 +421,21 @@ ProgramGroup::Ptr Pipeline::add_raygen_program(const std::string& entryPoint,
     return program;
 }
 
+/**
+ * Creates a new miss ProgramGroup.
+ *
+ * The ProgramGroup is added to the Pipeline::programs_ list.
+ *
+ * The ProgramGroup is added to the dependencies of this Pipeline.
+ *
+ * @param entryPoint name of the symbol (function name) of the entry function
+ *                   in the module. Must start with the __miss__ prefix.
+ * @param moduleName name of the Module which contains the function
+ *                   "entryPoint". Should have already be added to this
+ *                   Pipeline.
+ *
+ * @return a shared pointer to the newly created ProgramGroup.
+ */
 ProgramGroup::Ptr Pipeline::add_miss_program(const std::string& entryPoint,
                                              const std::string& moduleName)
 {
@@ -241,6 +444,20 @@ ProgramGroup::Ptr Pipeline::add_miss_program(const std::string& entryPoint,
     return program;
 }
 
+/**
+ * Creates a new miss ProgramGroup.
+ *
+ * The ProgramGroup is added to the Pipeline::programs_ list.
+ *
+ * The ProgramGroup is added to the dependencies of this Pipeline.
+ *
+ * @param entryPoint name of the symbol (function name) of the entry function
+ *                   in the module. Must start with __miss__ prefix.
+ * @param module     Module::Ptr which contains the function "entryPoint".
+ *                   Should have already be added to this Pipeline.
+ *
+ * @return a shared pointer to the newly created ProgramGroup.
+ */
 ProgramGroup::Ptr Pipeline::add_miss_program(const std::string& entryPoint,
                                              const Module::Ptr& module)
 {
@@ -252,6 +469,17 @@ ProgramGroup::Ptr Pipeline::add_miss_program(const std::string& entryPoint,
     return program;
 }
 
+/**
+ * Creates an empty hitgroup ProgramGroup.
+ *
+ * The ProgramGroup is added to the Pipeline::programs_ list.
+ *
+ * The ProgramGroup is added to the dependencies of this Pipeline.
+ *
+ * The ProgramGroup::Function information should be added later by the user.
+ *
+ * @return a shared pointer to the newly created ProgramGroup.
+ */
 ProgramGroup::Ptr Pipeline::add_hit_programs()
 {
     return this->add_program_group(OPTIX_PROGRAM_GROUP_KIND_HITGROUP);

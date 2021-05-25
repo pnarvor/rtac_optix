@@ -20,6 +20,38 @@
 
 namespace rtac { namespace optix {
 
+/**
+ * A wrapper around the OptixPipeline type.
+ *
+ * A Pipeline is the equivalent of a C/C++ build system for OptiX ray-tracing
+ * programs. The Pipeline takes OptiX sources as inputs to build then into
+ * Modules (see Module) which can contain several functions.  These Modules are
+ * then used to create several ProgramGroups objects (see ProgramGroup). The
+ * Pipeline then links the ProgramGroups together to build a fully-fledged
+ * ray-tracing GPU program ready to be launched.
+ *
+ * In this API, the process of creating the Pipeline, a Module and a
+ * ProgramGroup differs a bit from the official OptiX API process. In the
+ * official OptiX API, modules and programs are created before the pipeline,
+ * and the compileOptions and linkOptions used in Module creation and Pipeline
+ * creation must be the same.  (In the official OptiX API, the call to
+ * [optixPipelineCreate](https://raytracing-docs.nvidia.com/optix7/api/html/group__optix__host__api__pipelines.html)
+ * is equivalent to a link). In this API, an instance of Pipeline is the only
+ * allowed to create a new Module or a new ProgramGroup. This allows to ensure
+ * that the compile and link options are the same across all modules used in a
+ * particular Pipeline, and free the user from caring about the compile and
+ * link options more than once.
+ *
+ * The Pipeline, Module and ProgramGroup classes are linked together by the
+ * rtac::types::BuildTarget dependency system. Any change to a Module will
+ * trigger the rebuild of a dependant ProgramGroup and subsequently of the
+ * dependent Pipeline. This allows the user to change parameters of any object
+ * without caring about keeping track of dependencies between objects.
+ *
+ * See the [rtac_optix_samples
+ * repository](https://gitlab.ensta-bretagne.fr/narvorpi/rtac_optix_samples)
+ * for examples of ray-tracing applications.
+ */
 class Pipeline : public OptixWrapper<OptixPipeline>
 {
     public:
