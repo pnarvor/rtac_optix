@@ -9,7 +9,7 @@
 namespace rtac { namespace optix {
 
 /**
- * Generate default pipeline compile options. Will be called on Pipeline
+ * Generates default pipeline compile options. Will be called on Pipeline
  * instanciation if no compile options were provided by the user.
  *
  * This provides a "to go" default configuration for a Pipeline. However some
@@ -19,7 +19,8 @@ namespace rtac { namespace optix {
  *
  * See
  * [here](https://raytracing-docs.nvidia.com/optix7/api/html/struct_optix_pipeline_compile_options.html)
- * for an overlook on OptixPipelineCompileOptions.
+ * for an overlook on
+ * [OptixPipelineCompileOptions](https://raytracing-docs.nvidia.com/optix7/api/html/struct_optix_pipeline_compile_options.html).
  *
  * Default options :
  * - usesMotionBlur        : false
@@ -30,7 +31,9 @@ namespace rtac { namespace optix {
  * - pipelineLaunchParamsVariableName : "params"
  * - usesPrimitiveTypeFlags           : [OPTIX_PRIMITIVE_TYPE_FLAGS_TRIANGLE](https://raytracing-docs.nvidia.com/optix7/api/html/group__optix__types.html#ga1171b332da08991dd9e6ef54b52b3ba4)
  *
- * @return a OptixPipelineCompileOptions filled with default parameters.
+ * @return an
+ * [OptixPipelineCompileOptions](https://raytracing-docs.nvidia.com/optix7/api/html/struct_optix_pipeline_compile_options.html)
+ * filled with default parameters.
  */
 Pipeline::CompileOptions Pipeline::default_pipeline_compile_options()
 {
@@ -62,13 +65,15 @@ Pipeline::CompileOptions Pipeline::default_pipeline_compile_options()
  *
  * See
  * [here](https://raytracing-docs.nvidia.com/optix7/api/html/struct_optix_pipeline_link_options.html)
- * for an overlook on OptixPipelineLinkOptions.
+ * for an overlook on [OptixPipelineLinkOptions](https://raytracing-docs.nvidia.com/optix7/api/html/struct_optix_pipeline_link_options.html).
  *
  * Default options :
  * - maxTraceDepth : 1
  * - debugLevel    : [OPTIX_COMPILE_DEBUG_LEVEL_FULL](https://raytracing-docs.nvidia.com/optix7/api/html/group__optix__types.html#ga2a921efc5016b2b567fa81ddb429e81a)
  *
- * @return a OptixPipelineLinkOptions filled with default parameters.
+ * @return an
+ * [OptixPipelineLinkOptions](https://raytracing-docs.nvidia.com/optix7/api/html/struct_optix_pipeline_link_options.html)
+ * filled with default parameters.
  */
 Pipeline::LinkOptions Pipeline::default_pipeline_link_options()
 {
@@ -147,7 +152,8 @@ void Pipeline::build() const
  * the OptiX API functions.
  *
  * **DO NOT CALL THIS METHOD DIRECTLY UNLESS YOU KNOW WHAT YOU ARE DOING.**
- * This method will be called by the Pipeline::build method.
+ * This method will be automatically called by the Pipeline::build method when an
+ * access to the OptiX native type OptixPipeline is requested.
  */
 void Pipeline::do_build() const
 {
@@ -231,7 +237,7 @@ const Pipeline::LinkOptions& Pipeline::link_options() const
  * A writable access to compileOptions_ indicate that the user changed some
  * options and that the Pipeline and its Module must be rebuilt with the new options.
  *
- * return a writable reference to the compileOptions_. 
+ * @return a writable reference to the compileOptions_. 
  */
 Pipeline::CompileOptions& Pipeline::compile_options()
 {
@@ -246,7 +252,7 @@ Pipeline::CompileOptions& Pipeline::compile_options()
  * A writable access to linkOptions_ indicate that the user changed some
  * options and that the Pipeline must be rebuilt with the new options.
  *
- * return a writable reference to the linkOptions_. 
+ * @return a writable reference to the linkOptions_. 
  */
 Pipeline::LinkOptions& Pipeline::link_options()
 {

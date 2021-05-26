@@ -19,6 +19,22 @@ namespace rtac { namespace optix {
 // Create a new Module
 class Pipeline;
 
+/**
+ * A Module is the result of the compilation of a CUDA source file. It is the
+ * equivalent of a C/C++ object file (.o). A single Module contains several
+ * functions to be used in a ray-tracing program. Several Modules can be linked
+ * together with a Pipeline to make a full OptiX ray-tracing executable code.
+ *
+ * A Module is used to create a ProgramGroup. A ProgramGroup is defined by at
+ * least a pair containing a function name (a symbol) and a Module in which the
+ * function is defined.
+ *
+ * The user cannot create a standalone Module (the Constructor and the Create
+ * functions are protected). Instead, a Module must be created by calling the
+ * Pipeline::add_module method from an existing Pipeline. This allows to tie
+ * the Pipeline and its Modules together and free the user from managing shared
+ * options.
+ */
 class Module : public OptixWrapper<OptixModule>
 {
     public:
