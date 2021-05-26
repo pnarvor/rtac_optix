@@ -15,7 +15,7 @@
 
 namespace rtac { namespace optix {
 
-// Formward declaration of class Pipeline (only pipeline will be allowed to
+// Forward declaration of class Pipeline (only pipeline will be allowed to
 // Create a new Module
 class Pipeline;
 

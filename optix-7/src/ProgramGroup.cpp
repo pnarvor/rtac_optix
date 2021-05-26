@@ -11,6 +11,20 @@ const char* ProgramGroup::Function::ClosestHit           = "closesthit";
 const char* ProgramGroup::Function::DirectCallable       = "direct_callable";
 const char* ProgramGroup::Function::ContinuationCallable = "continuation_callable";
 
+/**
+ * Creates an empty description for a ProgramGroup of a specific kind.
+ *
+ * @param kind can be any value amongst :
+ * - [OPTIX_PROGRAM_GROUP_KIND_RAYGEN](https://raytracing-docs.nvidia.com/optix7/api/html/group__optix__types.html#gabca35b1218b4df575a5c42926da0d978)
+ * - [OPTIX_PROGRAM_GROUP_KIND_MISS](https://raytracing-docs.nvidia.com/optix7/api/html/group__optix__types.html#gabca35b1218b4df575a5c42926da0d978)
+ * - [OPTIX_PROGRAM_GROUP_KIND_HITGROUP](https://raytracing-docs.nvidia.com/optix7/api/html/group__optix__types.html#gabca35b1218b4df575a5c42926da0d978)
+ * - [OPTIX_PROGRAM_GROUP_KIND_EXCEPTION](https://raytracing-docs.nvidia.com/optix7/api/html/group__optix__types.html#gabca35b1218b4df575a5c42926da0d978)
+ * - [OPTIX_PROGRAM_GROUP_KIND_CALLABLES](https://raytracing-docs.nvidia.com/optix7/api/html/group__optix__types.html#gabca35b1218b4df575a5c42926da0d978)
+ * @param flags No ProgramGroup flags defined in OptiX for now. Default value is :
+ * - [OPTIX_PROGRAM_GROUP_FLAGS_NONE](https://raytracing-docs.nvidia.com/optix7/api/html/group__optix__types.html#gaa65e764f5bba97fda45d4453c0464596)
+ *
+ * @return an empty [OptixProgramGroupDesc](https://raytracing-docs.nvidia.com/optix7/api/html/struct_optix_program_group_desc.html) with valid king and flag fields.
+ */
 ProgramGroup::Description ProgramGroup::empty_description(const Kind& kind,  
                                                           unsigned int flags)
 {
@@ -20,6 +34,16 @@ ProgramGroup::Description ProgramGroup::empty_description(const Kind& kind,
     return description;
 }
 
+
+/**
+ * Generates default ProgramGroup options. It does not seemed to be used yet by
+ * OptiX API (as of OptiX 7.3). It is probably there for next OptiX extensions.
+ * 
+ * Called by default when creating a new ProgramGroup.
+ *
+ * @return an zeroed
+ * [OptixProgramGroupOptions](https://raytracing-docs.nvidia.com/optix7/api/html/struct_optix_program_group_options.html) instance.
+ */
 ProgramGroup::Options ProgramGroup::default_options()
 {
     return types::zero<Options>();
@@ -33,6 +57,23 @@ ProgramGroup::ProgramGroup(const Context::ConstPtr& context,
     options_(options)
 {}
 
+/**
+ * Instanciate a new empty ProgramGroup. Is protected. Should not be called
+ * directly by the user but with Pipeline::add_program_group or others Pipeline
+ * ProgramGorup factory functions.
+ *
+ * @param context         a non-null Context pointer. The Context cannot be
+ *                        changed in the ProgramGroup object lifetime.
+ * @param kind            ProgramGroup [kind](https://raytracing-docs.nvidia.com/optix7/api/html/group__optix__types.html#gabca35b1218b4df575a5c42926da0d978)
+ * @param flags           Must be [OPTIX_PROGRAM_GROUP_FLAGS_NONE](https://raytracing-docs.nvidia.com/optix7/api/html/group__optix__types.html#gaa65e764f5bba97fda45d4453c0464596)
+                          on current OptiX version (OptiX 7.3).
+ * @param options         ProgramGroup options. Ignored on current OptiX
+ *                        version (OptiX 7.3). Defaults to
+ *                        ProgramGroup::default_options (zeroed
+ *                        [OptixProgramGroupOptions](https://raytracing-docs.nvidia.com/optix7/api/html/struct_optix_program_group_options.html)).
+ *
+ * @return a shared pointer to the newly instanciated ProgramGroup.
+ */
 ProgramGroup::Ptr ProgramGroup::Create(const Context::ConstPtr& context,
                                        Kind kind, unsigned int flags,
                                        const Options& options)
@@ -51,6 +92,33 @@ ProgramGroup::~ProgramGroup()
     }
 }
 
+/**
+ * Update the
+ * [OptixProgramGroupDesc](https://raytracing-docs.nvidia.com/optix7/api/html/struct_optix_program_group_desc.html)
+ * description_ using information from functions_. This function is called in
+ * the ProgramGroup::do_build method for description_ to be used in the
+ * [optixProgramGroupCreate](https://raytracing-docs.nvidia.com/optix7/api/html/group__optix__host__api__program__groups.html#gaa3515445a876a8a381ced002e4020d42)
+ * call.
+ *
+ * The rtac_optix workflow is based on a JIT (Just In Time) build paradigm.
+ * Objects such as ProgramGroup, Module, Pipeline holds the parameters to build
+ * their
+ * [OptixProgramGroup](https://raytracing-docs.nvidia.com/optix7/api/html/group__optix__types.html#ga0b44fd0708cced8b77665cfac5453573),
+ * [OptixModule](https://raytracing-docs.nvidia.com/optix7/api/html/group__optix__types.html#ga63069b137849479cc9ed13564ff8bf32A)
+ * and
+ * [OptixPipeline](https://raytracing-docs.nvidia.com/optix7/api/html/group__optix__types.html#gaa3bca0606961880c75c10c7fbf375e71)
+ * counterparts. The build operation itself consists in calling the
+ * optix*Create from the OptiX API to generate the native OptiX types. This
+ * build operation is done **ONLY** when the native OptiX type is explicitly
+ * needed, such in an OptiX API call.
+ *
+ * To follow this JIT paradigm, the
+ * [OptixProgramGroupDesc](https://raytracing-docs.nvidia.com/optix7/api/html/struct_optix_program_group_desc.html)
+ * must be filled just before the ProgramGroup build because the
+ * [OptixProgramGroupDesc](https://raytracing-docs.nvidia.com/optix7/api/html/struct_optix_program_group_desc.html)
+ * holds some references to
+ * [OptixModule](https://raytracing-docs.nvidia.com/optix7/api/html/group__optix__types.html#ga63069b137849479cc9ed13564ff8bf32A).
+ */
 void ProgramGroup::update_description() const
 {
     auto f = functions_.end();
@@ -127,6 +195,14 @@ void ProgramGroup::update_description() const
     }
 }
 
+/**
+ * Effectively creates the underlying native ProgramGroup type
+ * OptixProgramGroup using the OptiX API functions.
+ *
+ * **DO NOT CALL THIS METHOD DIRECTLY UNLESS YOU KNOW WHAT YOU ARE DOING.**
+ * This method will be automatically called by the ProgramGroup::build method
+ * when an access to the OptiX native type OptixProgramGroup is requested.
+ */
 void ProgramGroup::do_build() const
 {
     this->update_description();
@@ -138,6 +214,9 @@ void ProgramGroup::do_build() const
         &optixObject_));
 }
 
+/**
+ * Destroy the underlying OptixProgramGroup Object (optixObject_)
+ */
 void ProgramGroup::clean() const
 {
     if(optixObject_ != nullptr)
@@ -154,12 +233,28 @@ const ProgramGroup::Options& ProgramGroup::options() const
     return options_;
 }
 
+/**
+ * This will trigger a rebuild of the ProgramGroup and its Pipeline.
+ *
+ * A writable access to description_ indicates that the user changed some
+ * fields and that the Pipeline must be rebuilt with the updated values.
+ *
+ * @return a writable reference to description_. 
+ */
 ProgramGroup::Description& ProgramGroup::description()
 {
     this->bump_version();
     return description_;
 }
 
+/**
+ * This will trigger a rebuild of the ProgramGroup and its Pipeline.
+ *
+ * A writable access to description_ indicates that the user changed some
+ * fields and that the Pipeline must be rebuilt with the updated values.
+ *
+ * @return a writable reference to options_. 
+ */
 ProgramGroup::Options& ProgramGroup::options()
 {
     this->bump_version();
@@ -176,6 +271,12 @@ unsigned int ProgramGroup::flags() const
     return description_.flags;
 }
 
+/**
+ * Changes the ProgramGroup::Kind. Does nothing if already the requested kind.
+ * Will trigger a rebuild if the kind changes.
+ *
+ * @param kind new ProgramGroup::Kind for the ProgramGroup.
+ */
 void ProgramGroup::set_kind(Kind kind)
 {
     if(this->kind() != kind) {
@@ -186,6 +287,22 @@ void ProgramGroup::set_kind(Kind kind)
     }
 }
 
+/**
+ * Add a new Function (function name + Module in which it is defined) to the
+ * ProgramGroup. Will trigger a build.
+ *
+ * @param kind     the type of the function. Might be:
+ *                 - Function::Raygen
+ *                 - Function::Miss
+ *                 - Function::Exception
+ *                 - Function::Intersection
+ *                 - Function::AnyHit
+ *                 - Function::ClosestHit
+ *                 - Function::DirectCallable
+ *                 - Function::ContinuationCallable
+ * @param function a Function struct with the name and the Module in which the
+ *                 function is defined.
+ */
 void ProgramGroup::add_function(const std::string& kind, const Function& function)
 {
     if(!function.module) {
@@ -197,6 +314,23 @@ void ProgramGroup::add_function(const std::string& kind, const Function& functio
     this->add_dependency(function.module);
 }
 
+/**
+ * Return a function of a specific type. If the function is not found, a
+ * FunctionNotFound exception is raised.
+ *
+ * @param kind     the type of the function. Might be:
+ *                 - Function::Raygen
+ *                 - Function::Miss
+ *                 - Function::Exception
+ *                 - Function::Intersection
+ *                 - Function::AnyHit
+ *                 - Function::ClosestHit
+ *                 - Function::DirectCallable
+ *                 - Function::ContinuationCallable
+ * 
+ * @return an iterator in functions_ container pointer to where the Function
+ *         object is.
+ */
 ProgramGroup::Functions::const_iterator ProgramGroup::function(const std::string& kind) const
 {
     auto it = functions_.find(kind);
@@ -206,48 +340,104 @@ ProgramGroup::Functions::const_iterator ProgramGroup::function(const std::string
     return it;
 }
 
+/**
+ * Sets a \_\_raygen\_\_ function and changes the Kind of the ProgramGroup to
+ * [OPTIX_PROGRAM_GROUP_KIND_RAYGEN](https://raytracing-docs.nvidia.com/optix7/api/html/group__optix__types.html#gabca35b1218b4df575a5c42926da0d978)
+ *
+ * @param function a Function struct which name starts with \_\_raygen\_\_
+ */
 void ProgramGroup::set_raygen(const Function& function)
 {
     this->set_kind(OPTIX_PROGRAM_GROUP_KIND_RAYGEN);
     this->add_function(Function::Raygen, function);
 }
 
+/**
+ * Sets a \_\_miss\_\_ function and changes the Kind of the ProgramGroup to
+ * [OPTIX_PROGRAM_GROUP_KIND_MISS](https://raytracing-docs.nvidia.com/optix7/api/html/group__optix__types.html#gabca35b1218b4df575a5c42926da0d978)
+ *
+ * @param function a Function struct which name starts with \_\_miss\_\_
+ */
 void ProgramGroup::set_miss(const Function& function)
 {
     this->set_kind(OPTIX_PROGRAM_GROUP_KIND_MISS);
     this->add_function(Function::Miss, function);
 }
 
+/**
+ * Sets an \_\_exception\_\_ function and changes the Kind of the ProgramGroup
+ * to
+ * [OPTIX_PROGRAM_GROUP_KIND_EXCEPTION](https://raytracing-docs.nvidia.com/optix7/api/html/group__optix__types.html#gabca35b1218b4df575a5c42926da0d978)
+
+ * @param function a Function struct which name starts with \_\_exception\_\_
+ */
 void ProgramGroup::set_exception(const Function& function)
 {
     this->set_kind(OPTIX_PROGRAM_GROUP_KIND_EXCEPTION);
     this->add_function(Function::Exception, function);
 }
 
+/**
+ * Sets an \_\_intersection\_\_ function and changes the Kind of the
+ * ProgramGroup to
+ * [OPTIX_PROGRAM_GROUP_KIND_HITGROUP](https://raytracing-docs.nvidia.com/optix7/api/html/group__optix__types.html#gabca35b1218b4df575a5c42926da0d978)
+ *
+ * @param function a Function struct which name starts with
+ *                 \_\_intersection\_\_
+ */
 void ProgramGroup::set_intersection(const Function& function)
 {
     this->set_kind(OPTIX_PROGRAM_GROUP_KIND_HITGROUP);
     this->add_function(Function::Intersection, function);
 }
 
+/**
+ * Sets an \_\_anythit\_\_ function and changes the Kind of the ProgramGroup to
+ * [OPTIX_PROGRAM_GROUP_KIND_HITGROUP](https://raytracing-docs.nvidia.com/optix7/api/html/group__optix__types.html#gabca35b1218b4df575a5c42926da0d978)
+ *
+ * @param function a Function struct which name starts with \_\_anythit\_\_
+ */
 void ProgramGroup::set_anyhit(const Function& function)
 {
     this->set_kind(OPTIX_PROGRAM_GROUP_KIND_HITGROUP);
     this->add_function(Function::AnyHit, function);
 }
 
+/**
+ * Sets an \_\_closestthit\_\_ function and changes the Kind of the
+ * ProgramGroup to
+ * [OPTIX_PROGRAM_GROUP_KIND_HITGROUP](https://raytracing-docs.nvidia.com/optix7/api/html/group__optix__types.html#gabca35b1218b4df575a5c42926da0d978)
+ *
+ * @param function a Function struct which name starts with \_\_closestthit\_\_
+ */
 void ProgramGroup::set_closesthit(const Function& function)
 {
     this->set_kind(OPTIX_PROGRAM_GROUP_KIND_HITGROUP);
     this->add_function(Function::ClosestHit, function);
 }
 
+/**
+ * Sets an \_\_direct_callable\_\_ function and changes the Kind of the
+ * ProgramGroup to
+ * [OPTIX_PROGRAM_GROUP_KIND_CALLABLES](https://raytracing-docs.nvidia.com/optix7/api/html/group__optix__types.html#gabca35b1218b4df575a5c42926da0d978)
+ *
+ * @param function a Function struct which name starts with
+ *                 \_\_direct_callable\_\_
+ */
 void ProgramGroup::set_direct_callable(const Function& function)
 {
     this->set_kind(OPTIX_PROGRAM_GROUP_KIND_CALLABLES);
     this->add_function(Function::DirectCallable, function);
 }
 
+/**
+ * Sets an \_\_continuation_callable\_\_ function and changes the Kind of the
+ * ProgramGroup to
+ * [OPTIX_PROGRAM_GROUP_KIND_CALLABLES](https://raytracing-docs.nvidia.com/optix7/api/html/group__optix__types.html#gabca35b1218b4df575a5c42926da0d978)
+ *
+ * @param function a Function struct which name starts with
+ *                 \_\_continuation_callable\_\_
+ */
 void ProgramGroup::set_continuation_callable(const Function& function)
 {
     this->set_kind(OPTIX_PROGRAM_GROUP_KIND_CALLABLES);

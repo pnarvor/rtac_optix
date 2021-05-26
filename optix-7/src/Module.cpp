@@ -52,7 +52,7 @@ Module::Module(const Context::ConstPtr& context,
  * directly by the user but with Pipeline::add_module method.
  *
  * @param context         a non-null Context pointer. The Context cannot be
- *                        changed in the Pipeline object lifetime.
+ *                        changed in the Module object lifetime.
  * @param ptxSource       ptx source string. Output of the compilation of a
  *                        single CUDA source file with either NVCC (compile
  *                        time compilation) or NVRTC (runtime compilation).
