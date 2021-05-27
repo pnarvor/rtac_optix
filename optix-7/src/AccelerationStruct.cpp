@@ -3,36 +3,15 @@
 namespace rtac { namespace optix {
 
 /**
- * Generates default (invalid) build input
- * [OptixBuildInput](https://raytracing-docs.nvidia.com/optix7/api/html/struct_optix_build_input.html).
+ * Generates a default (invalid) OptixBuildInput
  *
- * See
- * [here](https://raytracing-docs.nvidia.com/optix7/api/html/struct_optix_build_input.html)
- * for an overlook on
- * [OptixBuildInput](https://raytracing-docs.nvidia.com/optix7/api/html/struct_optix_build_input.html).
- *
- * @return a zeroed
- * [OptixBuildInput](https://raytracing-docs.nvidia.com/optix7/api/html/struct_optix_build_input.html)
- * struct.
+ * @return a zeroed OptixBuildInput struct.
  */
 AccelerationStruct::BuildInput AccelerationStruct::default_build_input()
 {
     return types::zero<BuildInput>();
 }
 
-/**
- * Generates default build options
- * [OptixBuildInput](https://raytracing-docs.nvidia.com/optix7/api/html/struct_optix_accel_build_options.html).
- *
- * See
- * [here](https://raytracing-docs.nvidia.com/optix7/api/html/struct_optix_accel_build_options.html)
- * for an overlook on
- * [OptixBuildInput](https://raytracing-docs.nvidia.com/optix7/api/html/struct_optix_accel_build_options.html).
- *
- * @return a zeroed
- * [OptixBuildInput](https://raytracing-docs.nvidia.com/optix7/api/html/struct_optix_build_input.html)
- * struct.
- */
 AccelerationStruct::BuildOptions AccelerationStruct::default_build_options()
 {
     auto options = types::zero<BuildOptions>();
