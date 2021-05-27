@@ -21,6 +21,8 @@ namespace rtac { namespace optix {
 class Pipeline;
 
 /**
+ * A wrapper around the OptixProgramGroup type.
+ *
  * A ProgramGroup represents a single or a set of user defined functions to be
  * called by OptiX on GPU during ray-tracing.
  *
@@ -29,38 +31,34 @@ class Pipeline;
  * to achieve parallel ray-tracing.
  *
  * There are 5 kind of ProgramGroup, each called on a specific ray-tracing step :
+ * - OPTIX_PROGRAM_GROUP_KIND_RAYGEN : the \_\_raygen\_\_ function can be
+ *      considered as the "main function" for rays.  It is the first function
+ *      to be called on each independent ray on a ray-tacing launch and the
+ *      last one to returns at the end of the ray-tracing operation. It is
+ *      responsible to launch the first of potentially many ray recursions and
+ *      usually fills the result of the ray-tracing in the ouput buffer. There
+ *      are as many \_\_raygen\_\_ calls than the concurrent rays computations
+ *      on the GPU.
  * -
- * [OPTIX_PROGRAM_GROUP_KIND_RAYGEN](https://raytracing-docs.nvidia.com/optix7/api/html/group__optix__types.html#gabca35b1218b4df575a5c42926da0d978)
- *      : the \_\_raygen\_\_ function can be considered as the "main function"
- *      for rays.  It is the first function to be called on each independent
- *      ray on a ray-tacing launch and the last one to returns at the end of
- *      the ray-tracing operation. It is responsible to launch the first of
- *      potentially many ray recursions and usually fills the result of the
- *      ray-tracing in the ouput buffer. There are as many \_\_raygen\_\_ calls
- *      than the concurrent rays computations on the GPU.
+ * OPTIX_PROGRAM_GROUP_KIND_MISS : the \_\_miss\_\_ function is called when a
+ *      ray reached its maximum distance without intersecting anything. 
  * -
- * [OPTIX_PROGRAM_GROUP_KIND_MISS](https://raytracing-docs.nvidia.com/optix7/api/html/group__optix__types.html#gabca35b1218b4df575a5c42926da0d978)
- *      : the \_\_miss\_\_ function is called when a ray reached its maximum
- *      distance without intersecting anything. 
- * -
- * [OPTIX_PROGRAM_GROUP_KIND_HITGROUP](https://raytracing-docs.nvidia.com/optix7/api/html/group__optix__types.html#gabca35b1218b4df575a5c42926da0d978)
- *      : a hitgroup ProgramGroup contains several functions all of which are
- *      optional. The \_\_anyhit\_\_ function is called on any intersection of the
- *      ray with a primitive. They are as much \_\_anyhit\_\_ calls as there are
- *      intersections. The \_\_closesthit\_\_ function is called only on the
- *      intersection the closest to the origin of the ray. The \_\_intersection\_\_
- *      function is called when a ray intersects the bounding-box of a
- *      primitive.  The \_\_intersection\_\_ function reports to the OptiX API if
- *      an intersection with the primitive occurred within the bounding box. If
- *      the \_\_intersection\_\_ function does not report an intersection to OptiX,
- *      the \_\_anyhit\_\_ and \_\_closesthit\_\_ function won't be called on this
- *      primitive. The \_\_intersection\_\_ function is used to define custom
- *      primitive geometries (i.e. non-triangles) such as spheres, or any other
- *      geometry. 
- * - [OPTIX_PROGRAM_GROUP_KIND_EXCEPTION](https://raytracing-docs.nvidia.com/optix7/api/html/group__optix__types.html#gabca35b1218b4df575a5c42926da0d978)
- *      : Not tested in rtac_optix yet.
- * - [OPTIX_PROGRAM_GROUP_KIND_CALLABLES](https://raytracing-docs.nvidia.com/optix7/api/html/group__optix__types.html#gabca35b1218b4df575a5c42926da0d978)
-        : Not tested in rtac_optix yet.
+ * OPTIX_PROGRAM_GROUP_KIND_HITGROUP : a hitgroup ProgramGroup contains several
+ *      functions all of which are optional. The \_\_anyhit\_\_ function is
+ *      called on any intersection of the ray with a primitive. They are as
+ *      much \_\_anyhit\_\_ calls as there are intersections. The
+ *      \_\_closesthit\_\_ function is called only on the intersection the
+ *      closest to the origin of the ray. The \_\_intersection\_\_ function is
+ *      called when a ray intersects the bounding-box of a primitive.  The
+ *      \_\_intersection\_\_ function reports to the OptiX API if an
+ *      intersection with the primitive occurred within the bounding box. If
+ *      the \_\_intersection\_\_ function does not report an intersection to
+ *      OptiX, the \_\_anyhit\_\_ and \_\_closesthit\_\_ function won't be
+ *      called on this primitive. The \_\_intersection\_\_ function is used to
+ *      define custom primitive geometries (i.e. non-triangles) such as
+ *      spheres, or any other geometry. 
+ * - OPTIX_PROGRAM_GROUP_KIND_EXCEPTION : Not tested in rtac_optix yet.
+ * - OPTIX_PROGRAM_GROUP_KIND_CALLABLES : Not tested in rtac_optix yet.
  */
 class ProgramGroup : public OptixWrapper<OptixProgramGroup>
 {

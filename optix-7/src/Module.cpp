@@ -3,28 +3,21 @@
 namespace rtac { namespace optix {
 
 /**
- * Generates default module compile options. Will be called on
+ * Generates default OptixModuleCompileOptions. Will be called on
  * Pipeline::add_module if no Module compile option were provided by the user.
  *
  * This provides a "to go" default configuration for a Module. These options
  * can be left as-is, but tweaking these options may lead to better
  * performances.
  *
- * See
- * [here](https://raytracing-docs.nvidia.com/optix7/api/html/struct_optix_module_compile_options.html)
- * for an overlook on
- * [OptixModuleCompileOptions](https://raytracing-docs.nvidia.com/optix7/api/html/struct_optix_module_compile_options.html).
- *
  * Default options :
- * - maxRegisterCount : [OPTIX_COMPILE_DEFAULT_MAX_REGISTER_COUNT](https://raytracing-docs.nvidia.com/optix7/api/html/group__optix__types.html#ga74b0be2a2ec5c76beb3faf0d41837360)
- * - optLevel         : [OPTIX_COMPILE_OPTIMIZATION_DEFAULT](https://raytracing-docs.nvidia.com/optix7/api/html/group__optix__types.html#gaea8ecab8ad903804364ea246eefc79b2)
- * - debugLevel       : [OPTIX_COMPILE_DEBUG_LEVEL_LINEINFO](https://raytracing-docs.nvidia.com/optix7/api/html/group__optix__types.html#ga2a921efc5016b2b567fa81ddb429e81a)
+ * - maxRegisterCount : OPTIX_COMPILE_DEFAULT_MAX_REGISTER_COUNT
+ * - optLevel         : OPTIX_COMPILE_OPTIMIZATION_DEFAULT
+ * - debugLevel       : OPTIX_COMPILE_DEBUG_LEVEL_LINEINFO
  * - boundValues      : nullptr (0)
  * - numBoundValues   : 0
  *
- * @return an
- * [OptixModuleCompileOptions](https://raytracing-docs.nvidia.com/optix7/api/html/struct_optix_module_compile_options.html)
- * filled with default parameters.
+ * @return an OptixModuleCompileOptions filled with default parameters.
  */
 Module::ModuleOptions Module::default_options()
 {

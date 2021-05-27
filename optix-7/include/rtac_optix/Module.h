@@ -20,6 +20,8 @@ namespace rtac { namespace optix {
 class Pipeline;
 
 /**
+ * A wrapper around the OptixModule type.
+ *
  * A Module is the result of the compilation of a CUDA source file. It is the
  * equivalent of a C/C++ object file (.o). A single Module contains several
  * functions to be used in a ray-tracing program. Several Modules can be linked

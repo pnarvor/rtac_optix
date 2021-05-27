@@ -35,12 +35,11 @@ namespace rtac { namespace optix {
  * official OptiX API, modules and programs are created before the pipeline,
  * and the compileOptions and linkOptions used in Module creation and Pipeline
  * creation must be the same.  (In the official OptiX API, the call to
- * [optixPipelineCreate](https://raytracing-docs.nvidia.com/optix7/api/html/group__optix__host__api__pipelines.html)
- * is equivalent to a link). In this API, an instance of Pipeline is the only
- * allowed to create a new Module or a new ProgramGroup. This allows to ensure
- * that the compile and link options are the same across all modules used in a
- * particular Pipeline, and free the user from caring about the compile and
- * link options more than once.
+ * optixPipelineCreate is equivalent to a link). In this API, an instance of
+ * Pipeline is the only allowed to create a new Module or a new ProgramGroup.
+ * This allows to ensure that the compile and link options are the same across
+ * all modules used in a particular Pipeline, and free the user from caring
+ * about the compile and link options more than once.
  *
  * The Pipeline, Module and ProgramGroup classes are linked together by the
  * rtac::types::BuildTarget dependency system. Any change to a Module will

@@ -4,27 +4,20 @@
 namespace rtac { namespace optix {
 
 /**
- * Generates default Context options. Will be called on Context instanciation
- * if no options were provided by the user. These options are mostly
- * logging/debug related.
+ * Generates default OptixDeviceContextOptions. Will be called on Context
+ * instanciation if no options were provided by the user. These options are
+ * mostly logging/debug related.
  *
  * This provides a "to go" default configuration for a Context. These options
  * can be left as-is, but tweaking them may lead to better performances.
- *
- * See
- * [here](https://raytracing-docs.nvidia.com/optix7/api/html/struct_optix_device_context_options.html)
- * for an overlook on
- * [OptixDeviceContextOptions](https://raytracing-docs.nvidia.com/optix7/api/html/struct_optix_device_context_options.html).
  *
  * Default options :
  * - logCallbackFunction : Context::log_callback
  * - logCallbackData     : nullptr(0)
  * - logCallbackLevel    : 4
- * - validationMode      : [OPTIX_DEVICE_CONTEXT_VALIDATION_MODE_OFF](https://raytracing-docs.nvidia.com/optix7/api/html/group__optix__types.html#ga0fac96215f0518eb6d2d14d2bba62a25)
+ * - validationMode      : OPTIX_DEVICE_CONTEXT_VALIDATION_MODE_OFF
  *
- * @return an
- * [OptixDeviceContextOptions](https://raytracing-docs.nvidia.com/optix7/api/html/struct_optix_device_context_options.html)
- * filled with default parameters.
+ * @return an OptixDeviceContextOptions filled with default parameters.
  */
 OptixDeviceContextOptions Context::default_options()
 {
@@ -56,8 +49,6 @@ Context::Context(const OptixDeviceContext& context) :
  * Creates and initializes a new optix Context.
  *
  * @param options          OptixDeviceContextOptions. Logging related options.
- *                         See [here](https://raytracing-docs.nvidia.com/optix7/api/html/struct_optix_device_context_options.html)
- *                         for more information.
  * @param cudaContext      a cuda context (represent a specific GPU). Default is 0
  *                         (default GPU as seen by CUDA).
  * @param diskCacheEnabled whether to use the disk cache (disabled by default).

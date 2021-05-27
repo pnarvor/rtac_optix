@@ -9,7 +9,7 @@
 namespace rtac { namespace optix {
 
 /**
- * Generates default pipeline compile options. Will be called on Pipeline
+ * Generates default OptixPipelineCompileOptions. Will be called on Pipeline
  * instanciation if no compile options were provided by the user.
  *
  * This provides a "to go" default configuration for a Pipeline. However some
@@ -17,23 +17,16 @@ namespace rtac { namespace optix {
  * numAttributesValue for example). Some other options can be left as-is in all
  * cases, but tweaking these options may lead to better performances.
  *
- * See
- * [here](https://raytracing-docs.nvidia.com/optix7/api/html/struct_optix_pipeline_compile_options.html)
- * for an overlook on
- * [OptixPipelineCompileOptions](https://raytracing-docs.nvidia.com/optix7/api/html/struct_optix_pipeline_compile_options.html).
- *
  * Default options :
- * - usesMotionBlur        : false
- * - traversableGraphFlags : [OPTIX_TRAVERSABLE_GRAPH_FLAG_ALLOW_ANY](https://raytracing-docs.nvidia.com/optix7/api/html/group__optix__types.html#gabd8bb7368518a44361e045fe5ad1fd17)
- * - numPayloadValues      : 3
- * - numAttributesValues   : 3
- * - exceptionFlags        : [OPTIX_EXCEPTION_FLAGS_NONE](https://raytracing-docs.nvidia.com/optix7/api/html/group__optix__types.html#ga95e8175699d1a23c5c1d5333c4468190)
+ * - usesMotionBlur                   : false
+ * - traversableGraphFlags            : OPTIX_TRAVERSABLE_GRAPH_FLAG_ALLOW_ANY
+ * - numPayloadValues                 : 3
+ * - numAttributesValues              : 3
+ * - exceptionFlags                   : OPTIX_EXCEPTION_FLAGS_NONE
  * - pipelineLaunchParamsVariableName : "params"
- * - usesPrimitiveTypeFlags           : [OPTIX_PRIMITIVE_TYPE_FLAGS_TRIANGLE](https://raytracing-docs.nvidia.com/optix7/api/html/group__optix__types.html#ga1171b332da08991dd9e6ef54b52b3ba4)
+ * - usesPrimitiveTypeFlags           : OPTIX_PRIMITIVE_TYPE_FLAGS_TRIANGLE
  *
- * @return an
- * [OptixPipelineCompileOptions](https://raytracing-docs.nvidia.com/optix7/api/html/struct_optix_pipeline_compile_options.html)
- * filled with default parameters.
+ * @return an OptixPipelineCompileOptions filled with default parameters.
  */
 Pipeline::CompileOptions Pipeline::default_pipeline_compile_options()
 {
@@ -55,7 +48,7 @@ Pipeline::CompileOptions Pipeline::default_pipeline_compile_options()
 }
 
 /**
- * Generate default pipeline link options. Will be called on Pipeline
+ * Generate default OptixPipelineLinkOptions. Will be called on Pipeline
  * instanciation if no link options were provided by the user.
  *
  * This provides a "to go" default configuration for a Pipeline. However some
@@ -63,17 +56,11 @@ Pipeline::CompileOptions Pipeline::default_pipeline_compile_options()
  * options can be left as-is in all cases, but tweaking these options may lead
  * to better performances.
  *
- * See
- * [here](https://raytracing-docs.nvidia.com/optix7/api/html/struct_optix_pipeline_link_options.html)
- * for an overlook on [OptixPipelineLinkOptions](https://raytracing-docs.nvidia.com/optix7/api/html/struct_optix_pipeline_link_options.html).
- *
  * Default options :
  * - maxTraceDepth : 1
- * - debugLevel    : [OPTIX_COMPILE_DEBUG_LEVEL_FULL](https://raytracing-docs.nvidia.com/optix7/api/html/group__optix__types.html#ga2a921efc5016b2b567fa81ddb429e81a)
+ * - debugLevel    : OPTIX_COMPILE_DEBUG_LEVEL_FULL
  *
- * @return an
- * [OptixPipelineLinkOptions](https://raytracing-docs.nvidia.com/optix7/api/html/struct_optix_pipeline_link_options.html)
- * filled with default parameters.
+ * @return an OptixPipelineLinkOptions filled with default parameters.
  */
 Pipeline::LinkOptions Pipeline::default_pipeline_link_options()
 {
@@ -271,8 +258,8 @@ Pipeline::LinkOptions& Pipeline::link_options()
  * @param ptxContent    a ptx source string which was compiled from CUDA code
  *                      using either NVCC at compile time or NVRTC at runtime (the
  *                      later is not implemented yet).
- * @param moduleOptions [OptixModuleCompileOptions](https://raytracing-docs.nvidia.com/optix7/api/html/struct_optix_module_compile_options.html)
- *                      for this Module. Defaults are given by Module::default_options().
+ * @param moduleOptions OptixModuleCompileOptions for this Module. Defaults are
+ *                      given by Module::default_options().
  * @param forceReplace  if false, an error will be reported if the name was
  *                      already used to create a Module. Otherwise, the
  *                      existing Module with the same name will be removed (but
@@ -368,7 +355,7 @@ ProgramGroup::Ptr Pipeline::add_program_group(ProgramGroup::Kind kind)
 
 // BELOW HERE, ONLY METHOD OVERLOADS
 /**
- * Add a module with default [OptixModuleCompileOptions](https://raytracing-docs.nvidia.com/optix7/api/html/struct_optix_module_compile_options.html)
+ * Add a module with default OptixModuleCompileOptions.
  *
  * See Pipeline::add_module for more info.
  */
