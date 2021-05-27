@@ -21,14 +21,28 @@
 
 namespace rtac { namespace optix {
 
+/**
+ * Abstract class representing a node of the object tree which needs to be
+ * build by the OptiX API. This class hides the tedious build process from the
+ * user.
+ *
+ * A simple user of the rtac_optix library should not have to directly use
+ * this type. More user-friendly types are provided to ease the creation of
+ * triangle mesh geometries (MeshGeometry), custom geometries (CustomGeometry),
+ * or groups of objects (GroupInstance).
+ *
+ * The nodes of the object tree are either geometrical objects (triangle
+ * meshes, custom geometries such as spheres...) or groups of other objects.
+ * Each of the graph nodes needs to be **build** according to the OptiX
+ * terminology. In practice, this build operation probably generates the data
+ * structures needed by OptiX to perform an efficient ray-tracing operation
+ * (generation of KdTrees for fast scene exploration, alignment of vertex data
+ * for efficient memory access...). From the user perspective, the build
+ * process can be viewed as a conversion from user data types to OptiX
+ * optimized data types.
+ */
 class AccelerationStruct : public OptixWrapper<OptixTraversableHandle>
 {
-    // ABSTRACT class
-
-    // Represent complex nodes of the rendering graph which need to be built.
-    // The purpose of this graph is to hide the build operation. It must be
-    // subclassed by a class implementing the sbt_width method.
-
     public:
 
     using Ptr      = OptixWrapperHandle<AccelerationStruct>;
@@ -40,10 +54,13 @@ class AccelerationStruct : public OptixWrapper<OptixTraversableHandle>
     static BuildOptions default_build_options();
 
     using Buffer = rtac::cuda::DeviceVector<unsigned char>;
-    // This contains the CUDA stream in which the build is performed and a
-    // temporaty buffer needed during the build but not used afterwards.  This
-    // can be ignored by the user (defaults values will be provided). They are
-    // usefull if the user wants to optimize the build process.
+    /** This contains the CUDA stream in which the build is performed (the
+     * build operation can take a long time and several build operations can
+     * run in parallel in separated CUstreams) and a temporary buffer needed
+     * during the build but not used afterwards.  This can be ignored by the
+     * user (defaults values will be provided). It is useful if the user wants
+     * to optimize the build process.
+     */
     struct BuildMeta { Handle<Buffer> buffer; CUstream stream; };
 
     protected:
