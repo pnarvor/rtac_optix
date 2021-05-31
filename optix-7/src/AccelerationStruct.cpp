@@ -12,6 +12,14 @@ AccelerationStruct::BuildInput AccelerationStruct::default_build_input()
     return types::zero<BuildInput>();
 }
 
+/**
+ * Default options :
+ * - buildFlags    : OPTIX_BUILD_FLAG_NONE
+ * - operation     : OPTIX_BUILD_OPERATION_BUILD
+ * - motionOptions : zeroed OptixMotionOptions struct
+ * 
+ * @return a default OptixAccelBuildOptions for a build operation.
+ */
 AccelerationStruct::BuildOptions AccelerationStruct::default_build_options()
 {
     auto options = types::zero<BuildOptions>();
@@ -20,6 +28,19 @@ AccelerationStruct::BuildOptions AccelerationStruct::default_build_options()
     return options;
 }
 
+
+/**
+ * Protected Constructor. Should be called by a sub-class Constructor.
+ *
+ * @param context      a non-null Context pointer. The Context cannot be
+ *                     changed in the AccelerationStruct object lifetime.
+ * @param buildInput   a OptixBuildInput instance. Can be modified after the
+ *                     object instanciation. Usually provided by the sub-class
+ *                     Constructor.
+ * @param buildOptions a OptixAccelBuildOptions instance. Can be modified after
+ *                     the object instanciation. Usually provided by the
+ *                     sub-class Constructor.
+ */
 AccelerationStruct::AccelerationStruct(const Context::ConstPtr& context,
                                        const BuildInput& buildInput,
                                        const BuildOptions& buildOptions) :
@@ -30,6 +51,14 @@ AccelerationStruct::AccelerationStruct(const Context::ConstPtr& context,
     buildMeta_({Handle<Buffer>(nullptr), 0})
 {}
 
+/**
+ * Creates the OptixTraversableHandle from OptixBuildInput buildInput_ and
+ * OptixAccelBuildOptions buildOptions_ by calling optixAccelBuild.
+ *
+ * **DO NOT CALL THIS METHOD DIRECTLY UNLESS YOU KNOW WHAT YOU ARE DOING.**
+ * This method will be automatically called when a user request to
+ * OptixTraversableHandle occurs.
+ */
 void AccelerationStruct::do_build() const
 {
     // Computing memory usage needed(both for output and temporary usage for
@@ -110,23 +139,57 @@ const AccelerationStruct::BuildOptions& AccelerationStruct::build_options() cons
     return buildOptions_;
 }
 
+/**
+ * This will trigger a rebuild of the AccelerationStruct.
+ *
+ * A writable access to buildInput_ indicates that the user changed some
+ * options and that the AccelerationStruct should be rebuilt with the new
+ * options.
+ *
+ * @return a writable reference to OptixBuildInput buildInput_. 
+ */
 AccelerationStruct::BuildInput& AccelerationStruct::build_input()
 {
     this->bump_version();
     return buildInput_;
 }
 
+/**
+ * This will trigger a rebuild of the AccelerationStruct.
+ *
+ * A writable access to buildOptions_ indicates that the user changed some
+ * options and that the AccelerationStruct should be rebuilt with the new
+ * options.
+ *
+ * @return a writable reference to OptixAccelBuildOptions buildOptions_.
+ */
 AccelerationStruct::BuildOptions& AccelerationStruct::build_options()
 {
     this->bump_version();
     return buildOptions_;
 }
 
+/**
+ * Sets buffer for temporary buildData.
+ *
+ * If no temporary buffer was provided by the user a new one will be
+ * automatically created. However, if the build operation of all the
+ * AccelerationStruct in a project are performed sequentially, the same
+ * temporary build buffer can be used across all the AccelerationStruct. This
+ * should prevent multiple temporary buffer to be created on the device and
+ * lead to reduce loading time and device memory used.
+ *
+ * @param buffer a shared pointer to a DeviceVector which will be used to hold
+ *               temporary build data.
+ */
 void AccelerationStruct::set_build_buffer(const Handle<Buffer>& buffer)
 {
     buildMeta_.buffer = buffer;
 }
 
+/**
+ * Resizes the temporary build buffer according to the build process needs.
+ */
 void AccelerationStruct::resize_build_buffer(size_t size) const
 {
     if(!buildMeta_.buffer) {
@@ -137,17 +200,39 @@ void AccelerationStruct::resize_build_buffer(size_t size) const
     }
 }
 
+/**
+ * Sets a CUDA stream for parallel build of several AccelerationStruct. If none
+ * is set by the user,the default CUstream (0) is used.
+ *
+ * Each AccelerationBuild to be built in parallel should run in its own CUDA
+ * stream. Caution : each of the build thread should have its own temporary
+ * build buffer (set with AccelerationStruct::set_build_buffer).
+ *
+ * @param stream a CUstream to run the build operation into.
+ */
 void AccelerationStruct::set_build_stream(CUstream stream)
 {
     buildMeta_.stream = stream;
 }
 
+/**
+ * Sets a temporary build buffer and a CUstream to run the build operation
+ * into. See AccelerationStruct::set_build_buffer and
+ * AccelerationStruct::set_build_stream for more details.
+ *
+ * @param buffer a shared pointer to a DeviceVector which will be used to hold
+ *               temporary build data.
+ * @param stream a CUstream to run the build operation into.
+ */
 void AccelerationStruct::set_build_meta(const Handle<Buffer>& buffer, CUstream stream)
 {
     this->set_build_buffer(buffer);
     this->set_build_stream(stream);
 }
 
+/**
+ * @return type of AccelerationStruct, OptixBuildInputType.
+ */
 OptixBuildInputType AccelerationStruct::kind() const
 {
     return buildInput_.type;

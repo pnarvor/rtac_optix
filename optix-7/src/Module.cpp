@@ -41,8 +41,8 @@ Module::Module(const Context::ConstPtr& context,
 {}
 
 /**
- * Instanciate a new Module on the heap. Is protected. Should not be called
- * directly by the user but with Pipeline::add_module method.
+ * Instanciate a new Module. Is protected. Should not be called directly by the
+ * user but with Pipeline::add_module method.
  *
  * @param context         a non-null Context pointer. The Context cannot be
  *                        changed in the Module object lifetime.
@@ -124,8 +124,9 @@ const Module::ModuleOptions& Module::module_options() const
  * This will trigger a rebuild of the Module and its Pipeline (and all other
  * Modules and ProgramsGroups in the Pipeline).
  *
- * A writable access to pipelineOptions_ indicate that the user changed some
- * options and that the Pipeline and its Modules must be rebuilt with the new options.
+ * A writable access to pipelineOptions_ indicates that the user changed some
+ * options and that the Pipeline and its Modules must be rebuilt with the new
+ * options.
  *
  * @return a writable reference to compileOptions_. 
  */

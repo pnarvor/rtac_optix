@@ -108,6 +108,48 @@
 </compound>
 
 
+<compound kind="struct">
+    <name>optixAccelBuild</name>
+    <filename>
+        group__optix__host__api__acceleration__structures.html#gab3fdfe8ee81f725555b0be927fbaa44b
+    </filename>
+</compound>
+<compound kind="struct">
+    <name>OptixBuildInput</name>
+    <filename>
+        struct_optix_build_input.html
+    </filename>
+</compound>
+<compound kind="struct">
+    <name>OptixAccelBuildOptions</name>
+    <filename>
+        struct_optix_accel_build_options.html
+    </filename>
+</compound>
+<compound kind="struct">
+    <name>OptixBuildInputType</name>
+    <filename>
+        group__optix__types.html#ga7932d1d9cdf33506a75a5da5d8a62d94
+    </filename>
+</compound>
+<compound kind="struct">
+    <name>OPTIX_BUILD_FLAG_NONE</name>
+    <filename>
+        group__optix__types.html#gaff328b8278fbd1900558593599698bba
+    </filename>
+</compound>
+<compound kind="struct">
+    <name>OPTIX_BUILD_OPERATION_BUILD</name>
+    <filename>
+        group__optix__types.html#ga411c1c6d9f4d8e039ae19e9dea65958a
+    </filename>
+</compound>
+<compound kind="struct">
+    <name>OptixMotionOptions</name>
+    <filename>
+        struct_optix_motion_options.html
+    </filename>
+</compound>
 
 
 
@@ -204,8 +246,4 @@
     </filename>
 </compound>
 
-<compound kind="struct">
-    <name>OptixBuildInput</name>
-    <filename>struct_optix_build_input.html</filename>
-</compound>
 </tagfile>

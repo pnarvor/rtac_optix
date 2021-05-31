@@ -33,13 +33,16 @@ namespace rtac { namespace optix {
  *
  * The nodes of the object tree are either geometrical objects (triangle
  * meshes, custom geometries such as spheres...) or groups of other objects.
- * Each of the graph nodes needs to be **build** according to the OptiX
+ * Each of the graph nodes needs to be **built** according to the OptiX
  * terminology. In practice, this build operation probably generates the data
  * structures needed by OptiX to perform an efficient ray-tracing operation
- * (generation of KdTrees for fast scene exploration, alignment of vertex data
- * for efficient memory access...). From the user perspective, the build
- * process can be viewed as a conversion from user data types to OptiX
+ * (generation of KdTrees for fast scene exploration, memory alignment of
+ * vertex data for efficient memory access...). From the user perspective, the
+ * build process can be viewed as a conversion from user data types to OptiX
  * optimized data types.
+ *
+ * The build operation of AccelerationStruct is the optixAccelBuild function.
+ * See its documentation for more information.
  */
 class AccelerationStruct : public OptixWrapper<OptixTraversableHandle>
 {
