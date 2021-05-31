@@ -2,21 +2,55 @@
 
 namespace rtac { namespace optix {
 
+/**
+ * @return a default (invalid and zeroed) OptixBuildInput.
+ */
 GeometryAccelStruct::BuildInput GeometryAccelStruct::default_build_input()
 {
     return AccelerationStruct::default_build_input();
 }
 
+/**
+ * Default options (same as AccelerationStruct::default_build_options) :
+ * - buildFlags    : OPTIX_BUILD_FLAG_NONE
+ * - operation     : OPTIX_BUILD_OPERATION_BUILD
+ * - motionOptions : zeroed OptixMotionOptions struct
+ * 
+ * @return a default OptixAccelBuildOptions for a build operation.
+ */
 GeometryAccelStruct::BuildOptions GeometryAccelStruct::default_build_options()
 {
     return AccelerationStruct::default_build_options();
 }
 
+/**
+ * Default hit flag configuration (see GeometryAccelStruct::material_hit_setup).
+ *
+ * By default every primitive has the same material index (0).
+ *
+ * @return configuration for a single material with flag
+ *         OPTIX_GEOMETRY_FLAG_NONE.
+ */
 std::vector<unsigned int> GeometryAccelStruct::default_hit_flags()
 {
     return std::vector<unsigned int>({OPTIX_GEOMETRY_FLAG_NONE});
 }
 
+/**
+ * Protected Constructor. Should be called by a sub-class Constructor.
+ *
+ * @param context      a non-null Context pointer. The Context cannot be
+ *                     changed in the AccelerationStruct object lifetime.
+ * @param buildInput   a OptixBuildInput instance. Can be modified after the
+ *                     object instanciation. Usually provided by the sub-class
+ *                     Constructor.
+ * @param buildOptions a OptixAccelBuildOptions instance. Can be modified after
+ *                     the object instanciation. Usually provided by the
+ *                     sub-class Constructor.
+ *
+ * Loads a default material configuration (all primitives have the same
+ * material index = 0).
+ */
 GeometryAccelStruct::GeometryAccelStruct(const Context::ConstPtr& context,
                                          const OptixBuildInput& buildInput,
                                          const OptixAccelBuildOptions& options) :
@@ -25,6 +59,11 @@ GeometryAccelStruct::GeometryAccelStruct(const Context::ConstPtr& context,
     this->material_hit_setup(default_hit_flags());
 }
 
+/**
+ * Fill-in the OptixBuildInput buildInput_ from the material configuration in
+ * materialHitFlags_ and materialIndexes_ attributes. This is called before the
+ * buld process in GeometryAccelStruct::do_build.
+ */
 void GeometryAccelStruct::update_hit_setup() const
 {
     switch(this->buildInput_.type)
@@ -77,12 +116,38 @@ void GeometryAccelStruct::update_hit_setup() const
     };
 }
 
+/**
+ * Calls GeometryAccelStruct::update_hit_setup, then creates the
+ * OptixTraversableHandle from OptixBuildInput buildInput_ and
+ * OptixAccelBuildOptions buildOptions_ by calling optixAccelBuild.
+ *
+ * **DO NOT CALL THIS METHOD DIRECTLY UNLESS YOU KNOW WHAT YOU ARE DOING.**
+ * This method will be automatically called when a user request to
+ * OptixTraversableHandle occurs.
+ */
 void GeometryAccelStruct::do_build() const
 {
     this->update_hit_setup();
     AccelerationStruct::do_build();
 }
 
+/**
+ * Configures the **materials indexes** for the primitives of this
+ * GeometryAccelStruct (associates a pairi [index,flags] to each primitive).
+ *
+ * @param hitFlags        a std::vector with OptixGeometryFlags flags.
+ *                        hitFlags.size() defines the number of different
+ *                        materials for this GeometryAccelStruct. (and all
+ *                        **material indexes** must be between 0 and
+ *                        hitFlags.size()-1).
+ * @param materialIndexes a handle to a DeviceVector containing the **material
+ *                        indexes** associated with each primitive. Values must
+ *                        be between 0 and hitFlags.size()-1.
+ *                        materialIndexes.size() must be equal to the number of
+ *                        primitives in the geometry. Can be null if there is
+ *                        only one Material in the geometryAccelStruct (i.e. if
+ *                        hitFlags.size() == 1)
+ */
 void GeometryAccelStruct::material_hit_setup(
     const std::vector<unsigned int>& hitFlags,
     const Handle<MaterialIndexBuffer>& materialIndexes)
@@ -125,6 +190,10 @@ void GeometryAccelStruct::material_hit_setup(
     }
 }
 
+/**
+ * Overload of GeometryAccelStruct::material_hit_setup with a host-side
+ * material indexes vector.
+ */
 void GeometryAccelStruct::material_hit_setup(
     const std::vector<unsigned int>& hitFlags,
     const std::vector<uint8_t>& materialIndexes)
@@ -133,12 +202,25 @@ void GeometryAccelStruct::material_hit_setup(
         Handle<MaterialIndexBuffer>(new MaterialIndexBuffer(materialIndexes)));
 }
 
+/**
+ * Clears and invalidate the current material configuration.
+ *
+ * Trying to build/use this object without reconfiguring the materials will
+ * result in an error.
+ */
 void GeometryAccelStruct::clear_hit_setup()
 {
     this->bump_version();
     materialHitFlags_.resize(0);
 }
 
+/**
+ * @return the width this object takes in the ShaderBindingTable. (Without
+ *         taking into account the number of raytypes. It is equal to the
+ *         number of different materials in this GeometryAccelStruct.
+ *
+ * See ShaderBindingTable for more information.
+ */
 unsigned int GeometryAccelStruct::sbt_width() const
 {
     return materialHitFlags_.size();

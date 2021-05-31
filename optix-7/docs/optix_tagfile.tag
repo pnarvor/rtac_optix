@@ -151,8 +151,12 @@
     </filename>
 </compound>
 
-
-
+<compound kind="struct">
+    <name>OPTIX_GEOMETRY_FLAG_NONE</name>
+    <filename>
+        group__optix__types.html#ga1405d971960ccde46cc2c5771f34fc76
+    </filename>
+</compound>
 
 
 <compound kind="struct">

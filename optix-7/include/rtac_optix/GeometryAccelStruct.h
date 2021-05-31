@@ -17,11 +17,39 @@
 
 namespace rtac { namespace optix {
 
+/**
+ * Abstract specialization of AccelerationStruct describing the geometry of a
+ * physical object the rays will intersect with.
+ *
+ * GeometryAccelStruct is the base class for MeshGeometry and CustomGeometry
+ * which respectively describes a triangle mesh object (optimized for
+ * triangle-ray intersection using the NVIDIA RTX cores), and a custom geometry
+ * object (usually one or a set of parametrized surfaces, such as spheres,
+ * cones, quadrics ...). A GeometryAccelStruct also defines the material
+ * structure of the geometry. A material index (together with material specific
+ * flags) can be defined either for each primitive.
+ *
+ * It is important to understand that the GeometryAccelStruct only associate
+ * each primitive with a **material index or label**, not with a Material
+ * object instance. The user himself must provide the association between a
+ * **material index** and a Material instance.
+ * 
+ * Example : a GeometryAccelStruct (rather the MeshGeometry subclass)
+ * represents the triangle mesh of a house. The Material indexes that the
+ * GeometryAccelStruct holds are :
+ * - 0 : a rocky wall
+ * - 1 : a tiled roof
+ * - 2 : a glass window.
+ *
+ * To each triangle is associated an index (0, 1 or 2) which says if a triangle
+ * is a rocky wall, a tiled roof or a glass window. However, it does not says
+ * **how** the ray is supposed to interact with a rock, a tile, or glass. The
+ * **how** is defined in a \_\_closesthit\_\_ program embedded within a
+ * Material instance.  The association between a GeometryAccelStruct and the
+ * Material instances is done in the ObjectInstance object.
+ */
 class GeometryAccelStruct : public AccelerationStruct
 {
-    // This class is mostly there to provide a common base class to geometric
-    // acceleration struct such as MeshAccelStruct and CustomAccelStruct.
-
     public:
 
     using Ptr                 = OptixWrapperHandle<GeometryAccelStruct>;
