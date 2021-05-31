@@ -139,6 +139,12 @@
     </filename>
 </compound>
 <compound kind="struct">
+    <name>OPTIX_BUILD_FLAG_ALLOW_RANDOM_VERTEX_ACCESS</name>
+    <filename>
+        group__optix__types.html#gaff328b8278fbd1900558593599698bba
+    </filename>
+</compound>
+<compound kind="struct">
     <name>OPTIX_BUILD_OPERATION_BUILD</name>
     <filename>
         group__optix__types.html#ga411c1c6d9f4d8e039ae19e9dea65958a
@@ -150,11 +156,36 @@
         struct_optix_motion_options.html
     </filename>
 </compound>
-
 <compound kind="struct">
     <name>OPTIX_GEOMETRY_FLAG_NONE</name>
     <filename>
         group__optix__types.html#ga1405d971960ccde46cc2c5771f34fc76
+    </filename>
+</compound>
+<compound kind="struct">
+    <name>OPTIX_BUILD_INPUT_TYPE_TRIANGLES</name>
+    <filename>
+        group__optix__types.html#ga7932d1d9cdf33506a75a5da5d8a62d94
+    </filename>
+</compound>
+<compound kind="struct">
+    <name>OPTIX_BUILD_INPUT_TYPE_CUSTOM_PRIMITIVES</name>
+    <filename>
+        group__optix__types.html#ga7932d1d9cdf33506a75a5da5d8a62d94
+    </filename>
+</compound>
+<compound kind="struct">
+    <name>OPTIX_BUILD_INPUT_INSTANCES</name>
+    <filename>
+        group__optix__types.html#ga7932d1d9cdf33506a75a5da5d8a62d94
+    </filename>
+</compound>
+
+<!-- OptiX device API symbols -->
+<compound kind="struct">
+    <name>optixGetTriangleVertexData</name>
+    <filename>
+        group__optix__device__api.html#gaef28dbe2938c22a319c00335d47b0e64
     </filename>
 </compound>
 

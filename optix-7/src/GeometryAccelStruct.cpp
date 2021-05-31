@@ -62,7 +62,7 @@ GeometryAccelStruct::GeometryAccelStruct(const Context::ConstPtr& context,
 /**
  * Fill-in the OptixBuildInput buildInput_ from the material configuration in
  * materialHitFlags_ and materialIndexes_ attributes. This is called before the
- * buld process in GeometryAccelStruct::do_build.
+ * build process in GeometryAccelStruct::do_build.
  */
 void GeometryAccelStruct::update_hit_setup() const
 {
@@ -133,7 +133,7 @@ void GeometryAccelStruct::do_build() const
 
 /**
  * Configures the **materials indexes** for the primitives of this
- * GeometryAccelStruct (associates a pairi [index,flags] to each primitive).
+ * GeometryAccelStruct (associates a pair [index,flags] to each primitive).
  *
  * @param hitFlags        a std::vector with OptixGeometryFlags flags.
  *                        hitFlags.size() defines the number of different
@@ -216,7 +216,7 @@ void GeometryAccelStruct::clear_hit_setup()
 
 /**
  * @return the width this object takes in the ShaderBindingTable. (Without
- *         taking into account the number of raytypes. It is equal to the
+ *         taking into account the number of ray types. It is equal to the
  *         number of different materials in this GeometryAccelStruct.
  *
  * See ShaderBindingTable for more information.

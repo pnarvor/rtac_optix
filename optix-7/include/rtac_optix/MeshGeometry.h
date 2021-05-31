@@ -21,6 +21,20 @@
 
 namespace rtac { namespace optix {
 
+/**
+ * Specialization of GeometryAccelStruct to describe a triangle mesh geometry.
+ *
+ * This can be used as a geometry in an ObjectInstance. A single MeshGeometry
+ * can be use in several ObjectInstance.
+ *
+ * This object can be used to describe a triangle mesh geometry compatible with
+ * the RTX cores on recent NVIDIA GPUs. (The RTX cores specifically accelerates
+ * the computation of ray-triangle intersections). If the GPU described in the
+ * current Context has no RTX cores the OptiX library will use a software
+ * implemented intersection algorithm on regular CUDA cores. This is handled
+ * directly into the OptiX library and no user action is required to
+ * activate/deactivate the use of RTX cores.
+ */
 class MeshGeometry : public GeometryAccelStruct
 {
     public:
