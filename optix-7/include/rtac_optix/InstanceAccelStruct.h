@@ -23,6 +23,17 @@
 
 namespace rtac { namespace optix {
 
+/**
+ * Specialization of AccelerationStruct describing a group of Instances.
+ *
+ * This is the base class of GroupInstance. It holds a vector of Instance
+ * pointers and describes a non-leaf node in the object tree (it describes a
+ * node but is not a node itself. The corresponding node is the GroupInstance
+ * class, which holds an InstanceAccelStruct pointer).
+ *
+ * InstanceAccelStruct and GroupInstance might be merged in a single class in
+ * future developments.
+ */
 class InstanceAccelStruct : public AccelerationStruct
 {
     public:

@@ -82,8 +82,7 @@ Pipeline::Pipeline(const Context::ConstPtr& context,
 {}
 
 /**
- * Instanciate a new Pipeline on the heap (Recommended way to create a new
- * Pipeline).
+ * Instanciate a new Pipeline.
  *
  * @param context        a non-null Context pointer. The Context cannot be
  *                       changed in the Pipeline object lifetime.

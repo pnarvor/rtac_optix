@@ -117,6 +117,8 @@ void GeometryAccelStruct::update_hit_setup() const
 }
 
 /**
+ * Creates the underlying OptixTraversableHandle.
+ *
  * Calls GeometryAccelStruct::update_hit_setup, then creates the
  * OptixTraversableHandle from OptixBuildInput buildInput_ and
  * OptixAccelBuildOptions buildOptions_ by calling optixAccelBuild.

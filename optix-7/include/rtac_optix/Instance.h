@@ -17,6 +17,26 @@
 
 namespace rtac { namespace optix {
 
+/**
+ * An Instance is a wrapper around OptixInstance. An OptixInstance is a generic
+ * container used to build the object tree. It should be viewed as a unique
+ * physical object in the scene, (or a unique group of objects).
+ *
+ * An Instance holds a pointer to an AccelerationStruct (in the OptiX API the
+ * OptixInstance holds an OptixTraversableHandle). This AccelerationStruct can
+ * be one of the geometric types, such as MeshGeometry or CustomGeometry. In
+ * that case the Instance is a leaf of the object tree.  On the other hand, the
+ * AccelerationStruct can be a InstanceAccelStruct. In that case, the instance
+ * is a non-leaf node of the object tree and contains one or several other
+ * instances.
+ *
+ * Each OptixInstance holds its own specific 3D transform, instanceId,
+ * visibilityMask and sbtOffset (see ShaderBindingTable for more info on the
+ * sbtOffset). However, several Instance can share the same AccelerationStruct
+ * pointer. This allows to use the same object geometry in several objects in
+ * the object tree, or even reuse the same group of objects at different
+ * locations in the scene.
+ */
 class Instance : public OptixWrapper<OptixInstance>
 {
     public:

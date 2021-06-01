@@ -52,6 +52,8 @@ AccelerationStruct::AccelerationStruct(const Context::ConstPtr& context,
 {}
 
 /**
+ * Creates the underlying OptixTraversableHandle.
+ *
  * Creates the OptixTraversableHandle from OptixBuildInput buildInput_ and
  * OptixAccelBuildOptions buildOptions_ by calling optixAccelBuild.
  *

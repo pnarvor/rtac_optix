@@ -107,7 +107,13 @@
     </filename>
 </compound>
 
-
+<!-- OptixTraversableHandle -->
+<compound kind="struct">
+    <name>OptixTraversableHandle</name>
+    <filename>
+        group__optix__types.html#gaacf20eb67c33c2c1849adc058d43cff7
+    </filename>
+</compound>
 <compound kind="struct">
     <name>optixAccelBuild</name>
     <filename>
@@ -181,11 +187,43 @@
     </filename>
 </compound>
 
+<!-- OptixInstance -->
+<compound kind="struct">
+    <name>OptixInstance</name>
+    <filename>
+        struct_optix_instance.html
+    </filename>
+</compound>
+<compound kind="struct">
+    <name>OptixInstanceFlags</name>
+    <filename>
+        group__optix__types.html#gadefef6077edef8bb8f4008d27d784745
+    </filename>
+</compound>
+<compound kind="struct">
+    <name>OPTIX_INSTANCE_FLAG_NONE</name>
+    <filename>
+        group__optix__types.html#gadefef6077edef8bb8f4008d27d784745
+    </filename>
+</compound>
+
 <!-- OptiX device API symbols -->
+<compound kind="struct">
+    <name>optixTrace</name>
+    <filename>
+        group__optix__device__api.html#gab2bdbb55a09ffbaa1643f1d7e2fcfcc9
+    </filename>
+</compound>
 <compound kind="struct">
     <name>optixGetTriangleVertexData</name>
     <filename>
         group__optix__device__api.html#gaef28dbe2938c22a319c00335d47b0e64
+    </filename>
+</compound>
+<compound kind="struct">
+    <name>optixGetInstanceId</name>
+    <filename>
+        group__optix__device__api.html#ga4d70272186506b1a5cb4813f1047021f
     </filename>
 </compound>
 

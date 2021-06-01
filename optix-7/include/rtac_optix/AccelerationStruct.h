@@ -29,17 +29,17 @@ namespace rtac { namespace optix {
  * A simple user of the rtac_optix library should not have to directly use
  * this type. More user-friendly types are provided to ease the creation of
  * triangle mesh geometries (MeshGeometry), custom geometries (CustomGeometry),
- * or groups of objects (GroupInstance).
+ * objects (ObjectInstance, or groups of objects (GroupInstance).
  *
- * The nodes of the object tree are either geometrical objects (triangle
- * meshes, custom geometries such as spheres...) or groups of other objects.
- * Each of the graph nodes needs to be **built** according to the OptiX
- * terminology. In practice, this build operation probably generates the data
- * structures needed by OptiX to perform an efficient ray-tracing operation
- * (generation of KdTrees for fast scene exploration, memory alignment of
- * vertex data for efficient memory access...). From the user perspective, the
- * build process can be viewed as a conversion from user data types to OptiX
- * optimized data types.
+ * The nodes of the object tree are either geometrical objects with their own
+ * materials (textured triangle meshes, custom geometries such as glass
+ * spheres...) or groups of other objects.  Each of the graph nodes needs to be
+ * **built** according to the OptiX terminology. In practice, this build
+ * operation probably generates the data structures needed by OptiX to perform
+ * an efficient ray-tracing operation (generation of KdTrees for fast scene
+ * exploration, memory alignment of vertex data for efficient memory
+ * access...). From the user perspective, the build process can be viewed as a
+ * conversion from user data types to OptiX optimized data types.
  *
  * The build operation of AccelerationStruct is the optixAccelBuild function.
  * See its documentation for more information.

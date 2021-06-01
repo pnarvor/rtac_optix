@@ -27,7 +27,8 @@ namespace rtac { namespace optix {
  * object (usually one or a set of parametrized surfaces, such as spheres,
  * cones, quadrics ...). A GeometryAccelStruct also defines the material
  * structure of the geometry. A material index (together with material specific
- * flags) can be defined either for each primitive.
+ * flags) must be defined for each primitive (Or a single one for all
+ * primitives).
  *
  * It is important to understand that the GeometryAccelStruct only associate
  * each primitive with a **material index or label**, not with a Material
@@ -44,9 +45,10 @@ namespace rtac { namespace optix {
  * To each triangle is associated an index (0, 1 or 2) which says if a triangle
  * is a rocky wall, a tiled roof or a glass window. However, it does not says
  * **how** the ray is supposed to interact with a rock, a tile, or glass. The
- * **how** is defined in a \_\_closesthit\_\_ program embedded within a
- * Material instance.  The association between a GeometryAccelStruct and the
- * Material instances is done in the ObjectInstance object.
+ * **how** is defined in a \_\_anythit\_\_ or a \_\_closesthit\_\_ program
+ * embedded within a Material instance.  The association between a
+ * GeometryAccelStruct and the Material instances is done in the ObjectInstance
+ * class.
  */
 class GeometryAccelStruct : public AccelerationStruct
 {
