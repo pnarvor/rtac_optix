@@ -17,11 +17,16 @@
 
 namespace rtac { namespace optix {
 
+/**
+ * Subclass of Instance representing a single object in the object tree (not a
+ * group of objects). This is the recommended way to create an object.
+ *
+ * This class binds together a single geometry which gives the object its
+ * shape, and one or several Materials which define the behavior of the rays
+ * which intersect with the geometry.
+ */
 class ObjectInstance : public Instance
 {
-    // This class represent a single object in the world (geometry +
-    // material).
-
     public:
 
     using Ptr       = OptixWrapperHandle<ObjectInstance>;

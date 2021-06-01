@@ -8,6 +8,11 @@ ObjectInstance::ObjectInstance(const GeometryAccelStruct::ConstPtr& geometry,
     materials_(0)
 {}
 
+/**
+ * Creates a new ObjectInstance.
+ *
+ * @param geometry a (usually a MeshGeometry or CustomGeometry)
+ */
 ObjectInstance::Ptr ObjectInstance::Create(const GeometryAccelStruct::ConstPtr& geometry,
                                            unsigned int instanceId)
 {
