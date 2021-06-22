@@ -67,6 +67,17 @@ struct Raytype : public PayloadT // Inheriting payload type for easy access
 
     __device__ void load_registers();
     __device__ static Raytype<PayloadT,SbtOffsetV,SbtStrideV,MissSbtOffsetV> from_registers();
+
+    __device__ static float3 world_origin();
+    __device__ static float3 world_direction();
+    __device__ static float3 current_world_position();
+
+    __device__ static float3 object_origin();
+    __device__ static float3 object_direction();
+    __device__ static float3 current_object_position();
+
+    __device__ static float tmin();
+    __device__ static float tmax();
     #endif
 };
 
@@ -218,6 +229,55 @@ Raytype<PayloadT,SbtOffsetV,SbtStrideV,MissSbtOffsetV>::from_registers()
     res.load_registers();
     return res;
 }
+
+template <class PayloadT, uint8_t SbtOffsetV, uint8_t SbtStrideV, uint8_t MissSbtOffsetV>
+__device__ float3 Raytype<PayloadT,SbtOffsetV,SbtStrideV,MissSbtOffsetV>::world_origin()
+{
+    return optixGetWorldRayOrigin();
+}
+
+template <class PayloadT, uint8_t SbtOffsetV, uint8_t SbtStrideV, uint8_t MissSbtOffsetV>
+__device__ float3 Raytype<PayloadT,SbtOffsetV,SbtStrideV,MissSbtOffsetV>::world_direction()
+{
+    return optixGetWorldRayDirection();
+}
+
+template <class PayloadT, uint8_t SbtOffsetV, uint8_t SbtStrideV, uint8_t MissSbtOffsetV>
+__device__ float3 Raytype<PayloadT,SbtOffsetV,SbtStrideV,MissSbtOffsetV>::current_world_position()
+{
+    return optixGetWorldRayOrigin() + optixGetRayTmax() * optixGetWorldRayDirection();
+}
+
+template <class PayloadT, uint8_t SbtOffsetV, uint8_t SbtStrideV, uint8_t MissSbtOffsetV>
+__device__ float3 Raytype<PayloadT,SbtOffsetV,SbtStrideV,MissSbtOffsetV>::object_origin()
+{
+    return optixGetObjectRayOrigin();
+}
+
+template <class PayloadT, uint8_t SbtOffsetV, uint8_t SbtStrideV, uint8_t MissSbtOffsetV>
+__device__ float3 Raytype<PayloadT,SbtOffsetV,SbtStrideV,MissSbtOffsetV>::object_direction()
+{
+    return optixGetObjectRayDirection();
+}
+
+template <class PayloadT, uint8_t SbtOffsetV, uint8_t SbtStrideV, uint8_t MissSbtOffsetV>
+__device__ float3 Raytype<PayloadT,SbtOffsetV,SbtStrideV,MissSbtOffsetV>::current_object_position()
+{
+    return optixGetObjectRayOrigin() + optixGetRayTmax() * optixGetObjectRayDirection();
+}
+
+template <class PayloadT, uint8_t SbtOffsetV, uint8_t SbtStrideV, uint8_t MissSbtOffsetV>
+__device__ float Raytype<PayloadT,SbtOffsetV,SbtStrideV,MissSbtOffsetV>::tmin()
+{
+    return optixGetRayTmin();
+}
+
+template <class PayloadT, uint8_t SbtOffsetV, uint8_t SbtStrideV, uint8_t MissSbtOffsetV>
+__device__ float Raytype<PayloadT,SbtOffsetV,SbtStrideV,MissSbtOffsetV>::tmax()
+{
+    return optixGetRayTmax();
+}
+
 
 #endif //RTAC_CUDACC
 }; //namespace optix
