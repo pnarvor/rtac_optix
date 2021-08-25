@@ -202,7 +202,7 @@ template <class PayloadT, uint8_t SbtOffsetV, uint8_t SbtStrideV, uint8_t MissSb
 __device__ void Raytype<PayloadT,SbtOffsetV,SbtStrideV,MissSbtOffsetV>::
 set_payload() const
 {
-    to_register(*this);
+    set_payload(*this);
 }
 
 template <class PayloadT, uint8_t SbtOffsetV, uint8_t SbtStrideV, uint8_t MissSbtOffsetV>
