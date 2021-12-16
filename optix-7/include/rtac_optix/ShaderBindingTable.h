@@ -29,8 +29,8 @@ class ShaderBindingTable : public OptixWrapper<OptixShaderBindingTable>
     
     using MissRecords            = std::vector<MaterialBase::ConstPtr>;
     using MaterialRecordsIndexes = std::unordered_map<MaterialBase::ConstPtr,
-                                                      std::vector<unsigned int>,
-                                                      MaterialBase::ConstPtr::Hash>;
+                                                      std::vector<unsigned int>>;
+                                                      //MaterialBase::ConstPtr::Hash>;
     
     // Attributes
     unsigned int raytypeCount_;

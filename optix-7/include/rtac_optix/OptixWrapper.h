@@ -11,7 +11,8 @@
 namespace rtac { namespace optix {
 
 template <typename T>
-using OptixWrapperHandle = rtac::types::BuildTargetHandle<T,Handle>;
+// using OptixWrapperHandle = rtac::types::BuildTargetHandle<T,Handle>;
+using OptixWrapperHandle = Handle<T>;
 
 /**
  * This type aims at being a generic helper to be used instead of native OptiX
