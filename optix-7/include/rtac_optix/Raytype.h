@@ -7,6 +7,7 @@
 #include <optix_stubs.h>
 
 #include <rtac_base/cuda/utils.h>
+#include <rtac_optix/helpers/maths.h>
 
 namespace rtac { namespace optix {
 
