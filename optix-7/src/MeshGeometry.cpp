@@ -26,18 +26,8 @@ OptixAccelBuildOptions MeshGeometry::default_build_options()
     return GeometryAccelStruct::default_build_options();
 }
 
-/**
- * @param scale half-length of the cube edges.
- *
- * @return a new DeviceMesh filled with a cube's points and faces.
- */
-Handle<MeshGeometry::DeviceMesh> MeshGeometry::cube_data(float scale)
-{
-    return Handle<DeviceMesh>(new DeviceMesh(rtac::types::Mesh<float3,uint3>::cube(scale)));
-}
-
 MeshGeometry::MeshGeometry(const Context::ConstPtr& context,
-                           const Handle<const DeviceMesh>& mesh,
+                           const DeviceMesh::ConstPtr& mesh,
                            const DeviceVector<float>& preTransform) :
     GeometryAccelStruct(context, default_build_input(), default_build_options()),
     sourceMesh_(NULL)
@@ -63,7 +53,7 @@ MeshGeometry::MeshGeometry(const Context::ConstPtr& context,
  * @return a shared pointer to a new (valid) MeshGeometry instance.
  */
 MeshGeometry::Ptr MeshGeometry::Create(const Context::ConstPtr& context,
-                                       const Handle<const DeviceMesh>& mesh,
+                                       const DeviceMesh::ConstPtr& mesh,
                                        const DeviceVector<float>& preTransform)
 {
     return Ptr(new MeshGeometry(context, mesh, preTransform));
@@ -89,32 +79,32 @@ MeshGeometry::Ptr MeshGeometry::CreateCube(const Context::ConstPtr& context,
                                            float scale,
                                            const DeviceVector<float>& preTransform)
 {
-    return Create(context, cube_data(scale), preTransform);
+    return Create(context, DeviceMesh::cube(scale), preTransform);
 }
 
-/**
- * Creates a new instance of MeshGeometry filled with the description of a mesh
- * given by an instance of Mesh.
- *
- * The Constructor of GeometryAccelStruct provides a default material
- * configuration. (All facets have the same material with flag
- * OPTIX_GEOMETRY_FLAG_NONE).
- *
- * @param context      a non-null Context pointer. The Context cannot be
- *                     changed in the object lifetime.
- * @param mesh         Mesh holding the triangular mesh data.
- * @param preTransform global transformation to apply on all vertices. See
- *                     MeshGeometry::set_pre_transform.
- *
- * @return a shared pointer to a new (valid) MeshGeometry instance.
- */
-MeshGeometry::Ptr MeshGeometry::Create(const Context::ConstPtr& context,
-                                       const Mesh& mesh,
-                                       const DeviceVector<float>& preTransform)
-{
-    Handle<DeviceMesh> deviceMesh(new DeviceMesh(mesh));
-    return Ptr(new MeshGeometry(context, deviceMesh, preTransform));
-}
+// /**
+//  * Creates a new instance of MeshGeometry filled with the description of a mesh
+//  * given by an instance of Mesh.
+//  *
+//  * The Constructor of GeometryAccelStruct provides a default material
+//  * configuration. (All facets have the same material with flag
+//  * OPTIX_GEOMETRY_FLAG_NONE).
+//  *
+//  * @param context      a non-null Context pointer. The Context cannot be
+//  *                     changed in the object lifetime.
+//  * @param mesh         Mesh holding the triangular mesh data.
+//  * @param preTransform global transformation to apply on all vertices. See
+//  *                     MeshGeometry::set_pre_transform.
+//  *
+//  * @return a shared pointer to a new (valid) MeshGeometry instance.
+//  */
+// MeshGeometry::Ptr MeshGeometry::Create(const Context::ConstPtr& context,
+//                                        const Mesh& mesh,
+//                                        const DeviceVector<float>& preTransform)
+// {
+//     DeviceMesh::Ptr deviceMesh(new DeviceMesh(mesh));
+//     return Ptr(new MeshGeometry(context, deviceMesh, preTransform));
+// }
 
 /**
  * Sets the triangular mesh information.
@@ -134,9 +124,9 @@ MeshGeometry::Ptr MeshGeometry::Create(const Context::ConstPtr& context,
  *
  * @param mesh a valid shared pointer to a DeviceMesh instance.
  */
-void MeshGeometry::set_mesh(const Handle<const DeviceMesh>& mesh)
+void MeshGeometry::set_mesh(const DeviceMesh::ConstPtr& mesh)
 {
-    if(mesh->num_points() == 0)
+    if(mesh->points().size() == 0)
         return;
     
     sourceMesh_ = mesh; // Keeping a reference to mesh to keep it alive.
@@ -148,14 +138,14 @@ void MeshGeometry::set_mesh(const Handle<const DeviceMesh>& mesh)
         this->geomData_.resize(1);
     this->geomData_[0] = reinterpret_cast<CUdeviceptr>(mesh->points().data());
 
-    this->buildInput_.triangleArray.numVertices         = mesh->num_points();
+    this->buildInput_.triangleArray.numVertices         = mesh->points().size();
     this->buildInput_.triangleArray.vertexFormat        = OPTIX_VERTEX_FORMAT_FLOAT3;
     this->buildInput_.triangleArray.vertexStrideInBytes = sizeof(DeviceMesh::Point);
     this->buildInput_.triangleArray.vertexBuffers       = geomData_.data();
         
 
-    if(mesh->num_faces() > 0) {
-        this->buildInput_.triangleArray.numIndexTriplets    = mesh->num_faces();
+    if(mesh->faces().size() > 0) {
+        this->buildInput_.triangleArray.numIndexTriplets    = mesh->faces().size();
         this->buildInput_.triangleArray.indexFormat         = OPTIX_INDICES_FORMAT_UNSIGNED_INT3;
         this->buildInput_.triangleArray.indexStrideInBytes  = sizeof(DeviceMesh::Face);
         this->buildInput_.triangleArray.indexBuffer         =

@@ -39,9 +39,14 @@ using namespace rtac::display;
 
 template<>
 struct rtac::display::GLFormat<uchar3> {
+
+    using Scalar = unsigned char;
+
     static constexpr unsigned int Size  = 3;
     static constexpr GLenum PixelFormat = GL_RGB;
     static constexpr GLenum Type        = GL_UNSIGNED_BYTE;
+
+    static constexpr GLenum InternalFormat = GL_RGB8;
 };
 
 using RaygenRecord     = SbtRecord<RaygenData>;
@@ -57,10 +62,10 @@ DeviceVector<float2> compute_cube_uv()
     Vector3<float> z0({0.0f,0.0f,1.0f});
     
     std::vector<float2> uv;
-    for(auto& f : cube.faces()) {
-        auto p0 = cube.point(f.x);
-        auto p1 = cube.point(f.y);
-        auto p2 = cube.point(f.z);
+    for(auto& f : cube->faces()) {
+        auto p0 = cube->points()[f.x];
+        auto p1 = cube->points()[f.y];
+        auto p2 = cube->points()[f.z];
         
         // a normal vector
         auto n = ((p1 - p0).cross(p2 - p1)).array().abs();
@@ -212,8 +217,7 @@ int main()
     
     // Preparing display
     Display display;
-    auto renderer = ImageRenderer::New();
-    display.add_renderer(renderer);
+    auto renderer = display.create_renderer<ImageRenderer>(View::New());
 
     GLVector<uchar3> imgData(W*H);
 

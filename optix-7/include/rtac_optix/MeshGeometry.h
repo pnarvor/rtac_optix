@@ -41,38 +41,37 @@ class MeshGeometry : public GeometryAccelStruct
 
     using Ptr        = OptixWrapperHandle<MeshGeometry>;
     using ConstPtr   = OptixWrapperHandle<const MeshGeometry>;
-    using DeviceMesh = rtac::cuda::DeviceMesh<float3, uint3>;
-    using Mesh       = DeviceMesh::MeshBase;
+    using DeviceMesh = rtac::cuda::DeviceMesh<>;
     template <typename T>
     using DeviceVector = rtac::cuda::DeviceVector<T>;
 
     static OptixBuildInput        default_build_input();
     static OptixAccelBuildOptions default_build_options();
 
-    static Handle<DeviceMesh> cube_data(float scale = 1.0f);
+    static DeviceMesh::Ptr cube_data(float scale = 1.0) { return DeviceMesh::cube(scale); }
 
     protected:
 
-    Handle<const DeviceMesh>  sourceMesh_;
-    DeviceVector<float>       preTransform_;  // Row-major homogeneous matrix without bottom line.
+    DeviceMesh::ConstPtr sourceMesh_;
+    DeviceVector<float>    preTransform_;  // Row-major homogeneous matrix without bottom line.
 
     MeshGeometry(const Context::ConstPtr& context,
-                 const Handle<const DeviceMesh>& mesh,
+                 const DeviceMesh::ConstPtr& mesh,
                  const DeviceVector<float>& preTransform = DeviceVector<float>(0));
 
     public:
 
     static Ptr Create(const Context::ConstPtr& context,
-                      const Handle<const DeviceMesh>& mesh,
+                      const DeviceMesh::ConstPtr& mesh,
                       const DeviceVector<float>& preTransform = DeviceVector<float>(0));
     static Ptr CreateCube(const Context::ConstPtr& context,
                           float scale = 1.0f,
                           const DeviceVector<float>& preTransform = DeviceVector<float>(0));
-    static Ptr Create(const Context::ConstPtr& context,
-                      const Mesh& mesh,
-                      const DeviceVector<float>& preTransform = DeviceVector<float>(0));
+    //static Ptr Create(const Context::ConstPtr& context,
+    //                  const Mesh& mesh,
+    //                  const DeviceVector<float>& preTransform = DeviceVector<float>(0));
 
-    void set_mesh(const Handle<const DeviceMesh>& mesh);
+    void set_mesh(const DeviceMesh::ConstPtr& mesh);
 
     void set_pre_transform(const DeviceVector<float>& preTransform);
     void unset_pre_transform();
@@ -81,6 +80,9 @@ class MeshGeometry : public GeometryAccelStruct
     void disable_vertex_access();
 
     virtual unsigned int primitive_count() const;
+
+    unsigned int num_points() const { return sourceMesh_->points().size(); }
+    unsigned int num_faces()  const { return sourceMesh_->faces().size();  }
 };
 
 }; //namespace optix

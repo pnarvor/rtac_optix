@@ -12,7 +12,6 @@
 
 #include <rtac_base/cuda/HostVector.h>
 #include <rtac_base/cuda/DeviceVector.h>
-#include <rtac_base/cuda/DeviceMesh.h>
 
 #include <rtac_optix/Handle.h>
 #include <rtac_optix/utils.h>

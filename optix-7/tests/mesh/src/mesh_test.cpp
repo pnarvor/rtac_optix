@@ -73,8 +73,7 @@ int main()
 
     //auto handle = AccelerationStruct::Create(context, buildInput, buildOptions);
 
-    auto mesh   = MeshGeometry::cube_data();
-    auto handle = MeshGeometry::Create(context, mesh);
+    auto handle = MeshGeometry::CreateCube(context);
     handle->material_hit_setup({OPTIX_GEOMETRY_FLAG_NONE});
     std::vector<float> pose({1.0f,0.0f,0.0f,0.0f,
                              0.0f,1.0f,0.0f,0.0f,
