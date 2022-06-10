@@ -263,7 +263,7 @@ int main()
 
         // Updating display
         //imgData = renderData;
-        renderer->texture()->set_image({W,H}, imgData);
+        renderer->texture()->set_image(rtac::display::Shape({W,H}), imgData);
 
         display.draw();
 
